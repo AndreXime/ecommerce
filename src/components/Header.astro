@@ -1,0 +1,77 @@
+<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4">
+        <!-- Linha Superior: Menus e Logo -->
+        <div
+            class="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0"
+        >
+            <!-- Menu Esquerdo -->
+            <div
+                class="flex items-center space-x-6 w-full md:w-auto justify-center md:justify-start"
+            >
+                <div
+                    class="flex items-center text-gray-600 hover:text-blue-600 cursor-pointer transition"
+                >
+                    <i class="far fa-user text-lg mr-2"></i>
+                    <span class="text-sm font-medium">Minha Conta</span>
+                </div>
+            </div>
+
+            <!-- Logo Central -->
+            <div class="flex items-center justify-center">
+                <a href="#" class="flex items-center group">
+                    <div
+                        class="bg-blue-600 text-white p-2 rounded-lg shadow-lg group-hover:bg-blue-700 transition transform group-hover:scale-105"
+                    >
+                        <i class="fas fa-bolt text-xl"></i>
+                    </div>
+                    <span
+                        class="ml-3 text-xl font-bold tracking-tight text-gray-900 group-hover:text-blue-700 transition"
+                    >
+                        Emporium da Tecnologia
+                    </span>
+                </a>
+            </div>
+
+            <!-- Menu Direito -->
+            <div
+                class="flex items-center space-x-6 w-full md:w-auto justify-center md:justify-end text-sm font-medium text-gray-600"
+            >
+                <a
+                    href="#"
+                    class="hover:text-blue-600 transition hidden sm:block"
+                    >Atendimento</a
+                >
+                <a
+                    href="#"
+                    class="hover:text-blue-600 transition hidden sm:block"
+                    >Produtos</a
+                >
+                <div
+                    class="relative cursor-pointer hover:text-blue-600 transition"
+                >
+                    <i class="fas fa-shopping-bag text-xl"></i>
+                    <span
+                        class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
+                        >2</span
+                    >
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de Busca -->
+        <div class="mt-4 flex justify-center">
+            <div class="relative w-full max-w-2xl">
+                <div
+                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+                >
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input
+                    type="text"
+                    class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full leading-5 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition shadow-sm"
+                    placeholder="Buscar produtos (ex: Fones, Drones, Câmeras)..."
+                />
+            </div>
+        </div>
+    </div>
+</header>
