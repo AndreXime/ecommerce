@@ -1,17 +1,368 @@
 ---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import Layout from "../layout/layout.astro";
 
+interface Product {
+	id: string;
+	tag: string;
+	name: string;
+	price: string;
+	image: string;
+	rating: number;
+	reviews: string;
+	discount?: string; // Opcional
+}
+
+const offers: Product[] = [
+	{
+		id: "cam-01",
+		tag: "Visionary",
+		name: "Visionary 4K Cam",
+		price: "$649.99",
+		image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=600",
+		rating: 4.5,
+		reviews: "(128 reviews)",
+		discount: "-20%",
+	},
+	{
+		id: "drone-01",
+		tag: "Aero",
+		name: "SkyLark Drone X1",
+		price: "$899.00",
+		image: "https://images.unsplash.com/photo-1572569028738-411a29639581?auto=format&fit=crop&q=80&w=600",
+		rating: 5,
+		reviews: "(84 reviews)",
+	},
+	{
+		id: "headphone-01",
+		tag: "Sonic",
+		name: "NoiseCancel Pro",
+		price: "$249.50",
+		image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&q=80&w=600",
+		rating: 4,
+		reviews: "(342 reviews)",
+		discount: "-15%",
+	},
+	{
+		id: "watch-01",
+		tag: "Chrono",
+		name: "FitTrack Elite",
+		price: "$199.99",
+		image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=600",
+		rating: 5,
+		reviews: "(1.2k reviews)",
+	},
+];
+
+const bestSellers: Product[] = [
+	{
+		id: "laptop-01",
+		tag: "Dell",
+		name: "XPS 15 Laptop",
+		price: "$1,299",
+		image: "https://images.unsplash.com/photo-1593642632823-8f78536788c6?auto=format&fit=crop&q=80&w=600",
+		rating: 5,
+		reviews: "(200)",
+	},
+	{
+		id: "ipad-01",
+		tag: "Apple",
+		name: "iPad Pro M2",
+		price: "$899",
+		image: "https://images.unsplash.com/photo-1558086266-993d07730598?auto=format&fit=crop&q=80&w=600",
+		rating: 4.5,
+		reviews: "(450)",
+	},
+	{
+		id: "dualsense-01",
+		tag: "Sony",
+		name: "DualSense 5",
+		price: "$69.99",
+		image: "https://images.unsplash.com/photo-1610438235354-a6ae5528385c?auto=format&fit=crop&q=80&w=600",
+		rating: 5,
+		reviews: "(999+)",
+	},
+	{
+		id: "monitor-01",
+		tag: "LG",
+		name: "UltraGear Monitor",
+		price: "$349.00",
+		image: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&q=80&w=600",
+		rating: 4,
+		reviews: "(56)",
+	},
+	{
+		id: "speaker-01",
+		tag: "Bose",
+		name: "SoundLink Flex",
+		price: "$149.00",
+		image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?auto=format&fit=crop&q=80&w=600",
+		rating: 5,
+		reviews: "(120)",
+	},
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Emporium da Tecnologia" description="Loja">
+	<Header />
+
+	<section
+		class="relative h-[500px] w-full bg-gray-900 overflow-hidden group"
+	>
+		<!-- Imagem de Fundo -->
+		<div class="absolute inset-0">
+			<img
+				src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop"
+				alt="Tecnologia Cyberpunk"
+				class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-1000 ease-in-out"
+			/>
+			<!-- Gradiente Overlay -->
+			<div
+				class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-80"
+			>
+			</div>
+		</div>
+
+		<!-- Conteúdo Overlay -->
+		<div
+			class="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center z-10"
+		>
+			<span
+				class="inline-block py-1 px-3 rounded-full bg-blue-600/30 border border-blue-500 text-blue-300 text-xs font-bold tracking-wider mb-4 uppercase backdrop-blur-sm"
+			>
+				Novidades 2024
+			</span>
+			<h1
+				class="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight drop-shadow-lg"
+			>
+				O Futuro da Tecnologia Chegou
+			</h1>
+			<p
+				class="text-lg md:text-xl text-gray-200 max-w-2xl font-light drop-shadow-md"
+			>
+				Descubra as últimas novidades em eletrônicos de ponta. Preços
+				imbatíveis, qualidade inigualável.
+			</p>
+			<div class="mt-8 flex gap-4">
+				<button
+					class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full transition transform hover:-translate-y-1 shadow-lg shadow-blue-600/50"
+				>
+					Comprar Agora
+				</button>
+				<button
+					class="bg-transparent border border-white hover:bg-white hover:text-gray-900 text-white font-semibold py-3 px-8 rounded-full transition"
+				>
+					Ver Catálogo
+				</button>
+			</div>
+		</div>
+	</section>
+	<main class="flex-grow container mx-auto px-4 py-12 space-y-16">
+		<!-- 3. Seção "Produtos em oferta" -->
+		<section>
+			<div class="flex items-center justify-between mb-8">
+				<div class="h-px bg-gray-200 flex-grow"></div>
+				<h2
+					class="text-2xl md:text-3xl font-bold text-gray-800 px-6 text-center"
+				>
+					Produtos em oferta
+				</h2>
+				<div class="h-px bg-gray-200 flex-grow"></div>
+			</div>
+
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+				{
+					offers.map((product) => (
+						<div class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 overflow-hidden flex flex-col group">
+							<div class="relative h-48 bg-gray-100 overflow-hidden">
+								<img
+									src={product.image}
+									alt={product.name}
+									class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+								/>
+								{product.discount && (
+									<div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+										{product.discount}
+									</div>
+								)}
+							</div>
+							<div class="p-4 flex-grow flex flex-col">
+								<span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+									{product.tag}
+								</span>
+								<h3 class="text-lg font-bold text-gray-900 mt-1 mb-2">
+									{product.name}
+								</h3>
+								<div class="flex items-center mb-3">
+									<div class="text-yellow-400 text-xs flex">
+										{Array.from({ length: 5 }).map(
+											(_, i) => {
+												if (
+													i <
+													Math.floor(product.rating)
+												)
+													return (
+														<i class="fas fa-star" />
+													);
+												if (
+													i ===
+														Math.floor(
+															product.rating,
+														) &&
+													product.rating % 1 !== 0
+												)
+													return (
+														<i class="fas fa-star-half-alt" />
+													);
+												return (
+													<i class="far fa-star" />
+												);
+											},
+										)}
+									</div>
+									<span class="text-xs text-gray-500 ml-2">
+										{product.reviews}
+									</span>
+								</div>
+								<div class="mt-auto flex items-center justify-between">
+									<span class="text-xl font-bold text-gray-900">
+										{product.price}
+									</span>
+									<button class="text-sm font-medium text-gray-500 hover:text-blue-600 flex items-center transition">
+										Ver Detalhes{" "}
+										<i class="fas fa-arrow-right ml-1 text-xs" />
+									</button>
+								</div>
+							</div>
+						</div>
+					))
+				}
+			</div>
+		</section>
+
+		<!-- 4. Seção "Produtos mais vendidos" (Carrossel) -->
+		<section class="relative">
+			<div class="flex items-center justify-between mb-8">
+				<div class="h-px bg-gray-200 flex-grow"></div>
+				<h2
+					class="text-2xl md:text-3xl font-bold text-gray-800 px-6 text-center"
+				>
+					Produtos mais vendidos
+				</h2>
+				<div class="h-px bg-gray-200 flex-grow"></div>
+			</div>
+
+			<!-- Navegação do Slider -->
+			<div class="relative group/slider">
+				<!-- Botão Esquerda -->
+				<button
+					id="scrollLeft"
+					class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg opacity-0 group-hover/slider:opacity-100 transition duration-300 focus:outline-none hidden md:block"
+				>
+					<i class="fas fa-chevron-left"></i>
+				</button>
+
+				<!-- Container do Scroll -->
+				<div
+					id="sliderContainer"
+					class="flex overflow-x-auto space-x-6 pb-6 hide-scroll scroll-smooth"
+				>
+					{
+						bestSellers.map((product) => (
+							<div class="min-w-[280px] md:min-w-[300px] bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+								<div class="h-48 bg-gray-100 overflow-hidden">
+									<img
+										src={product.image}
+										alt={product.name}
+										class="w-full h-full object-cover"
+									/>
+								</div>
+								<div class="p-4 flex-grow flex flex-col">
+									<span class="text-xs font-semibold text-gray-400 uppercase">
+										{product.tag}
+									</span>
+									<h3 class="text-lg font-bold text-gray-900 mt-1 mb-2">
+										{product.name}
+									</h3>
+									<div class="flex items-center mb-3 text-yellow-400 text-xs">
+										{Array.from({ length: 5 }).map(
+											(_, i) => {
+												if (
+													i <
+													Math.floor(product.rating)
+												)
+													return (
+														<i class="fas fa-star" />
+													);
+												if (
+													i ===
+														Math.floor(
+															product.rating,
+														) &&
+													product.rating % 1 !== 0
+												)
+													return (
+														<i class="fas fa-star-half-alt" />
+													);
+												return (
+													<i class="far fa-star" />
+												);
+											},
+										)}
+										<span class="text-gray-500 ml-2">
+											{product.reviews}
+										</span>
+									</div>
+									<div class="mt-auto flex justify-between items-center">
+										<span class="text-xl font-bold text-gray-900">
+											{product.price}
+										</span>
+										<button class="text-sm text-gray-500 hover:text-blue-600">
+											Ver Detalhes
+										</button>
+									</div>
+								</div>
+							</div>
+						))
+					}
+				</div>
+
+				<!-- Botão Direita -->
+				<button
+					id="scrollRight"
+					class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg opacity-0 group-hover/slider:opacity-100 transition duration-300 focus:outline-none hidden md:block"
+				>
+					<i class="fas fa-chevron-right"></i>
+				</button>
+			</div>
+		</section>
+
+		<!-- 5. Botão de Ação (CTA Geral) -->
+		<section class="flex justify-center pb-8">
+			<button
+				class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 px-10 rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105"
+			>
+				Ver Todos os Produtos
+			</button>
+		</section>
+	</main>
+
+	<script>
+		const scrollContainer = document.getElementById("sliderContainer");
+		const scrollLeftBtn = document.getElementById("scrollLeft");
+		const scrollRightBtn = document.getElementById("scrollRight");
+
+		if (scrollContainer && scrollLeftBtn && scrollRightBtn) {
+			scrollLeftBtn.addEventListener("click", () => {
+				scrollContainer.scrollBy({ left: -320, behavior: "smooth" });
+			});
+
+			scrollRightBtn.addEventListener("click", () => {
+				scrollContainer.scrollBy({ left: 320, behavior: "smooth" });
+			});
+		}
+	</script>
+
+	<Footer />
+</Layout>
