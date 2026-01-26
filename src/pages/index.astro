@@ -1,7 +1,7 @@
 ---
-import Footer from "../components/Footer.astro";
-import Header from "../components/Header.astro";
-import Layout from "../layout/layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Layout from "@/layout/layout.astro";
 
 interface Product {
 	id: string;
@@ -104,7 +104,7 @@ const bestSellers: Product[] = [
 ];
 ---
 
-<Layout title="Emporium da Tecnologia" description="Loja">
+<Layout title="Emporium da Tecnologia" description="">
 	<Header />
 
 	<section

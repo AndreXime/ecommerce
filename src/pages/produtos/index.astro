@@ -1,0 +1,397 @@
+---
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Layout from "@/layout/layout.astro";
+
+interface FilterOption {
+    label: string;
+    checked?: boolean;
+}
+
+interface Product {
+    id: string;
+    tag: string;
+    name: string;
+    rating: number;
+    reviews: number;
+    price: number;
+    image: string;
+    discount?: string; // Ex: "-10%"
+    isNew?: boolean; // Ex: Badge "Novo"
+}
+
+// --- Dados Mockados ---
+
+const categories: FilterOption[] = [
+    { label: "Câmeras" },
+    { label: "Drones" },
+    { label: "E-Readers" },
+    { label: "Fones de Ouvido" },
+    { label: "Games" },
+    { label: "Laptops", checked: true },
+    { label: "Monitores" },
+    { label: "Smartphones" },
+    { label: "Tablets" },
+    { label: "VR/AR" },
+    { label: "Wearables" },
+    { label: "Áudio" },
+];
+
+const brands: FilterOption[] = [
+    { label: "Aero" },
+    { label: "Chrono" },
+    { label: "Galaxy" },
+    { label: "Immersia" },
+    { label: "Nexus" },
+    { label: "SoundScape" },
+    { label: "Tabula" },
+    { label: "Visionary" },
+];
+
+const products: Product[] = [
+    {
+        id: "laptop-01",
+        tag: "Aero",
+        name: "AeroBook Pro 15",
+        rating: 4.5,
+        reviews: 89,
+        price: 1499.0,
+        image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=600",
+        isNew: true,
+    },
+    {
+        id: "phone-01",
+        tag: "Galaxy",
+        name: "GalaxyPhone X",
+        rating: 5,
+        reviews: 412,
+        price: 999.0,
+        image: "https://images.unsplash.com/photo-1592899677712-a5a254503484?auto=format&fit=crop&q=80&w=600",
+    },
+    {
+        id: "fone-01",
+        tag: "SoundScape",
+        name: "SoundScape ANC",
+        rating: 4,
+        reviews: 156,
+        price: 299.0,
+        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=600",
+        discount: "-10%",
+    },
+    {
+        id: "watch-01",
+        tag: "Chrono",
+        name: "ChronoWatch 5",
+        rating: 4.5,
+        reviews: 890,
+        price: 349.5,
+        image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&q=80&w=600",
+    },
+    {
+        id: "cam-01",
+        tag: "Visionary",
+        name: "Visionary 4K Cam",
+        rating: 5,
+        reviews: 64,
+        price: 649.99,
+        image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=600",
+        discount: "-15%",
+    },
+    {
+        id: "game-01",
+        tag: "Nexus",
+        name: "GameSphere 5",
+        rating: 5,
+        reviews: 1024,
+        price: 59.99,
+        image: "https://images.unsplash.com/photo-1605901309584-818e25960b8f?auto=format&fit=crop&q=80&w=600",
+    },
+    {
+        id: "drone-01",
+        tag: "Aero",
+        name: "SkyLark Drone",
+        rating: 4,
+        reviews: 45,
+        price: 899.0,
+        image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&q=80&w=600",
+    },
+    {
+        id: "tablet-01",
+        tag: "Tabula",
+        name: "Tabula Slate Pro",
+        rating: 4.5,
+        reviews: 320,
+        price: 599.0,
+        image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=80&w=600",
+    },
+];
+---
+
+<Layout title="Emporium da Tecnologia" description="">
+    <Header />
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <!-- 2. Título da Página -->
+        <div class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">
+                Todos os Produtos
+            </h1>
+            <p class="text-gray-500 mt-2">Exibindo 12 de 48 produtos</p>
+        </div>
+
+        <!-- 3. Layout Principal (Sidebar + Grid) -->
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- A. Barra Lateral de Filtros (Sidebar) -->
+            <aside class="w-full lg:w-1/4 flex-shrink-0">
+                <div
+                    class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm sticky top-24"
+                >
+                    <!-- Cabeçalho da Sidebar -->
+                    <div
+                        class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100"
+                    >
+                        <span class="text-lg font-bold text-gray-900"
+                            >Filtros</span
+                        >
+                        <button
+                            class="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                            >Limpar</button
+                        >
+                    </div>
+
+                    <!-- Filtro Categoria -->
+                    <div class="mb-6">
+                        <details open class="group">
+                            <summary
+                                class="flex justify-between items-center font-semibold text-gray-800 cursor-pointer mb-3 select-none"
+                            >
+                                Categoria
+                                <i
+                                    class="fas fa-chevron-down text-gray-400 text-xs transition-transform group-open:rotate-180"
+                                ></i>
+                            </summary>
+                            <div class="space-y-2 pl-1">
+                                {
+                                    categories.map((cat) => (
+                                        <label class="flex items-center space-x-3 cursor-pointer group/item">
+                                            <input
+                                                type="checkbox"
+                                                checked={cat.checked}
+                                                class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                            />
+                                            <span
+                                                class={`text-gray-600 group-hover/item:text-blue-600 text-sm ${cat.checked ? "font-medium" : ""}`}
+                                            >
+                                                {cat.label}
+                                            </span>
+                                        </label>
+                                    ))
+                                }
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="h-px bg-gray-100 my-4"></div>
+
+                    <!-- Filtro Marca -->
+                    <div class="mb-6">
+                        <details open class="group">
+                            <summary
+                                class="flex justify-between items-center font-semibold text-gray-800 cursor-pointer mb-3 select-none"
+                            >
+                                Marca
+                                <i
+                                    class="fas fa-chevron-down text-gray-400 text-xs transition-transform group-open:rotate-180"
+                                ></i>
+                            </summary>
+                            <div class="space-y-2 pl-1">
+                                {
+                                    brands.map((brand) => (
+                                        <label class="flex items-center space-x-3 cursor-pointer group/item">
+                                            <input
+                                                type="checkbox"
+                                                class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                            />
+                                            <span class="text-gray-600 group-hover/item:text-blue-600 text-sm">
+                                                {brand.label}
+                                            </span>
+                                        </label>
+                                    ))
+                                }
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="h-px bg-gray-100 my-4"></div>
+
+                    <!-- Filtro Faixa de Preço -->
+                    <div>
+                        <div
+                            class="flex justify-between items-center font-semibold text-gray-800 mb-4"
+                        >
+                            Faixa de Preço
+                        </div>
+                        <div class="px-2">
+                            <input
+                                type="range"
+                                min="0"
+                                max="2200"
+                                value="1200"
+                                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            />
+                            <div
+                                class="flex justify-between mt-2 text-sm text-gray-600 font-medium"
+                            >
+                                <span>$0</span>
+                                <span>$2200</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- B. Grade de Produtos (Product Grid) -->
+            <div class="flex-grow">
+                <!-- Toolbar superior (Ordenação, View) - Opcional, mas bom para e-commerce -->
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-sm text-gray-500"
+                        >Mostrando 8 de 48 resultados</span
+                    >
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm text-gray-600">Ordenar por:</label
+                        >
+                        <select
+                            class="text-sm border-gray-300 border rounded p-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-700"
+                        >
+                            <option>Relevância</option>
+                            <option>Menor Preço</option>
+                            <option>Maior Preço</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Mudei aqui: lg:grid-cols-2 em vez de 3 -->
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6"
+                >
+                    {
+                        products.map((product) => (
+                            <div class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 overflow-hidden flex flex-col group">
+                                <div class="relative h-56 bg-gray-100 overflow-hidden">
+                                    <img
+                                        src={product.image}
+                                        alt={product.name}
+                                        class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                                    />
+
+                                    {/* Badge lógica: Novo ou Desconto */}
+                                    {product.isNew && (
+                                        <div class="absolute top-2 left-2 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                            Novo
+                                        </div>
+                                    )}
+                                    {product.discount && (
+                                        <div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                            {product.discount}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div class="p-4 flex-grow flex flex-col">
+                                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                                        {product.tag}
+                                    </span>
+                                    <h3 class="text-lg font-bold text-gray-900 mt-1 mb-2">
+                                        {product.name}
+                                    </h3>
+
+                                    {/* Lógica de Estrelas */}
+                                    <div class="flex items-center mb-3">
+                                        <div class="text-yellow-400 text-xs flex">
+                                            {Array.from({ length: 5 }).map(
+                                                (_, i) => {
+                                                    if (
+                                                        i <
+                                                        Math.floor(
+                                                            product.rating,
+                                                        )
+                                                    )
+                                                        return (
+                                                            <i class="fas fa-star" />
+                                                        );
+                                                    if (
+                                                        i ===
+                                                            Math.floor(
+                                                                product.rating,
+                                                            ) &&
+                                                        product.rating % 1 !== 0
+                                                    )
+                                                        return (
+                                                            <i class="fas fa-star-half-alt" />
+                                                        );
+                                                    return (
+                                                        <i class="far fa-star" />
+                                                    );
+                                                },
+                                            )}
+                                        </div>
+                                        <span class="text-xs text-gray-500 ml-2">
+                                            ({product.reviews} reviews)
+                                        </span>
+                                    </div>
+
+                                    <div class="mt-auto flex items-center justify-between pt-2">
+                                        <span class="text-xl font-bold text-gray-900">
+                                            $
+                                            {product.price.toLocaleString(
+                                                "en-US",
+                                                { minimumFractionDigits: 2 },
+                                            )}
+                                        </span>
+                                        <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition shadow-md hover:shadow-lg flex items-center">
+                                            Ver Detalhes{" "}
+                                            <i class="fas fa-arrow-right ml-2 text-xs" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
+
+                <!-- Paginação -->
+                <div class="mt-12 flex justify-center">
+                    <nav class="flex items-center space-x-2">
+                        <button
+                            class="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50"
+                            >Anterior</button
+                        >
+                        <button
+                            class="px-3 py-2 rounded-md bg-blue-600 text-white font-medium"
+                            >1</button
+                        >
+                        <button
+                            class="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                            >2</button
+                        >
+                        <button
+                            class="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                            >3</button
+                        >
+                        <span class="px-2 text-gray-500">...</span>
+                        <button
+                            class="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                            >12</button
+                        >
+                        <button
+                            class="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50"
+                            >Próximo</button
+                        >
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <Footer />
+</Layout>
