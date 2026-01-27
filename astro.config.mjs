@@ -5,13 +5,16 @@ import tailwindcss from "@tailwindcss/vite";
 
 import preact from "@astrojs/preact";
 
+import vercel from "@astrojs/vercel";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://ecommerce.andreximenes.xyzs",
 
   vite: {
       plugins: [tailwindcss()],
-	},
+    },
 
   integrations: [preact()],
+  adapter: vercel(),
 });
