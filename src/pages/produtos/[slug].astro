@@ -7,6 +7,7 @@ import {
     calculateOldPrice,
     formatPrice,
 } from "@/lib/productsMethods";
+import StarRating from "@/components/StarRating";
 
 export const prerender = false;
 const { slug } = Astro.params;
@@ -15,15 +16,6 @@ const product = getProductById(slug || "");
 if (!product) return Astro.redirect("/404");
 
 const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
-
-const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }).map((_, i) => {
-        if (i < Math.floor(rating)) return "fas fa-star";
-        if (i === Math.floor(rating) && rating % 1 !== 0)
-            return "fas fa-star-half-alt";
-        return "far fa-star";
-    });
-};
 ---
 
 <Layout title={product.name} description={product.description}>
@@ -78,11 +70,7 @@ const renderStars = (rating: number) => {
                     </h1>
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center text-yellow-400 text-sm">
-                            {
-                                renderStars(product.rating).map((iconClass) => (
-                                    <i class={iconClass} />
-                                ))
-                            }
+                            <StarRating rating={product.rating} />
                         </div>
                         <a
                             href="#reviews"
@@ -325,11 +313,7 @@ const renderStars = (rating: number) => {
                         <div
                             class="flex justify-center text-yellow-400 mb-2 text-lg"
                         >
-                            {
-                                renderStars(product.rating).map((icon) => (
-                                    <i class={icon} />
-                                ))
-                            }
+                            <StarRating rating={product.rating} />
                         </div>
                         <p class="text-gray-500 text-sm mb-6">
                             Baseado em {product.reviewsCount} avaliações
@@ -364,11 +348,9 @@ const renderStars = (rating: number) => {
                                                 {review.author}
                                             </h4>
                                             <div class="flex text-yellow-400 text-xs">
-                                                {renderStars(review.rating).map(
-                                                    (icon) => (
-                                                        <i class={icon} />
-                                                    ),
-                                                )}
+                                                <StarRating
+                                                    rating={review.rating}
+                                                />
                                             </div>
                                         </div>
                                     </div>

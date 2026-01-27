@@ -7,6 +7,7 @@ import {
 	getProductSummaries,
 	formatPrice,
 } from "@/lib/productsMethods";
+import StarRating from "@/components/StarRating";
 
 const offers = getOffers(4);
 const bestSellers = getProductSummaries(6);
@@ -18,21 +19,18 @@ const bestSellers = getProductSummaries(6);
 	<section
 		class="relative h-[500px] w-full bg-gray-900 overflow-hidden group"
 	>
-		<!-- Imagem de Fundo -->
 		<div class="absolute inset-0">
 			<img
 				src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop"
 				alt="Tecnologia Cyberpunk"
 				class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-1000 ease-in-out"
 			/>
-			<!-- Gradiente Overlay -->
 			<div
 				class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-80"
 			>
 			</div>
 		</div>
 
-		<!-- Conteúdo Overlay -->
 		<div
 			class="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center z-10"
 		>
@@ -67,7 +65,6 @@ const bestSellers = getProductSummaries(6);
 		</div>
 	</section>
 	<main class="flex-grow container mx-auto px-4 py-12 space-y-16">
-		<!-- 3. Seção "Produtos em oferta" -->
 		<section>
 			<div class="flex items-center justify-between mb-8">
 				<div class="h-px bg-gray-200 flex-grow"></div>
@@ -105,30 +102,7 @@ const bestSellers = getProductSummaries(6);
 								</h3>
 								<div class="flex items-center mb-3">
 									<div class="text-yellow-400 text-xs flex">
-										{Array.from({ length: 5 }).map(
-											(_, i) => {
-												if (
-													i <
-													Math.floor(product.rating)
-												)
-													return (
-														<i class="fas fa-star" />
-													);
-												if (
-													i ===
-														Math.floor(
-															product.rating,
-														) &&
-													product.rating % 1 !== 0
-												)
-													return (
-														<i class="fas fa-star-half-alt" />
-													);
-												return (
-													<i class="far fa-star" />
-												);
-											},
-										)}
+										<StarRating rating={product.rating} />
 									</div>
 									<span class="text-xs text-gray-500 ml-2">
 										{product.reviewsCount}
@@ -153,7 +127,6 @@ const bestSellers = getProductSummaries(6);
 			</div>
 		</section>
 
-		<!-- 4. Seção "Produtos mais vendidos" (Carrossel) -->
 		<section class="relative">
 			<div class="flex items-center justify-between mb-8">
 				<div class="h-px bg-gray-200 flex-grow"></div>
@@ -165,9 +138,7 @@ const bestSellers = getProductSummaries(6);
 				<div class="h-px bg-gray-200 flex-grow"></div>
 			</div>
 
-			<!-- Navegação do Slider -->
 			<div class="relative group/slider">
-				<!-- Botão Esquerda -->
 				<button
 					id="scrollLeft"
 					class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg opacity-0 group-hover/slider:opacity-100 transition duration-300 focus:outline-none hidden md:block"
@@ -175,7 +146,6 @@ const bestSellers = getProductSummaries(6);
 					<i class="fas fa-chevron-left"></i>
 				</button>
 
-				<!-- Container do Scroll -->
 				<div
 					id="sliderContainer"
 					class="flex overflow-x-auto space-x-6 pb-6 hide-scroll scroll-smooth"
@@ -198,30 +168,8 @@ const bestSellers = getProductSummaries(6);
 										{product.name}
 									</h3>
 									<div class="flex items-center mb-3 text-yellow-400 text-xs">
-										{Array.from({ length: 5 }).map(
-											(_, i) => {
-												if (
-													i <
-													Math.floor(product.rating)
-												)
-													return (
-														<i class="fas fa-star" />
-													);
-												if (
-													i ===
-														Math.floor(
-															product.rating,
-														) &&
-													product.rating % 1 !== 0
-												)
-													return (
-														<i class="fas fa-star-half-alt" />
-													);
-												return (
-													<i class="far fa-star" />
-												);
-											},
-										)}
+										<StarRating rating={product.rating} />
+
 										<span class="text-gray-500 ml-2">
 											{product.reviewsCount}
 										</span>
@@ -230,9 +178,12 @@ const bestSellers = getProductSummaries(6);
 										<span class="text-xl font-bold text-gray-900">
 											{formatPrice(product.price)}
 										</span>
-										<button class="text-sm text-gray-500 hover:text-blue-600">
+										<a
+											href={`/produtos/${product.id}`}
+											class="text-sm text-gray-500 hover:text-blue-600"
+										>
 											Ver Detalhes
-										</button>
+										</a>
 									</div>
 								</div>
 							</div>
@@ -240,7 +191,6 @@ const bestSellers = getProductSummaries(6);
 					}
 				</div>
 
-				<!-- Botão Direita -->
 				<button
 					id="scrollRight"
 					class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg opacity-0 group-hover/slider:opacity-100 transition duration-300 focus:outline-none hidden md:block"
@@ -250,13 +200,13 @@ const bestSellers = getProductSummaries(6);
 			</div>
 		</section>
 
-		<!-- 5. Botão de Ação (CTA Geral) -->
 		<section class="flex justify-center pb-8">
-			<button
+			<a
+				href={`/produtos`}
 				class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 px-10 rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105"
 			>
 				Ver Todos os Produtos
-			</button>
+			</a>
 		</section>
 	</main>
 
