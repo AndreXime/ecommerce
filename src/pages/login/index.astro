@@ -1,0 +1,81 @@
+---
+import Layout from "@/layout/layout.astro";
+import AuthComponent from "./_auth";
+---
+
+<Layout title="Login | Emporium da Tecnologia" description="Acesse sua conta">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <div
+                class="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0"
+            >
+                <div
+                    class="flex items-center space-x-6 w-full md:w-auto justify-center md:justify-start"
+                >
+                    <a
+                        href="/"
+                        class="flex items-center text-gray-600 hover:text-blue-600 cursor-pointer transition"
+                    >
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        <span class="text-sm font-medium">Voltar à Loja</span>
+                    </a>
+                </div>
+
+                <div class="flex items-center justify-center">
+                    <a href="/" class="flex items-center group">
+                        <div
+                            class="bg-blue-600 text-white p-2 rounded-lg shadow-lg group-hover:bg-blue-700 transition transform group-hover:scale-105"
+                        >
+                            <i class="fas fa-bolt text-xl"></i>
+                        </div>
+                        <span
+                            class="ml-3 text-xl font-bold tracking-tight text-gray-900 group-hover:text-blue-700 transition"
+                        >
+                            Emporium da Tecnologia
+                        </span>
+                    </a>
+                </div>
+
+                <div
+                    class="flex items-center space-x-6 w-full md:w-auto justify-center md:justify-end text-sm font-medium text-gray-600"
+                >
+                    <a
+                        href="#"
+                        class="hover:text-blue-600 transition flex items-center"
+                    >
+                        <i class="far fa-question-circle mr-2"></i> Ajuda
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main
+        class="flex-grow container mx-auto px-4 py-12 flex items-center justify-center bg-gray-50/50 min-h-[80vh]"
+    >
+        <AuthComponent client:load />
+    </main>
+
+    <style is:inline>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+
+    <footer
+        class="py-6 text-center text-sm text-gray-400 border-t border-gray-200 bg-white"
+    >
+        <p>&copy; 2024 Emporium da Tecnologia, Inc.</p>
+    </footer>
+</Layout>
