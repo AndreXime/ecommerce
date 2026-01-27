@@ -2,66 +2,40 @@
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
+import { getProductById, formatPrice } from "@/lib/productsMethods";
+import type { CartItem } from "@/lib/productsTypes";
 
-interface CartItem {
-    id: string;
-    brand: string;
-    name: string;
-    variant: string;
-    price: number;
-    quantity: number;
-    image: string;
-}
-
-interface PaymentMethod {
-    icon: string;
-    colorClass: string;
-}
-
-const cartItems: CartItem[] = [
-    {
-        id: "laptop-01",
-        brand: "Aero",
-        name: "AeroBook Pro 15",
-        variant: "Cinza Espacial, 512GB SSD",
-        price: 1499.0,
-        quantity: 1,
-        image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=200",
-    },
-    {
-        id: "headphone-01",
-        brand: "SoundScape",
-        name: "SoundScape ANC",
-        variant: "Preto Matte",
-        price: 299.0,
-        quantity: 1,
-        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=200",
-    },
+const cartItemIds = [
+    { id: "aerobook-pro-15", qty: 1, variant: "Cinza Espacial, 512GB" },
+    { id: "soundscape-anc", qty: 2, variant: "Preto Matte" },
 ];
 
-const paymentMethods: PaymentMethod[] = [
+const cartItems: CartItem[] = cartItemIds
+    .map((item) => {
+        const product = getProductById(item.id);
+        if (!product) return null;
+
+        return {
+            ...product,
+            quantity: item.qty,
+            selectedVariant: item.variant,
+        } as CartItem;
+    })
+    .filter((item): item is CartItem => item !== null);
+
+const paymentMethods = [
     { icon: "fab fa-cc-visa", colorClass: "hover:text-blue-800" },
     { icon: "fab fa-cc-mastercard", colorClass: "hover:text-red-600" },
     { icon: "fab fa-cc-paypal", colorClass: "hover:text-blue-500" },
     { icon: "fab fa-cc-apple-pay", colorClass: "hover:text-black" },
 ];
 
-// Calcula o valor total do carrinho
 const cartTotal = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0,
 );
 
-// Calcula o número total de itens
 const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-
-// Função auxiliar para formatar moeda
-const formatCurrency = (value: number) => {
-    return value.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-    });
-};
 ---
 
 <Layout title="Emporium da Tecnologia" description="">
@@ -90,20 +64,20 @@ const formatCurrency = (value: number) => {
                             <div class="col-span-6 flex items-center w-full">
                                 <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                     <img
-                                        src={item.image}
+                                        src={item.images[0]}
                                         alt={item.name}
                                         class="h-full w-full object-cover object-center"
                                     />
                                 </div>
                                 <div class="ml-4 flex flex-col">
                                     <span class="text-xs text-blue-600 font-semibold uppercase tracking-wide">
-                                        {item.brand}
+                                        {item.tag}
                                     </span>
                                     <h3 class="text-base font-bold text-gray-900">
                                         {item.name}
                                     </h3>
                                     <p class="text-sm text-gray-500 mt-1">
-                                        {item.variant}
+                                        {item.selectedVariant}
                                     </p>
                                     <button class="text-xs text-red-500 hover:text-red-700 font-medium mt-2 flex items-center md:hidden">
                                         <i class="far fa-trash-alt mr-1" />{" "}
@@ -117,7 +91,7 @@ const formatCurrency = (value: number) => {
                                     Preço:
                                 </span>
                                 <span class="text-gray-900 font-medium">
-                                    {formatCurrency(item.price)}
+                                    {formatPrice(item.price)}
                                 </span>
                             </div>
 
@@ -144,7 +118,7 @@ const formatCurrency = (value: number) => {
                                 </span>
                                 <div class="flex flex-col items-end">
                                     <span class="text-lg font-bold text-gray-900">
-                                        {formatCurrency(
+                                        {formatPrice(
                                             item.price * item.quantity,
                                         )}
                                     </span>
@@ -190,7 +164,7 @@ const formatCurrency = (value: number) => {
                                 >Total</span
                             >
                             <span class="text-3xl font-bold text-blue-900"
-                                >{formatCurrency(cartTotal)}</span
+                                >{formatPrice(cartTotal)}</span
                             >
                         </div>
                         <p class="text-xs text-gray-500 text-right mb-6">

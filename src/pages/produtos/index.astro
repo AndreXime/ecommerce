@@ -2,129 +2,19 @@
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
+import { products } from "@/lib/products";
+import {
+    formatPrice,
+    getPriceRange,
+    getUniqueBrands,
+    getUniqueCategories,
+} from "@/lib/productsMethods";
 
-interface FilterOption {
-    label: string;
-    checked?: boolean;
-}
-
-interface Product {
-    id: string;
-    tag: string;
-    name: string;
-    rating: number;
-    reviews: number;
-    price: number;
-    image: string;
-    discount?: string; // Ex: "-10%"
-    isNew?: boolean; // Ex: Badge "Novo"
-}
-
-// --- Dados Mockados ---
-
-const categories: FilterOption[] = [
-    { label: "Câmeras" },
-    { label: "Drones" },
-    { label: "E-Readers" },
-    { label: "Fones de Ouvido" },
-    { label: "Games" },
-    { label: "Laptops", checked: true },
-    { label: "Monitores" },
-    { label: "Smartphones" },
-    { label: "Tablets" },
-    { label: "VR/AR" },
-    { label: "Wearables" },
-    { label: "Áudio" },
-];
-
-const brands: FilterOption[] = [
-    { label: "Aero" },
-    { label: "Chrono" },
-    { label: "Galaxy" },
-    { label: "Immersia" },
-    { label: "Nexus" },
-    { label: "SoundScape" },
-    { label: "Tabula" },
-    { label: "Visionary" },
-];
-
-const products: Product[] = [
-    {
-        id: "laptop-01",
-        tag: "Aero",
-        name: "AeroBook Pro 15",
-        rating: 4.5,
-        reviews: 89,
-        price: 1499.0,
-        image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=600",
-        isNew: true,
-    },
-    {
-        id: "phone-01",
-        tag: "Galaxy",
-        name: "GalaxyPhone X",
-        rating: 5,
-        reviews: 412,
-        price: 999.0,
-        image: "https://images.unsplash.com/photo-1592899677712-a5a254503484?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-        id: "fone-01",
-        tag: "SoundScape",
-        name: "SoundScape ANC",
-        rating: 4,
-        reviews: 156,
-        price: 299.0,
-        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=600",
-        discount: "-10%",
-    },
-    {
-        id: "watch-01",
-        tag: "Chrono",
-        name: "ChronoWatch 5",
-        rating: 4.5,
-        reviews: 890,
-        price: 349.5,
-        image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-        id: "cam-01",
-        tag: "Visionary",
-        name: "Visionary 4K Cam",
-        rating: 5,
-        reviews: 64,
-        price: 649.99,
-        image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=600",
-        discount: "-15%",
-    },
-    {
-        id: "game-01",
-        tag: "Nexus",
-        name: "GameSphere 5",
-        rating: 5,
-        reviews: 1024,
-        price: 59.99,
-        image: "https://images.unsplash.com/photo-1605901309584-818e25960b8f?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-        id: "drone-01",
-        tag: "Aero",
-        name: "SkyLark Drone",
-        rating: 4,
-        reviews: 45,
-        price: 899.0,
-        image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&q=80&w=600",
-    },
-    {
-        id: "tablet-01",
-        tag: "Tabula",
-        name: "Tabula Slate Pro",
-        rating: 4.5,
-        reviews: 320,
-        price: 599.0,
-        image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=80&w=600",
-    },
-];
+const currentProducts = products;
+const totalProducts = products.length;
+const categories = getUniqueCategories();
+const brands = getUniqueBrands();
+const { min: minPrice, max: maxPrice } = getPriceRange();
 ---
 
 <Layout title="Emporium da Tecnologia" description="">
@@ -136,7 +26,9 @@ const products: Product[] = [
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900">
                 Todos os Produtos
             </h1>
-            <p class="text-gray-500 mt-2">Exibindo 12 de 48 produtos</p>
+            <p class="text-gray-500 mt-2">
+                Exibindo {currentProducts.length} de {totalProducts} produtos
+            </p>
         </div>
 
         <!-- 3. Layout Principal (Sidebar + Grid) -->
@@ -157,6 +49,21 @@ const products: Product[] = [
                             class="text-sm text-blue-600 hover:text-blue-800 hover:underline"
                             >Limpar</button
                         >
+                    </div>
+
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="flex items-center space-x-2">
+                            <label class="text-sm text-gray-600"
+                                >Ordenar por:</label
+                            >
+                            <select
+                                class="text-sm border-gray-300 border rounded p-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-700"
+                            >
+                                <option>Relevância</option>
+                                <option>Menor Preço</option>
+                                <option>Maior Preço</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- Filtro Categoria -->
@@ -234,16 +141,16 @@ const products: Product[] = [
                         <div class="px-2">
                             <input
                                 type="range"
-                                min="0"
-                                max="2200"
-                                value="1200"
+                                min={minPrice}
+                                max={maxPrice}
+                                value={(maxPrice + minPrice) / 2}
                                 class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                             />
                             <div
                                 class="flex justify-between mt-2 text-sm text-gray-600 font-medium"
                             >
-                                <span>$0</span>
-                                <span>$2200</span>
+                                <span>${minPrice}</span>
+                                <span>${maxPrice}</span>
                             </div>
                         </div>
                     </div>
@@ -252,34 +159,16 @@ const products: Product[] = [
 
             <!-- B. Grade de Produtos (Product Grid) -->
             <div class="flex-grow">
-                <!-- Toolbar superior (Ordenação, View) - Opcional, mas bom para e-commerce -->
-                <div class="flex justify-between items-center mb-6">
-                    <span class="text-sm text-gray-500"
-                        >Mostrando 8 de 48 resultados</span
-                    >
-                    <div class="flex items-center space-x-2">
-                        <label class="text-sm text-gray-600">Ordenar por:</label
-                        >
-                        <select
-                            class="text-sm border-gray-300 border rounded p-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-700"
-                        >
-                            <option>Relevância</option>
-                            <option>Menor Preço</option>
-                            <option>Maior Preço</option>
-                        </select>
-                    </div>
-                </div>
-
                 <!-- Mudei aqui: lg:grid-cols-2 em vez de 3 -->
                 <div
                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6"
                 >
                     {
-                        products.map((product) => (
+                        currentProducts.map((product) => (
                             <div class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 overflow-hidden flex flex-col group">
                                 <div class="relative h-56 bg-gray-100 overflow-hidden">
                                     <img
-                                        src={product.image}
+                                        src={product.images[0]}
                                         alt={product.name}
                                         class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                                     />
@@ -290,9 +179,10 @@ const products: Product[] = [
                                             Novo
                                         </div>
                                     )}
-                                    {product.discount && (
+                                    {product.discountPercentage && (
                                         <div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                                            {product.discount}
+                                            DESCONTO de{" "}
+                                            {product.discountPercentage}%
                                         </div>
                                     )}
                                 </div>
@@ -336,22 +226,21 @@ const products: Product[] = [
                                             )}
                                         </div>
                                         <span class="text-xs text-gray-500 ml-2">
-                                            ({product.reviews} reviews)
+                                            ({product.reviewsCount} reviews)
                                         </span>
                                     </div>
 
                                     <div class="mt-auto flex items-center justify-between pt-2">
                                         <span class="text-xl font-bold text-gray-900">
-                                            $
-                                            {product.price.toLocaleString(
-                                                "en-US",
-                                                { minimumFractionDigits: 2 },
-                                            )}
+                                            {formatPrice(product.price)}
                                         </span>
-                                        <button class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition shadow-md hover:shadow-lg flex items-center">
+                                        <a
+                                            href={`/produtos/${product.id}`}
+                                            class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition shadow-md hover:shadow-lg flex items-center"
+                                        >
                                             Ver Detalhes{" "}
                                             <i class="fas fa-arrow-right ml-2 text-xs" />
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -373,10 +262,6 @@ const products: Product[] = [
                         <button
                             class="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                             >2</button
-                        >
-                        <button
-                            class="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                            >3</button
                         >
                         <span class="px-2 text-gray-500">...</span>
                         <button

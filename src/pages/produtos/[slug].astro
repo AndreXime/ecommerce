@@ -2,102 +2,26 @@
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
+import {
+    getProductById,
+    calculateOldPrice,
+    formatPrice,
+} from "@/lib/productsMethods";
 
 export const prerender = false;
+const { slug } = Astro.params;
+const product = getProductById(slug || "");
 
-interface Review {
-    id: string;
-    author: string;
-    avatar?: string; // Opcional (se não tiver, usa as iniciais)
-    initials?: string;
-    rating: number;
-    date: string;
-    title: string;
-    content: string;
-}
+if (!product) return Astro.redirect("/404");
 
-interface ProductImage {
-    src: string;
-    alt: string;
-}
+const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
 
-interface Product {
-    id: string;
-    name: string;
-    rating: number;
-    reviewsCount: number;
-    price: number;
-    oldPrice: number;
-    discount: number; // Valor em $
-    description: string;
-    mainImage: string;
-    thumbnails: ProductImage[];
-    colors: string[];
-    storage: string[];
-    reviews: Review[];
-}
-
-// --- Dados Mockados ---
-
-const product: Product = {
-    id: "aerobook-pro-15",
-    name: "AeroBook Pro 15",
-    rating: 4.8,
-    reviewsCount: 89,
-    price: 1499.0,
-    oldPrice: 1699.0,
-    discount: 200,
-    description:
-        "O AeroBook Pro 15 redefine a potência portátil. Equipado com o novo processador Neural Core, display Retina XDR de 15 polegadas e bateria para o dia todo. Perfeito para criadores, desenvolvedores e profissionais exigentes.",
-    mainImage:
-        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=1200",
-    thumbnails: [
-        {
-            src: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=200",
-            alt: "Front View",
-        },
-        {
-            src: "https://images.unsplash.com/photo-1531297461136-82lw8521d582?auto=format&fit=crop&q=80&w=200",
-            alt: "Side View",
-        },
-        {
-            src: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=200",
-            alt: "Keyboard View",
-        },
-    ],
-    colors: ["bg-gray-800", "bg-gray-300"],
-    storage: ["256GB", "512GB", "1TB"],
-    reviews: [
-        {
-            id: "r1",
-            author: "João D.",
-            initials: "JD",
-            rating: 5,
-            date: "Há 2 dias",
-            title: "Máquina incrível!",
-            content:
-                "Estou usando para desenvolvimento de software (Docker, VS Code, Go) e a performance é absurda. A tela é a melhor que já vi em um laptop.",
-        },
-        {
-            id: "r2",
-            author: "Maria S.",
-            avatar: "https://randomuser.me/api/portraits/women/44.jpg",
-            rating: 4.5,
-            date: "Há 1 semana",
-            title: "Design impecável, mas esquenta um pouco",
-            content:
-                "O acabamento em metal é lindo e o teclado é super confortável. Notei que em renderizações pesadas ele esquenta um pouco na parte inferior, mas nada que atrapalhe o uso.",
-        },
-    ],
-};
-
-// Helper para estrelas
 const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, i) => {
         if (i < Math.floor(rating)) return "fas fa-star";
         if (i === Math.floor(rating) && rating % 1 !== 0)
             return "fas fa-star-half-alt";
-        return "far fa-star"; // Usando classe FontAwesome vazia se necessário, ou omitindo
+        return "far fa-star";
     });
 };
 ---
@@ -116,7 +40,7 @@ const renderStars = (rating: number) => {
                     >
                         <img
                             id="mainImage"
-                            src={product.mainImage}
+                            src={product.images[0]}
                             alt={product.name}
                             class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-700"
                         />
@@ -129,25 +53,18 @@ const renderStars = (rating: number) => {
 
                     <div class="grid grid-cols-4 gap-4" id="thumbnails">
                         {
-                            product.thumbnails.map((thumb, index) => (
+                            product.images.map((src, index) => (
                                 <button
                                     class={`thumbnail-btn aspect-square rounded-lg border p-1 bg-white overflow-hidden transition ${index === 0 ? "border-2 border-blue-600" : "border-gray-200 hover:border-blue-400"}`}
                                     aria-label={`View image ${index + 1}`}
                                 >
                                     <img
-                                        src={thumb.src}
-                                        alt={thumb.alt}
+                                        src={src}
                                         class="w-full h-full object-cover rounded pointer-events-none"
                                     />
                                 </button>
                             ))
                         }
-
-                        <div
-                            class="aspect-square rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-200 transition"
-                        >
-                            <i class="fas fa-play text-xl"></i>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -182,14 +99,14 @@ const renderStars = (rating: number) => {
 
                 <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
                     <p class="text-sm text-gray-500 line-through mb-1">
-                        ${product.oldPrice.toFixed(2)}
+                        {formatPrice(oldPrice)}
                     </p>
                     <div class="flex items-end gap-2">
                         <span class="text-4xl font-bold text-gray-900"
-                            >${product.price.toFixed(2)}</span
+                            >{formatPrice(product.price)}</span
                         >
                         <span class="text-sm text-blue-600 font-bold mb-1"
-                            >Economize ${product.discount}</span
+                            >Economize ${product.discountPercentage}</span
                         >
                     </div>
                     <p class="text-xs text-gray-500 mt-2">
@@ -201,42 +118,47 @@ const renderStars = (rating: number) => {
                     {product.description}
                 </p>
 
-                <div class="space-y-4 pt-4 border-t border-gray-100">
-                    <div>
-                        <span
-                            class="block text-sm font-semibold text-gray-900 mb-2"
-                        >
-                            Cor: <span class="text-gray-500 font-normal"
-                                >Cinza Espacial</span
-                            >
-                        </span>
-                        <div class="flex space-x-3">
-                            {
-                                product.colors.map((color, idx) => (
-                                    <button
-                                        class={`w-8 h-8 rounded-full ${color} ${idx === 0 ? "ring-2 ring-offset-2 ring-blue-600" : "hover:ring-2 hover:ring-offset-2 hover:ring-gray-400"} transition focus:outline-none`}
-                                    />
-                                ))
-                            }
-                        </div>
-                    </div>
-                    <div>
-                        <span
-                            class="block text-sm font-semibold text-gray-900 mb-2"
-                            >Armazenamento</span
-                        >
-                        <div class="grid grid-cols-3 gap-3">
-                            {
-                                product.storage.map((size, idx) => (
-                                    <button
-                                        class={`rounded-lg py-2 text-sm transition ${idx === 1 ? "border-2 border-blue-600 bg-blue-50 text-blue-700 font-bold" : "border border-gray-200 font-medium hover:border-blue-600 hover:text-blue-600"}`}
-                                    >
-                                        {size}
-                                    </button>
-                                ))
-                            }
-                        </div>
-                    </div>
+                <div class="space-y-6 pt-4 border-t border-gray-100">
+                    {
+                        product.options &&
+                            product.options.map((option) => (
+                                <div>
+                                    <span class="block text-sm font-semibold text-gray-900 mb-2">
+                                        {option.label}
+                                    </span>
+
+                                    {option.uiType === "color" && (
+                                        <div class="flex space-x-3">
+                                            {option.values.map((val, idx) => (
+                                                <button
+                                                    class={`w-8 h-8 rounded-full ${val} border border-gray-200 transition focus:outline-none 
+                                ${idx === 0 ? "ring-2 ring-offset-2 ring-blue-600" : "hover:ring-2 hover:ring-offset-2 hover:ring-gray-400"}`}
+                                                    aria-label={`Select ${val}`}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {(option.uiType === "pill" ||
+                                        option.uiType === "select") && (
+                                        <div class="flex flex-wrap gap-3">
+                                            {option.values.map((val, idx) => (
+                                                <button
+                                                    class={`rounded-lg py-2 px-4 text-sm transition border 
+                                ${
+                                    idx === 1 // Apenas exemplo de seleção padrão no segundo item
+                                        ? "border-blue-600 bg-blue-50 text-blue-700 font-bold shadow-sm"
+                                        : "border-gray-200 bg-white text-gray-700 hover:border-blue-600 hover:text-blue-600"
+                                }`}
+                                                >
+                                                    {val}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))
+                    }
                 </div>
 
                 <div class="pt-6 border-t border-gray-100">
@@ -318,28 +240,42 @@ const renderStars = (rating: number) => {
                         <div
                             class="p-4 text-sm text-gray-600 border-t border-gray-100 space-y-2"
                         >
-                            <div
-                                class="flex justify-between border-b border-gray-50 pb-2"
-                            >
-                                <span class="font-medium">Processador</span>
-                                <span>Octa-core Neural Chip</span>
-                            </div>
-                            <div
-                                class="flex justify-between border-b border-gray-50 pb-2"
-                            >
-                                <span class="font-medium">RAM</span>
-                                <span>16GB Unified Memory</span>
-                            </div>
-                            <div
-                                class="flex justify-between border-b border-gray-50 pb-2"
-                            >
-                                <span class="font-medium">Tela</span>
-                                <span>15.6" Retina XDR (3024 x 1964)</span>
-                            </div>
-                            <div class="flex justify-between pt-1">
-                                <span class="font-medium">Bateria</span>
-                                <span>Até 18 horas</span>
-                            </div>
+                            {
+                                Object.entries(product.specs).map(
+                                    ([key, value]) => {
+                                        if (
+                                            key === "colors" ||
+                                            key === "storage"
+                                        )
+                                            return null;
+
+                                        // Formatação da Chave (ex: "flightTime" -> "Flight Time")
+                                        const label = key
+                                            .replace(/([A-Z])/g, " $1")
+                                            .replace(/^./, (str) =>
+                                                str.toUpperCase(),
+                                            );
+
+                                        // Tratamento se o valor for array (ex: conexões)
+                                        const displayValue = Array.isArray(
+                                            value,
+                                        )
+                                            ? value.join(", ")
+                                            : value;
+
+                                        return (
+                                            <div class="flex justify-between border-b border-gray-50 pb-2 last:border-0">
+                                                <span class="font-medium text-gray-700">
+                                                    {label}
+                                                </span>
+                                                <span class="text-gray-900">
+                                                    {displayValue}
+                                                </span>
+                                            </div>
+                                        );
+                                    },
+                                )
+                            }
                         </div>
                     </details>
 
@@ -408,7 +344,7 @@ const renderStars = (rating: number) => {
 
                 <div class="flex-grow space-y-6">
                     {
-                        product.reviews.map((review) => (
+                        product.fullReviews?.map((review) => (
                             <div class="border-b border-gray-100 pb-6">
                                 <div class="flex justify-between items-start mb-2">
                                     <div class="flex items-center gap-3">

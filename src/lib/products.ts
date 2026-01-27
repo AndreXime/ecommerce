@@ -1,0 +1,318 @@
+import type { ProductDetails } from "./productsTypes";
+
+export const products: ProductDetails[] = [
+	// 1. Laptop (Existente - Atualizado)
+	{
+		id: "laptop-aerobook-pro-15",
+		tag: "Aero",
+		name: "AeroBook Pro 15",
+		price: 1499.0,
+		discountPercentage: 12,
+		rating: 4.8,
+		reviewsCount: 89,
+		isNew: true,
+		images: [
+			"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=800",
+			"https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=800",
+			"https://images.unsplash.com/photo-1531297461136-82lw8521d582?auto=format&fit=crop&q=80&w=800",
+		],
+		description:
+			"O AeroBook Pro 15 redefine a potência portátil. Equipado com o novo processador Neural Core para tarefas pesadas de desenvolvimento e design.",
+		specs: {
+			Processador: "Octa-core Neural Chip",
+			Tela: '15.6" Retina XDR',
+			Bateria: "Até 18 horas",
+			SO: "AeroOS 14",
+		},
+		options: [
+			{
+				id: "color",
+				label: "Cores",
+				uiType: "color",
+				values: ["bg-gray-800", "bg-gray-300"],
+			},
+			{
+				id: "storage",
+				label: "Armazenamento",
+				uiType: "pill",
+				values: ["256GB", "512GB", "1TB"],
+			},
+		],
+		fullReviews: [
+			{
+				id: "r1",
+				author: "João D.",
+				rating: 5,
+				date: "Há 2 dias",
+				title: "Máquina incrível!",
+				content: "Performance absurda para Docker e VS Code. A bateria dura o dia todo.",
+			},
+			{
+				id: "r2",
+				author: "Maria S.",
+				rating: 4.5,
+				date: "Há 1 semana",
+				title: "Ótimo, mas esquenta um pouco",
+				content: "O acabamento é premium, mas renderizando 4K ele aquece.",
+			},
+		],
+	},
+	// 2. Audio (Existente - Atualizado)
+	{
+		id: "audio-soundscape-anc",
+		tag: "SoundScape",
+		name: "SoundScape ANC",
+		price: 299.0,
+		discountPercentage: 5,
+		rating: 4.0,
+		reviewsCount: 156,
+		images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800"],
+		description: "Cancelamento de ruído líder da indústria com áudio espacial imersivo e conforto para longas sessões.",
+		specs: {
+			Autonomia: "40 horas",
+			Conexão: "Bluetooth 5.2 / Cabo 3.5mm",
+			Cancelamento: "Híbrido Ativo (ANC)",
+			Peso: "250g",
+		},
+		options: [
+			{
+				id: "color",
+				label: "Cor",
+				uiType: "color",
+				values: ["bg-black", "bg-blue-900", "bg-gray-200"],
+			},
+		],
+	},
+	// 3. Camera (Existente - Atualizado)
+	{
+		id: "camera-visionary-4k",
+		tag: "Visionary",
+		name: "Visionary 4K Cam",
+		price: 649.99,
+		rating: 5.0,
+		reviewsCount: 64,
+		images: ["https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800"],
+		description: "Capture momentos em 4K Ultra HD com estabilização óptica de 5 eixos e sensor de última geração.",
+		specs: {
+			Resolução: "4K 60fps / 8K 24fps",
+			Sensor: "CMOS 1-inch",
+			Lente: "24-70mm f/2.8",
+			ISO: "100-25600",
+		},
+		options: [
+			{
+				id: "kit",
+				label: "Kit de Lentes",
+				uiType: "pill",
+				values: ["Corpo Apenas", "Kit Básico (18-55mm)", "Kit Pro (24-70mm)"],
+			},
+		],
+	},
+	// 4. Drone (Existente - Atualizado)
+	{
+		id: "drone-skylark",
+		tag: "Aero",
+		name: "SkyLark Drone X1",
+		price: 899.0,
+		rating: 4.5,
+		reviewsCount: 42,
+		images: ["https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&q=80&w=800"],
+		description: "Voe mais alto com autonomia estendida, sensores anti-colisão 360 e câmera cinematográfica.",
+		specs: {
+			Alcance: "10km",
+			"Tempo de Voo": "34 min",
+			Câmera: "4K HDR",
+			"Velocidade Máx": "68 km/h",
+		},
+		options: [
+			{
+				id: "pack",
+				label: "Pacote de Voo",
+				uiType: "pill",
+				values: ["Standard", "Fly More Combo (+2 Baterias)", "Cine Premium"],
+			},
+		],
+	},
+	// 5. Smartphone (Novo)
+	{
+		id: "smartphone-nexus-ultra",
+		tag: "Nexus",
+		name: "Nexus Ultra 5G",
+		price: 999.0,
+		rating: 4.7,
+		reviewsCount: 230,
+		isNew: true,
+		images: [
+			"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=800",
+			"https://images.unsplash.com/photo-1598327105666-5b89351aff23?auto=format&fit=crop&q=80&w=800",
+		],
+		description:
+			"A experiência Android definitiva. Tela LTPO de 120Hz, câmeras com IA noturna e carregamento ultrarrápido.",
+		specs: {
+			Tela: '6.7" OLED 120Hz',
+			Processador: "Snapdragon 8 Gen 4",
+			"Câmera Principal": "108MP",
+			Resistência: "IP68",
+		},
+		options: [
+			{
+				id: "storage",
+				label: "Armazenamento",
+				uiType: "pill",
+				values: ["128GB", "256GB", "512GB"],
+			},
+			{
+				id: "color",
+				label: "Acabamento",
+				uiType: "color",
+				values: ["bg-gray-900", "bg-green-700", "bg-white"],
+			},
+		],
+	},
+	// 6. Tablet (Novo)
+	{
+		id: "tablet-tabula-air",
+		tag: "Tabula",
+		name: "Tabula Air 10.9",
+		price: 599.0,
+		discountPercentage: 10,
+		rating: 4.6,
+		reviewsCount: 112,
+		images: ["https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=80&w=800"],
+		description: "Potência criativa em qualquer lugar. Suporte a caneta Stylus Pro e teclado magnético.",
+		specs: {
+			Tela: '10.9" Liquid Retina',
+			Processador: "M1 Chip",
+			Peso: "460g",
+			Conectividade: "Wi-Fi 6E",
+		},
+		options: [
+			{
+				id: "connectivity",
+				label: "Conectividade",
+				uiType: "pill",
+				values: ["Wi-Fi", "Wi-Fi + 5G"],
+			},
+			{
+				id: "color",
+				label: "Cor",
+				uiType: "color",
+				values: ["bg-gray-400", "bg-blue-300", "bg-pink-300"],
+			},
+		],
+	},
+	// 7. Monitor (Novo)
+	{
+		id: "monitor-visionary-curved",
+		tag: "Visionary",
+		name: 'Visionary 34" Ultrawide',
+		price: 450.0,
+		rating: 4.9,
+		reviewsCount: 45,
+		images: ["https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&q=80&w=800"],
+		description: "Imersão total para trabalho e jogos. Painel IPS curvo com 99% sRGB e USB-C Hub integrado.",
+		specs: {
+			Resolução: "3440 x 1440 (WQHD)",
+			"Taxa de Atualização": "144Hz",
+			Painel: "IPS Curvo 1500R",
+			Portas: "HDMI 2.1, DP 1.4, USB-C",
+		},
+		options: [
+			{
+				id: "stand",
+				label: "Suporte",
+				uiType: "pill",
+				values: ["Base Padrão", "Braço Articulado VESA"],
+			},
+		],
+	},
+	// 8. Wearable (Novo)
+	{
+		id: "wearable-chrono-watch",
+		tag: "Chrono",
+		name: "Chrono Fit 5",
+		price: 199.0,
+		rating: 4.3,
+		reviewsCount: 320,
+		images: ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800"],
+		description: "Seu parceiro de saúde. Monitoramento de ECG, oxigênio no sangue e sono avançado.",
+		specs: {
+			Bateria: "7 dias (Uso normal)",
+			Sensores: "SpO2, ECG, HR",
+			Resistência: "5 ATM (50 metros)",
+			GPS: "Integrado Dual-Band",
+		},
+		options: [
+			{
+				id: "size",
+				label: "Tamanho da Caixa",
+				uiType: "pill",
+				values: ["40mm", "44mm"],
+			},
+			{
+				id: "band",
+				label: "Pulseira",
+				uiType: "color",
+				values: ["bg-black", "bg-red-500", "bg-blue-500"],
+			},
+		],
+	},
+	// 9. VR Headset (Novo)
+	{
+		id: "vr-immersia-pro",
+		tag: "Immersia",
+		name: "Immersia VR Pro",
+		price: 1200.0,
+		isNew: true,
+		rating: 4.8,
+		reviewsCount: 28,
+		images: ["https://images.unsplash.com/photo-1593508512255-86ab42a8e620?auto=format&fit=crop&q=80&w=800"],
+		description: "O metaverso nunca foi tão real. Rastreamento ocular, telas micro-OLED 4K por olho.",
+		specs: {
+			Resolução: "4K por olho",
+			FOV: "110 graus",
+			"Refresh Rate": "90Hz / 120Hz",
+			Processador: "XR2 Gen 2",
+		},
+		options: [
+			{
+				id: "storage",
+				label: "Armazenamento Interno",
+				uiType: "pill",
+				values: ["256GB", "512GB"],
+			},
+		],
+	},
+	// 10. Periférico (Novo)
+	{
+		id: "accessories-mech-key",
+		tag: "Tabula",
+		name: "Tabula Mech RGB",
+		price: 129.0,
+		discountPercentage: 15,
+		rating: 4.7,
+		reviewsCount: 210,
+		images: ["https://images.unsplash.com/photo-1623126908029-58cb08a2b272?auto=format&fit=crop&q=80&w=800"],
+		description: "Teclado mecânico hot-swappable com construção em alumínio e iluminação RGB por tecla.",
+		specs: {
+			Layout: "ANSI 75%",
+			Conexão: "USB-C / Bluetooth / 2.4Ghz",
+			Bateria: "4000mAh",
+			Keycaps: "PBT Double-shot",
+		},
+		options: [
+			{
+				id: "switch",
+				label: "Switch Mecânico",
+				uiType: "pill",
+				values: ["Red (Linear)", "Blue (Clicky)", "Brown (Tátil)"],
+			},
+			{
+				id: "color",
+				label: "Cor do Chassi",
+				uiType: "color",
+				values: ["bg-gray-900", "bg-white"],
+			},
+		],
+	},
+];
