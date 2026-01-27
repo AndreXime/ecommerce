@@ -1,0 +1,520 @@
+---
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Layout from "@/layout/layout.astro";
+
+export const prerender = false;
+
+interface Review {
+    id: string;
+    author: string;
+    avatar?: string; // Opcional (se não tiver, usa as iniciais)
+    initials?: string;
+    rating: number;
+    date: string;
+    title: string;
+    content: string;
+}
+
+interface ProductImage {
+    src: string;
+    alt: string;
+}
+
+interface Product {
+    id: string;
+    name: string;
+    rating: number;
+    reviewsCount: number;
+    price: number;
+    oldPrice: number;
+    discount: number; // Valor em $
+    description: string;
+    mainImage: string;
+    thumbnails: ProductImage[];
+    colors: string[];
+    storage: string[];
+    reviews: Review[];
+}
+
+// --- Dados Mockados ---
+
+const product: Product = {
+    id: "aerobook-pro-15",
+    name: "AeroBook Pro 15",
+    rating: 4.8,
+    reviewsCount: 89,
+    price: 1499.0,
+    oldPrice: 1699.0,
+    discount: 200,
+    description:
+        "O AeroBook Pro 15 redefine a potência portátil. Equipado com o novo processador Neural Core, display Retina XDR de 15 polegadas e bateria para o dia todo. Perfeito para criadores, desenvolvedores e profissionais exigentes.",
+    mainImage:
+        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=1200",
+    thumbnails: [
+        {
+            src: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=200",
+            alt: "Front View",
+        },
+        {
+            src: "https://images.unsplash.com/photo-1531297461136-82lw8521d582?auto=format&fit=crop&q=80&w=200",
+            alt: "Side View",
+        },
+        {
+            src: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=200",
+            alt: "Keyboard View",
+        },
+    ],
+    colors: ["bg-gray-800", "bg-gray-300"],
+    storage: ["256GB", "512GB", "1TB"],
+    reviews: [
+        {
+            id: "r1",
+            author: "João D.",
+            initials: "JD",
+            rating: 5,
+            date: "Há 2 dias",
+            title: "Máquina incrível!",
+            content:
+                "Estou usando para desenvolvimento de software (Docker, VS Code, Go) e a performance é absurda. A tela é a melhor que já vi em um laptop.",
+        },
+        {
+            id: "r2",
+            author: "Maria S.",
+            avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+            rating: 4.5,
+            date: "Há 1 semana",
+            title: "Design impecável, mas esquenta um pouco",
+            content:
+                "O acabamento em metal é lindo e o teclado é super confortável. Notei que em renderizações pesadas ele esquenta um pouco na parte inferior, mas nada que atrapalhe o uso.",
+        },
+    ],
+};
+
+// Helper para estrelas
+const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }).map((_, i) => {
+        if (i < Math.floor(rating)) return "fas fa-star";
+        if (i === Math.floor(rating) && rating % 1 !== 0)
+            return "fas fa-star-half-alt";
+        return "far fa-star"; // Usando classe FontAwesome vazia se necessário, ou omitindo
+    });
+};
+---
+
+<Layout title={product.name} description={product.description}>
+    <Header />
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
+            <div class="lg:col-span-7">
+                <div
+                    class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sticky top-40"
+                >
+                    <div
+                        class="aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100 mb-4 group relative"
+                    >
+                        <img
+                            id="mainImage"
+                            src={product.mainImage}
+                            alt={product.name}
+                            class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-700"
+                        />
+                        <div
+                            class="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide"
+                        >
+                            Novo
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-4" id="thumbnails">
+                        {
+                            product.thumbnails.map((thumb, index) => (
+                                <button
+                                    class={`thumbnail-btn aspect-square rounded-lg border p-1 bg-white overflow-hidden transition ${index === 0 ? "border-2 border-blue-600" : "border-gray-200 hover:border-blue-400"}`}
+                                    aria-label={`View image ${index + 1}`}
+                                >
+                                    <img
+                                        src={thumb.src}
+                                        alt={thumb.alt}
+                                        class="w-full h-full object-cover rounded pointer-events-none"
+                                    />
+                                </button>
+                            ))
+                        }
+
+                        <div
+                            class="aspect-square rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 cursor-pointer hover:bg-gray-200 transition"
+                        >
+                            <i class="fas fa-play text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 flex flex-col space-y-6">
+                <div>
+                    <h1
+                        class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-2"
+                    >
+                        {product.name}
+                    </h1>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center text-yellow-400 text-sm">
+                            {
+                                renderStars(product.rating).map((iconClass) => (
+                                    <i class={iconClass} />
+                                ))
+                            }
+                        </div>
+                        <a
+                            href="#reviews"
+                            class="text-sm text-blue-600 hover:underline font-medium"
+                        >
+                            {product.reviewsCount} avaliações
+                        </a>
+                        <span class="text-gray-300">|</span>
+                        <span class="text-sm text-green-600 font-medium">
+                            <i class="fas fa-check-circle mr-1"></i>Em Estoque
+                        </span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <p class="text-sm text-gray-500 line-through mb-1">
+                        ${product.oldPrice.toFixed(2)}
+                    </p>
+                    <div class="flex items-end gap-2">
+                        <span class="text-4xl font-bold text-gray-900"
+                            >${product.price.toFixed(2)}</span
+                        >
+                        <span class="text-sm text-blue-600 font-bold mb-1"
+                            >Economize ${product.discount}</span
+                        >
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        Em até 12x de ${(product.price / 12).toFixed(2)} sem juros
+                    </p>
+                </div>
+
+                <p class="text-gray-600 leading-relaxed">
+                    {product.description}
+                </p>
+
+                <div class="space-y-4 pt-4 border-t border-gray-100">
+                    <div>
+                        <span
+                            class="block text-sm font-semibold text-gray-900 mb-2"
+                        >
+                            Cor: <span class="text-gray-500 font-normal"
+                                >Cinza Espacial</span
+                            >
+                        </span>
+                        <div class="flex space-x-3">
+                            {
+                                product.colors.map((color, idx) => (
+                                    <button
+                                        class={`w-8 h-8 rounded-full ${color} ${idx === 0 ? "ring-2 ring-offset-2 ring-blue-600" : "hover:ring-2 hover:ring-offset-2 hover:ring-gray-400"} transition focus:outline-none`}
+                                    />
+                                ))
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        <span
+                            class="block text-sm font-semibold text-gray-900 mb-2"
+                            >Armazenamento</span
+                        >
+                        <div class="grid grid-cols-3 gap-3">
+                            {
+                                product.storage.map((size, idx) => (
+                                    <button
+                                        class={`rounded-lg py-2 text-sm transition ${idx === 1 ? "border-2 border-blue-600 bg-blue-50 text-blue-700 font-bold" : "border border-gray-200 font-medium hover:border-blue-600 hover:text-blue-600"}`}
+                                    >
+                                        {size}
+                                    </button>
+                                ))
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-gray-100">
+                    <div class="flex gap-4">
+                        <div
+                            class="w-24 flex items-center border border-gray-300 rounded-xl"
+                        >
+                            <button
+                                class="w-8 h-full text-gray-500 hover:bg-gray-100 rounded-l-xl transition"
+                                >-</button
+                            >
+                            <input
+                                type="number"
+                                value="1"
+                                class="w-full text-center border-none focus:ring-0 font-semibold text-gray-900 bg-transparent h-12"
+                            />
+                            <button
+                                class="w-8 h-full text-gray-500 hover:bg-gray-100 rounded-r-xl transition"
+                                >+</button
+                            >
+                        </div>
+
+                        <button
+                            class="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg hover:shadow-blue-200/50 transition transform hover:-translate-y-0.5 flex items-center justify-center py-3 md:py-0"
+                        >
+                            Adicionar ao Carrinho <i
+                                class="fas fa-shopping-cart ml-2"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 mt-6 text-center">
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-2"
+                            >
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 font-medium"
+                                >Garantia de 2 Anos</span
+                            >
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-2"
+                            >
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 font-medium"
+                                >Frete Grátis</span
+                            >
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div
+                                class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mb-2"
+                            >
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <span class="text-xs text-gray-500 font-medium"
+                                >Pagamento Seguro</span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 space-y-4">
+                    <details
+                        class="group bg-white border border-gray-200 rounded-lg overflow-hidden transition hover:border-gray-300"
+                    >
+                        <summary
+                            class="flex justify-between items-center p-4 font-semibold text-gray-900 cursor-pointer select-none bg-gray-50 group-open:bg-white group-open:text-blue-600 transition"
+                        >
+                            Especificações Técnicas
+                            <span
+                                class="transform group-open:rotate-180 transition duration-300 text-gray-400 group-open:text-blue-600"
+                            >
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                        </summary>
+                        <div
+                            class="p-4 text-sm text-gray-600 border-t border-gray-100 space-y-2"
+                        >
+                            <div
+                                class="flex justify-between border-b border-gray-50 pb-2"
+                            >
+                                <span class="font-medium">Processador</span>
+                                <span>Octa-core Neural Chip</span>
+                            </div>
+                            <div
+                                class="flex justify-between border-b border-gray-50 pb-2"
+                            >
+                                <span class="font-medium">RAM</span>
+                                <span>16GB Unified Memory</span>
+                            </div>
+                            <div
+                                class="flex justify-between border-b border-gray-50 pb-2"
+                            >
+                                <span class="font-medium">Tela</span>
+                                <span>15.6" Retina XDR (3024 x 1964)</span>
+                            </div>
+                            <div class="flex justify-between pt-1">
+                                <span class="font-medium">Bateria</span>
+                                <span>Até 18 horas</span>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details
+                        class="group bg-white border border-gray-200 rounded-lg overflow-hidden transition hover:border-gray-300"
+                    >
+                        <summary
+                            class="flex justify-between items-center p-4 font-semibold text-gray-900 cursor-pointer select-none bg-gray-50 group-open:bg-white group-open:text-blue-600 transition"
+                        >
+                            Envio e Devoluções
+                            <span
+                                class="transform group-open:rotate-180 transition duration-300 text-gray-400 group-open:text-blue-600"
+                            >
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                        </summary>
+                        <div
+                            class="p-4 text-sm text-gray-600 border-t border-gray-100"
+                        >
+                            <p class="mb-2">
+                                Envio expresso disponível para todo o Brasil. O
+                                prazo médio é de 3-5 dias úteis.
+                            </p>
+                            <p>
+                                Aceitamos devoluções dentro de 30 dias após o
+                                recebimento, desde que o produto esteja na
+                                embalagem original.
+                            </p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+        <section id="reviews" class="border-t border-gray-200 pt-12 pb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-8">
+                Avaliações de Clientes
+            </h2>
+            <div class="flex flex-col md:flex-row gap-10">
+                <div class="w-full md:w-1/4 flex-shrink-0">
+                    <div
+                        class="bg-gray-50 rounded-2xl p-6 text-center border border-gray-100"
+                    >
+                        <div class="text-5xl font-bold text-gray-900 mb-2">
+                            {product.rating}
+                        </div>
+                        <div
+                            class="flex justify-center text-yellow-400 mb-2 text-lg"
+                        >
+                            {
+                                renderStars(product.rating).map((icon) => (
+                                    <i class={icon} />
+                                ))
+                            }
+                        </div>
+                        <p class="text-gray-500 text-sm mb-6">
+                            Baseado em {product.reviewsCount} avaliações
+                        </p>
+                        <button
+                            class="w-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-lg transition"
+                        >
+                            Escrever Avaliação
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-grow space-y-6">
+                    {
+                        product.reviews.map((review) => (
+                            <div class="border-b border-gray-100 pb-6">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex items-center gap-3">
+                                        {review.avatar ? (
+                                            <img
+                                                src={review.avatar}
+                                                class="w-10 h-10 rounded-full object-cover"
+                                                alt={review.author}
+                                            />
+                                        ) : (
+                                            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+                                                {review.initials}
+                                            </div>
+                                        )}
+                                        <div>
+                                            <h4 class="font-bold text-gray-900 text-sm">
+                                                {review.author}
+                                            </h4>
+                                            <div class="flex text-yellow-400 text-xs">
+                                                {renderStars(review.rating).map(
+                                                    (icon) => (
+                                                        <i class={icon} />
+                                                    ),
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-gray-400">
+                                        {review.date}
+                                    </span>
+                                </div>
+                                <h5 class="font-semibold text-gray-800 text-sm mb-1">
+                                    {review.title}
+                                </h5>
+                                <p class="text-gray-600 text-sm leading-relaxed">
+                                    {review.content}
+                                </p>
+                            </div>
+                        ))
+                    }
+                    <button
+                        class="text-blue-600 font-medium text-sm hover:underline"
+                    >
+                        Ver todas as {product.reviewsCount} avaliações
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <Footer />
+</Layout>
+
+<script>
+    // Script TypeScript para interação do lado do cliente
+
+    // Selecionando elementos
+    const mainImage = document.getElementById("mainImage") as HTMLImageElement;
+    const buttons = document.querySelectorAll(
+        ".thumbnail-btn",
+    ) as NodeListOf<HTMLButtonElement>;
+
+    const changeImage = (button: HTMLButtonElement) => {
+        const thumbImg = button.querySelector("img");
+
+        // Guard clause: se não houver imagem principal ou thumb, sai da função
+        if (!thumbImg || !mainImage) return;
+
+        let newSrc = thumbImg.src;
+
+        // Lógica para aumentar a resolução (baseada na API do Unsplash usada no mock)
+        // Se a URL contém parâmetros de query, trocamos w=200 por w=1200
+        if (newSrc.includes("w=200")) {
+            newSrc = newSrc.replace("w=200", "w=1200");
+        }
+
+        // Animação de fade-out
+        mainImage.style.opacity = "0.5";
+
+        setTimeout(() => {
+            mainImage.src = newSrc;
+            // Animação de fade-in
+            mainImage.style.opacity = "1";
+        }, 150);
+
+        // Atualiza estados dos botões (bordas)
+        buttons.forEach((btn) => {
+            btn.classList.remove("border-2", "border-blue-600");
+            btn.classList.add(
+                "border",
+                "border-gray-200",
+                "hover:border-blue-400",
+            );
+        });
+
+        // Define o botão clicado como ativo
+        button.classList.remove(
+            "border",
+            "border-gray-200",
+            "hover:border-blue-400",
+        );
+        button.classList.add("border-2", "border-blue-600");
+    };
+
+    // Adicionando Event Listeners
+    buttons.forEach((btn) => {
+        btn.addEventListener("click", () => changeImage(btn));
+    });
+</script>
