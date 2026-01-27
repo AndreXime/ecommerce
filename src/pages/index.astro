@@ -2,15 +2,11 @@
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
-import {
-	getOffers,
-	getProductSummaries,
-	formatPrice,
-} from "@/lib/productsMethods";
+import { getOffers, getMostSelled, formatPrice } from "@/lib/productsMethods";
 import StarRating from "@/components/StarRating";
 
 const offers = getOffers(4);
-const bestSellers = getProductSummaries(6);
+const bestSellers = getMostSelled(6);
 ---
 
 <Layout title="Emporium da Tecnologia" description="">
@@ -51,16 +47,12 @@ const bestSellers = getProductSummaries(6);
 				imbatíveis, qualidade inigualável.
 			</p>
 			<div class="mt-8 flex gap-4">
-				<button
+				<a
+					href="/produtos"
 					class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full transition transform hover:-translate-y-1 shadow-lg shadow-blue-600/50"
 				>
-					Comprar Agora
-				</button>
-				<button
-					class="bg-transparent border border-white hover:bg-white hover:text-gray-900 text-white font-semibold py-3 px-8 rounded-full transition"
-				>
 					Ver Catálogo
-				</button>
+				</a>
 			</div>
 		</div>
 	</section>

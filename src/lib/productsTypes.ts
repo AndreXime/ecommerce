@@ -11,6 +11,7 @@ export interface ProductSummary {
 }
 
 export interface ProductDetails extends ProductSummary {
+	quantitySold: number;
 	description: string;
 	specs: Record<string, string>;
 	options?: SelectableOption[];

@@ -1,28 +1,18 @@
 import { products } from "./products";
 import type { ProductSummary, ProductDetails } from "./productsTypes";
 
-export const getProductSummaries = (count?: number): ProductSummary[] => {
-	const list = products.map(({ id, name, tag, price, discountPercentage, images, rating, reviewsCount, isNew }) => ({
-		id,
-		name,
-		tag,
-		price,
-		discountPercentage,
-		images,
-		rating,
-		reviewsCount,
-		isNew,
-	}));
-	return count ? list.slice(0, count) : list;
+export const getMostSelled = (count?: number): ProductSummary[] => {
+	const offers = [...products].sort((a, b) => b.quantitySold - a.quantitySold);
+	return count ? offers.slice(0, count) : offers;
+};
+
+export const getOffers = (count?: number): ProductSummary[] => {
+	const offers = products.filter((p) => p.discountPercentage && p.discountPercentage > 0);
+	return count ? offers.slice(0, count) : offers;
 };
 
 export const getProductById = (id: string): ProductDetails | undefined => {
 	return products.find((p) => p.id === id);
-};
-
-export const getOffers = (count?: number): ProductSummary[] => {
-	const offers = getProductSummaries().filter((p) => p.discountPercentage && p.discountPercentage > 0);
-	return count ? offers.slice(0, count) : offers;
 };
 
 export const calculateOldPrice = (price: number, discountPercentage?: number): number => {
