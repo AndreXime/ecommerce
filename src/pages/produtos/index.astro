@@ -4,6 +4,7 @@ import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
 import { products } from "@/lib/products";
 import {
+    getFilteredProducts,
     formatPrice,
     getPriceRange,
     getUniqueBrands,
@@ -11,7 +12,11 @@ import {
 } from "@/lib/productsMethods";
 import StarRating from "@/components/StarRating";
 
-const currentProducts = products;
+export const prerender = false;
+
+const query = Astro.url.searchParams.get("s");
+
+const currentProducts = getFilteredProducts(query);
 const totalProducts = products.length;
 const categories = getUniqueCategories();
 const brands = getUniqueBrands();

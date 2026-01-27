@@ -11,6 +11,18 @@ export const getOffers = (count?: number): ProductSummary[] => {
 	return count ? offers.slice(0, count) : offers;
 };
 
+export const getFilteredProducts = (name?: string | null): ProductSummary[] => {
+	if (!name || name.trim() === "") {
+		return products;
+	}
+
+	const searchTerm = name.toLowerCase().trim();
+
+	return products.filter((p) => {
+		return p.name?.toLowerCase().includes(searchTerm);
+	});
+};
+
 export const getProductById = (id: string): ProductDetails | undefined => {
 	return products.find((p) => p.id === id);
 };

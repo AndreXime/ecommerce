@@ -70,7 +70,11 @@
         </div>
 
         <div class="flex justify-center w-full">
-            <div class="relative w-full max-w-2xl">
+            <form
+                action="/produtos"
+                method="GET"
+                class="relative w-full max-w-2xl"
+            >
                 <div
                     class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
                 >
@@ -78,17 +82,18 @@
                 </div>
                 <input
                     type="text"
+                    name="s"
                     class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full leading-5 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition shadow-sm"
                     placeholder="Buscar produtos..."
                 />
-            </div>
+            </form>
         </div>
     </div>
 </header>
 
 <div
     id="sidebar-overlay"
-    class="fixed inset-0 bg-black/50 z-[60] invisible opacity-0 transition-opacity duration-300"
+    class="fixed hidden inset-0 bg-black/50 z-[60] invisible opacity-0 transition-opacity duration-300"
 >
 </div>
 
@@ -150,11 +155,15 @@
     function toggleMenu() {
         if (sidebarMenu?.classList.contains("-translate-x-full")) {
             sidebarMenu?.classList.remove("-translate-x-full");
-            sidebarOverlay?.classList.remove("invisible", "opacity-0");
+            sidebarOverlay?.classList.remove(
+                "invisible",
+                "opacity-0",
+                "hidden",
+            );
             document.body.style.overflow = "hidden"; // Impede rolagem do fundo
         } else {
             sidebarMenu?.classList.add("-translate-x-full");
-            sidebarOverlay?.classList.add("invisible", "opacity-0");
+            sidebarOverlay?.classList.add("invisible", "opacity-0", "hidden");
             document.body.style.overflow = "";
         }
     }
