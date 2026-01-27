@@ -66,4 +66,48 @@ const dbCart = {
             &copy; 2024 Emporium da Tecnologia. Transação segura criptografada.
         </p>
     </footer>
+
+    <style is:inline>
+        /* Classes utilitárias para esconder/mostrar etapas */
+        .step-content {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilo para abas de pagamento selecionadas */
+        .payment-tab.active {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+            color: #1e40af;
+        }
+
+        /* Esconder ícone de check no progresso inativo */
+        .step-indicator.active .step-number {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        .step-indicator.completed .step-number {
+            background-color: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        .step-indicator.completed .step-text {
+            color: #10b981;
+        }
+    </style>
 </Layout>
