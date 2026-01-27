@@ -1,0 +1,76 @@
+<div id="toaster-container" class="toaster-container"></div>
+
+<style>
+    .toaster-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 100;
+    }
+
+    :global(.toast) {
+        background-color: var(--toast-bg, #333);
+        border-left: 5px solid var(--toast-border, #000);
+        min-width: 280px;
+        padding: 16px;
+        border-radius: 6px;
+        color: white;
+        font-weight: 500;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+<script>
+    import type { ToastDetail } from "@/lib/toast";
+
+    const colors = {
+        success: { bg: "#10b981", border: "#059669" },
+        error: { bg: "#ef4444", border: "#b91c1c" },
+        info: { bg: "#3b82f6", border: "1d4ed8" },
+    };
+
+    window.addEventListener("toast", (e: any) => {
+        const { message, type } = e.detail as ToastDetail;
+        const container = document.getElementById("toaster-container");
+
+        const toast = document.createElement("div");
+        const theme = colors[type];
+
+        toast.style.setProperty("--toast-bg", theme.bg);
+        toast.style.setProperty("--toast-border", theme.border);
+
+        toast.className = `toast`;
+        toast.innerHTML = `<span>${message}</span>`;
+
+        container?.appendChild(toast);
+
+        const removeToast = () => {
+            toast.style.transform = "translateX(100%)";
+            toast.style.opacity = "0";
+            toast.style.transition = "0.3s ease";
+            setTimeout(() => toast.remove(), 300);
+        };
+
+        toast.onclick = removeToast;
+        setTimeout(removeToast, 4000);
+    });
+</script>
