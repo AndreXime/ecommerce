@@ -1,19 +1,56 @@
+import { toast } from "@/lib/toast";
+import { actions } from "astro:actions";
 import { useState } from "preact/hooks";
 
 export default function Auth() {
 	const [activeTab, setActiveTab] = useState<"login" | "register">("login");
 	const [showPassword, setShowPassword] = useState(false);
+	const [loading, setLoading] = useState(false);
 
-	const handleLogin = (e: Event) => {
+	const handleLogin = async (e: SubmitEvent) => {
 		e.preventDefault();
-		console.log("Login submitted");
-		window.location.href = "/";
+		setLoading(true);
+
+		const formData = new FormData(e.currentTarget as HTMLFormElement);
+		const email = formData.get("email") as string;
+		const password = formData.get("password") as string;
+		const rememberMe = formData.get("remember") === "on";
+
+		const { data, error } = await actions.login({ email, password, rememberMe });
+
+		if (error) {
+			toast.error(`Erro ao entrar: ${error.message}`);
+		} else if (data?.success) {
+			window.location.href = "/perfil";
+		}
+
+		setLoading(false);
 	};
 
-	const handleRegister = (e: Event) => {
+	const handleRegister = async (e: SubmitEvent) => {
 		e.preventDefault();
-		alert("Cadastro realizado com sucesso!");
-		setActiveTab("login");
+		setLoading(true);
+
+		const formData = new FormData(e.currentTarget as HTMLFormElement);
+		const name = formData.get("name") as string;
+		const email = formData.get("email") as string;
+		const password = formData.get("password") as string;
+		const confirmPassword = formData.get("confirmPassword") as string;
+
+		const { data, error } = await actions.register({
+			name,
+			email,
+			password,
+			confirmPassword,
+		});
+
+		if (error) {
+			toast.error(`Erro no cadastro: ${error.message || "Dados inválidos"}`);
+		} else if (data?.success) {
+			window.location.href = "/perfil";
+		}
+
+		setLoading(false);
 	};
 
 	return (
@@ -41,20 +78,13 @@ export default function Auth() {
 						<h2 className="text-2xl font-bold text-gray-900 mb-2">Bem-vindo de volta!</h2>
 						<p className="text-sm text-gray-500 mb-6">Acesse sua conta para ver seus pedidos e favoritos.</p>
 
-						<div className="grid grid-cols-2 gap-3 mb-6">
+						<div className="grid gap-3 mb-6">
 							<button
 								type="button"
 								className="flex items-center justify-center py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700"
 							>
 								<img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 mr-2" alt="Google" />
 								Google
-							</button>
-							<button
-								type="button"
-								className="flex items-center justify-center py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700"
-							>
-								<i className="fab fa-facebook text-blue-600 text-lg mr-2"></i>
-								Facebook
 							</button>
 						</div>
 
@@ -75,6 +105,7 @@ export default function Auth() {
 									</label>
 									<input
 										type="email"
+										name="email"
 										id="login-email"
 										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
 										placeholder="seu@email.com"
@@ -94,6 +125,7 @@ export default function Auth() {
 										<input
 											type={showPassword ? "text" : "password"}
 											id="login-pass"
+											name="password"
 											className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
 											placeholder="••••••••"
 											required
@@ -111,6 +143,7 @@ export default function Auth() {
 
 							<div className="flex items-center mt-4 mb-6">
 								<input
+									name="remember"
 									type="checkbox"
 									id="remember"
 									className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
@@ -122,9 +155,10 @@ export default function Auth() {
 
 							<button
 								type="submit"
+								disabled={loading}
 								className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5"
 							>
-								Entrar
+								{loading ? "Carregando..." : "Entrar"}
 							</button>
 						</form>
 
@@ -153,6 +187,7 @@ export default function Auth() {
 									</label>
 									<input
 										type="text"
+										name="name"
 										id="reg-name"
 										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
 										placeholder="Ex: Maria Silva"
@@ -165,6 +200,7 @@ export default function Auth() {
 									</label>
 									<input
 										type="email"
+										name="email"
 										id="reg-email"
 										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
 										placeholder="seu@email.com"
@@ -177,6 +213,7 @@ export default function Auth() {
 									</label>
 									<input
 										type="password"
+										name="password"
 										id="reg-pass"
 										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
 										placeholder="Mínimo 8 caracteres"
@@ -190,6 +227,7 @@ export default function Auth() {
 									</label>
 									<input
 										type="password"
+										name="confirmPassword"
 										id="reg-confirm"
 										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
 										placeholder="Confirme sua senha"
@@ -220,9 +258,10 @@ export default function Auth() {
 
 							<button
 								type="submit"
+								disabled={loading}
 								className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5"
 							>
-								Cadastrar
+								{loading ? "Carregando..." : "Entrar"}
 							</button>
 						</form>
 

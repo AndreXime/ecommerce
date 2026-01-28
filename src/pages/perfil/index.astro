@@ -2,6 +2,21 @@
 import Layout from "@/layout/layout.astro";
 import AccountDashboard from "./_profile";
 import Header from "@/components/Header.astro";
+import { users } from "@/database/users";
+import { readToken } from "@/actions";
+
+export const prerender = false;
+
+const token = Astro.cookies.get("auth_token")?.value;
+const payload = await readToken(token);
+
+if (!payload || !payload.email) {
+    Astro.cookies.delete("auth_token");
+    return Astro.redirect("/login");
+}
+
+// Para demonstração
+const userData = users[0];
 ---
 
 <Layout
@@ -11,7 +26,7 @@ import Header from "@/components/Header.astro";
     <Header hideSearch />
 
     <main class="flex-grow container mx-auto px-4 py-8 bg-gray-50 min-h-[85vh]">
-        <AccountDashboard client:load />
+        <AccountDashboard client:load user={userData} />
     </main>
 
     <footer

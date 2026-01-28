@@ -1,113 +1,9 @@
+import type { User } from "@/database/users";
 import { useState, useEffect } from "preact/hooks";
-
-// --- Interfaces de Tipagem ---
-
-interface Order {
-	id: string;
-	date: string;
-	total: number;
-	status: "Entregue" | "Em Trânsito" | "Cancelado";
-	items: { name: string; variant: string; img: string }[];
-}
-
-interface Address {
-	id: string;
-	type: string;
-	street: string;
-	city: string;
-	isDefault: boolean;
-}
-
-interface Card {
-	id: string;
-	brand: "mastercard" | "visa";
-	last4: string;
-	holder: string;
-	expiry: string;
-}
-
-interface WishlistItem {
-	id: string;
-	name: string;
-	category: string;
-	price: number;
-	image: string;
-	inStock: boolean;
-}
-
-// --- Dados Mockados ---
-
-const mockOrders: Order[] = [
-	{
-		id: "#928301",
-		date: "24 Out 2024",
-		total: 1798.0,
-		status: "Entregue",
-		items: [
-			{
-				name: "AeroBook Pro 15",
-				variant: "Cinza Espacial",
-				img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=100",
-			},
-			{
-				name: "SoundScape ANC",
-				variant: "Preto Matte",
-				img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=100",
-			},
-		],
-	},
-	{
-		id: "#882100",
-		date: "10 Set 2024",
-		total: 59.99,
-		status: "Entregue",
-		items: [
-			{
-				name: "GameSphere 5",
-				variant: "Branco",
-				img: "https://images.unsplash.com/photo-1605901309584-818e25960b8f?auto=format&fit=crop&q=80&w=100",
-			},
-		],
-	},
-];
-
-const mockAddresses: Address[] = [
-	{ id: "1", type: "Casa", street: "Av. Paulista, 1000, Apt 42", city: "Bela Vista, São Paulo - SP", isDefault: true },
-	{
-		id: "2",
-		type: "Trabalho",
-		street: "Rua Funchal, 200, Bloco B",
-		city: "Vila Olímpia, São Paulo - SP",
-		isDefault: false,
-	},
-];
-
-const mockCards: Card[] = [{ id: "1", brand: "mastercard", last4: "8829", holder: "JOAO D SILVA", expiry: "10/28" }];
-
-const mockWishlist: WishlistItem[] = [
-	{
-		id: "1",
-		name: "Tabula Slate Pro",
-		category: "Tablet",
-		price: 599.0,
-		image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=80&w=100",
-		inStock: true,
-	},
-	{
-		id: "2",
-		name: "SkyLark Drone",
-		category: "Drone",
-		price: 899.0,
-		image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&q=80&w=100",
-		inStock: false,
-	},
-];
-
-// --- Componente Principal ---
 
 type Tab = "orders" | "profile" | "addresses" | "payments" | "wishlist";
 
-export default function AccountDashboard() {
+export default function AccountDashboard({ user }: { user: User }) {
 	const [activeTab, setActiveTab] = useState<Tab>("orders");
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -134,12 +30,13 @@ export default function AccountDashboard() {
 			{/* SIDEBAR DE NAVEGAÇÃO */}
 			<aside className="w-full md:w-1/4 flex-shrink-0">
 				<div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6 flex items-center gap-4">
-					<div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow-md">
-						JD
+					<div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow-md capitalize">
+						{user.personalData.name[0].toUpperCase()}
+						{user.personalData.name[1].toUpperCase()}
 					</div>
 					<div>
-						<h2 className="font-bold text-gray-900">João D.</h2>
-						<p className="text-xs text-gray-500">Membro desde 2023</p>
+						<h2 className="font-bold text-gray-900">{user.personalData.name}</h2>
+						<p className="text-xs text-gray-500">Membro desde {user.personalData.registredAt.getFullYear()}</p>
 					</div>
 				</div>
 
@@ -175,7 +72,7 @@ export default function AccountDashboard() {
 				{activeTab === "orders" && (
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Histórico de Pedidos</h2>
-						{mockOrders.map((order) => (
+						{user.ordersHistory.map((order) => (
 							<div key={order.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
 								<div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 									<div className="flex gap-6 text-sm">
@@ -223,12 +120,7 @@ export default function AccountDashboard() {
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Dados Pessoais</h2>
 						<div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-							<form
-								onSubmit={(e) => {
-									e.preventDefault();
-									alert("Dados salvos!");
-								}}
-							>
+							<form>
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 									<div>
 										<label htmlFor="profileName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -237,7 +129,7 @@ export default function AccountDashboard() {
 										<input
 											id="profileName"
 											type="text"
-											defaultValue="João Da Silva"
+											defaultValue={user.personalData.name}
 											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
 										/>
 									</div>
@@ -248,7 +140,7 @@ export default function AccountDashboard() {
 										<input
 											id="profileEmail"
 											type="email"
-											defaultValue="joao@exemplo.com"
+											defaultValue={user.personalData.email}
 											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50"
 											readOnly
 										/>
@@ -260,7 +152,7 @@ export default function AccountDashboard() {
 										<input
 											id="profileCpf"
 											type="text"
-											defaultValue="***.456.789-**"
+											defaultValue={user.personalData.registration}
 											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50"
 											readOnly
 										/>
@@ -272,7 +164,7 @@ export default function AccountDashboard() {
 										<input
 											id="profilePhone"
 											type="text"
-											defaultValue="(11) 98765-4321"
+											defaultValue={user.personalData.phone}
 											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
 										/>
 									</div>
@@ -297,7 +189,7 @@ export default function AccountDashboard() {
 							</button>
 						</div>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-							{mockAddresses.map((addr) => (
+							{user.addresses.map((addr) => (
 								<div
 									key={addr.id}
 									className={`bg-white p-6 rounded-xl border shadow-sm relative ${addr.isDefault ? "border-blue-500" : "border-gray-200 hover:border-gray-300 transition"}`}
@@ -336,7 +228,7 @@ export default function AccountDashboard() {
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Cartões Salvos</h2>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-							{mockCards.map((card) => (
+							{user.paymentCards.map((card) => (
 								<div
 									key={card.id}
 									onClick={() => setIsModalOpen(true)}
@@ -380,7 +272,7 @@ export default function AccountDashboard() {
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Lista de Desejos</h2>
 						<div className="space-y-4">
-							{mockWishlist.map((item) => (
+							{user.wishlistProducts.map((item) => (
 								<div
 									key={item.id}
 									className={`bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4 ${!item.inStock ? "opacity-75" : ""}`}
