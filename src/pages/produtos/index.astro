@@ -20,7 +20,7 @@ const paramsData = {
 
 const { data, options, metadata } = getPaginatedProducts(paramsData);
 
-const { brands, categories, princeRange } = options;
+const { brands, categories, priceRange } = options;
 const { totalProducts } = metadata;
 ---
 
@@ -96,35 +96,56 @@ const { totalProducts } = metadata;
                             </div>
 
                             <div class="flex justify-between items-center mb-6">
-                                <div class="flex items-center space-x-2">
-                                    <label class="text-sm text-gray-600"
+                                <div class="flex items-center gap-3 w-full">
+                                    <label
+                                        class="text-sm font-medium text-gray-700 whitespace-nowrap"
                                         >Ordenar por:</label
                                     >
-                                    <select
-                                        name="sort"
-                                        class="text-sm border-gray-300 border rounded p-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-700"
-                                    >
-                                        <option
-                                            value=""
-                                            selected={!paramsData.sort}
-                                            >Padrão</option
+
+                                    <div class="relative w-full">
+                                        <select
+                                            name="sort"
+                                            class="appearance-none w-full bg-gray-50 border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 pr-8 cursor-pointer transition-colors hover:bg-white"
                                         >
-                                        <option
-                                            value="asc"
-                                            selected={paramsData.sort === "asc"}
-                                            >Menor Preço</option
+                                            <option
+                                                value=""
+                                                selected={!paramsData.sort}
+                                                >Padrão</option
+                                            >
+                                            <option
+                                                value="asc"
+                                                selected={paramsData.sort ===
+                                                    "asc"}>Menor Preço</option
+                                            >
+                                            <option
+                                                value="desc"
+                                                selected={paramsData.sort ===
+                                                    "desc"}>Maior Preço</option
+                                            >
+                                        </select>
+
+                                        <div
+                                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500"
                                         >
-                                        <option
-                                            value="desc"
-                                            selected={paramsData.sort ===
-                                                "desc"}>Maior Preço</option
-                                        >
-                                    </select>
+                                            <svg
+                                                class="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M19 9l-7 7-7-7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="mb-6">
-                                <details open class="group">
+                                <details open>
                                     <summary
                                         class="flex justify-between items-center font-semibold text-gray-800 cursor-pointer mb-3 select-none"
                                     >
@@ -136,16 +157,51 @@ const { totalProducts } = metadata;
                                     <div class="space-y-2 pl-1">
                                         {
                                             categories.map((cat) => (
-                                                <label class="flex items-center space-x-3 cursor-pointer group/item">
-                                                    <input
-                                                        type="checkbox"
-                                                        name="category"
-                                                        checked={cat.checked}
-                                                        value={cat.label}
-                                                        class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                                    />
+                                                <label class="flex items-center gap-3 cursor-pointer group py-1">
+                                                    <div class="relative flex items-center">
+                                                        {/* 1. O Input real fica invisível, mas acessível */}
+                                                        <input
+                                                            type="checkbox"
+                                                            name="category"
+                                                            value={cat.label}
+                                                            checked={
+                                                                cat.checked
+                                                            }
+                                                            class="peer sr-only"
+                                                        />
+
+                                                        {/* 2. A caixa visual que muda de cor */}
+                                                        <div
+                                                            class="w-5 h-5 border-2 border-gray-300 rounded bg-white 
+                        peer-checked:bg-blue-600 peer-checked:border-blue-600 
+                        peer-focus:ring-2 peer-focus:ring-blue-200 
+                        transition-all duration-200 ease-in-out"
+                                                        />
+
+                                                        {/* 3. O ícone de check (SVG) que só aparece quando marcado */}
+                                                        <svg
+                                                            class="absolute w-3.5 h-3.5 text-white left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 
+                       opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke="currentColor"
+                                                            stroke-width="3"
+                                                        >
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                d="M5 13l4 4L19 7"
+                                                            />
+                                                        </svg>
+                                                    </div>
+
+                                                    {/* Texto do Label com efeito hover */}
                                                     <span
-                                                        class={`text-gray-600 capitalize group-hover/item:text-blue-600 text-sm ${cat.checked ? "font-medium" : ""}`}
+                                                        class={`text-sm select-none capitalize transition-colors group-hover:text-blue-600 ${
+                                                            cat.checked
+                                                                ? "text-gray-900 font-medium"
+                                                                : "text-gray-600"
+                                                        }`}
                                                     >
                                                         {cat.label}
                                                     </span>
@@ -171,15 +227,52 @@ const { totalProducts } = metadata;
                                     <div class="space-y-2 pl-1">
                                         {
                                             brands.map((brand) => (
-                                                <label class="flex items-center space-x-3 cursor-pointer group/item">
-                                                    <input
-                                                        type="checkbox"
-                                                        name="brand"
-                                                        value={brand.label}
-                                                        checked={brand.checked}
-                                                        class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                                                    />
-                                                    <span class="text-gray-600 group-hover/item:text-blue-600 text-sm">
+                                                <label class="flex items-center gap-3 cursor-pointer group py-1">
+                                                    <div class="relative flex items-center">
+                                                        {/* 1. O Input real fica invisível, mas acessível */}
+                                                        <input
+                                                            type="checkbox"
+                                                            name="brand"
+                                                            value={brand.label}
+                                                            checked={
+                                                                brand.checked
+                                                            }
+                                                            class="peer sr-only"
+                                                        />
+
+                                                        {/* 2. A caixa visual que muda de cor */}
+                                                        <div
+                                                            class="w-5 h-5 border-2 border-gray-300 rounded bg-white 
+                        peer-checked:bg-blue-600 peer-checked:border-blue-600 
+                        peer-focus:ring-2 peer-focus:ring-blue-200 
+                        transition-all duration-200 ease-in-out"
+                                                        />
+
+                                                        {/* 3. O ícone de check (SVG) que só aparece quando marcado */}
+                                                        <svg
+                                                            class="absolute w-3.5 h-3.5 text-white left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 
+                       opacity-0 peer-checked:opacity-100 transition-opacity duration-200 pointer-events-none"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke="currentColor"
+                                                            stroke-width="3"
+                                                        >
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                d="M5 13l4 4L19 7"
+                                                            />
+                                                        </svg>
+                                                    </div>
+
+                                                    {/* Texto do Label com efeito hover */}
+                                                    <span
+                                                        class={`text-sm select-none capitalize transition-colors group-hover:text-blue-600 ${
+                                                            brand.checked
+                                                                ? "text-gray-900 font-medium"
+                                                                : "text-gray-600"
+                                                        }`}
+                                                    >
                                                         {brand.label}
                                                     </span>
                                                 </label>
@@ -193,29 +286,61 @@ const { totalProducts } = metadata;
 
                             <div>
                                 <div
-                                    class="flex justify-between items-center font-semibold text-gray-800 mb-4"
+                                    class="flex justify-between items-center mb-4"
                                 >
-                                    Faixa de Preço
+                                    <span class="font-semibold text-gray-900"
+                                        >Faixa de Preço</span
+                                    >
                                 </div>
-                                <div class="space-y-3">
-                                    <div class="flex items-center gap-2">
-                                        De
+
+                                <div class="flex items-center gap-2">
+                                    <div class="relative w-full">
+                                        <div
+                                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                                        >
+                                            <span
+                                                class="text-gray-500 sm:text-sm"
+                                                >R$</span
+                                            >
+                                        </div>
                                         <input
                                             type="number"
                                             name="minPrice"
-                                            placeholder="Min"
-                                            min={princeRange.min}
-                                            class="w-full border-gray-300 border rounded-md p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                            id="min-price"
+                                            min="0"
+                                            placeholder={priceRange.min.toString()}
+                                            class="block w-full rounded-lg border-gray-300 pl-9 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 outline-none transition shadow-sm placeholder-gray-400"
                                         />
-                                        Até
+                                    </div>
+
+                                    <span class="text-gray-400 font-medium"
+                                        >-</span
+                                    >
+
+                                    <div class="relative w-full">
+                                        <div
+                                            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                                        >
+                                            <span
+                                                class="text-gray-500 sm:text-sm"
+                                                >R$</span
+                                            >
+                                        </div>
                                         <input
                                             type="number"
                                             name="maxPrice"
-                                            placeholder="Max"
-                                            max={princeRange.max}
-                                            class="w-full border-gray-300 border rounded-md p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                            id="max-price"
+                                            min="0"
+                                            placeholder={priceRange.max.toString()}
+                                            class="block w-full rounded-lg border-gray-300 pl-9 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500 outline-none transition shadow-sm placeholder-gray-400"
                                         />
                                     </div>
+                                </div>
+
+                                <div
+                                    class="mt-2 text-xs text-gray-500 text-right"
+                                >
+                                    Preços em Reais
                                 </div>
                             </div>
                         </div>
@@ -332,6 +457,7 @@ const { totalProducts } = metadata;
 
             return new URLSearchParams(entries).toString();
         };
+
         // Snapshot inicial
         const initialStateString = getFormString(form);
 

@@ -63,7 +63,7 @@ export const getPaginatedProducts = ({ name, categories, brands, maxPrice, minPr
 	}));
 
 	const prices = products.map((p) => p.price);
-	const princeRange = {
+	const priceRange = {
 		min: Math.floor(Math.min(...prices)),
 		max: Math.ceil(Math.max(...prices)),
 	};
@@ -73,7 +73,7 @@ export const getPaginatedProducts = ({ name, categories, brands, maxPrice, minPr
 		options: {
 			brands: avaibledBrands,
 			categories: avaibledCategories,
-			princeRange,
+			priceRange,
 		},
 		metadata: {
 			totalProducts: products.length,
