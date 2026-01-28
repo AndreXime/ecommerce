@@ -1,4 +1,4 @@
-import type { CartItem } from "@/lib/productsTypes";
+import type { CartItem } from "@/database/productsTypes";
 import { useState, useEffect } from "preact/hooks";
 
 const formatPrice = (value: number) => {

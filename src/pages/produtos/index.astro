@@ -2,13 +2,13 @@
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
-import { products } from "@/lib/products";
+import { products } from "@/database/products";
 import {
     getFilteredProducts,
     getPriceRange,
     getUniqueBrands,
     getUniqueCategories,
-} from "@/lib/productsMethods";
+} from "@/database/productsMethods";
 import StarRating from "@/components/StarRating";
 import { formatPrice } from "@/lib/utils";
 

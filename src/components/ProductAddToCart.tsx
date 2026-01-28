@@ -1,4 +1,4 @@
-import type { CartItem, ProductDetails } from "@/lib/productsTypes";
+import type { CartItem, ProductDetails } from "@/database/productsTypes";
 import { toast } from "@/lib/toast";
 import { useState } from "preact/hooks";
 
