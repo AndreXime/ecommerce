@@ -27,13 +27,6 @@ export const getProductById = (id: string): ProductDetails | undefined => {
 	return products.find((p) => p.id === id);
 };
 
-export const calculateOldPrice = (price: number, discountPercentage?: number): number => {
-	if (!discountPercentage) return price;
-	return price / (1 - discountPercentage / 100);
-};
-
-export const formatPrice = (val: number) => val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
 export const getUniqueBrands = () => {
 	const brands = new Set(products.map((p) => p.tag));
 	return Array.from(brands).map((label) => ({ label, checked: false }));

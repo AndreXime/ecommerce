@@ -5,12 +5,12 @@ import Layout from "@/layout/layout.astro";
 import { products } from "@/lib/products";
 import {
     getFilteredProducts,
-    formatPrice,
     getPriceRange,
     getUniqueBrands,
     getUniqueCategories,
 } from "@/lib/productsMethods";
 import StarRating from "@/components/StarRating";
+import { formatPrice } from "@/lib/utils";
 
 export const prerender = false;
 
