@@ -1,16 +1,10 @@
-<div id="toaster-container" class="toaster-container"></div>
+<div
+    id="toaster-container"
+    class="fixed top-5 right-5 flex flex-col gap-3 z-100"
+>
+</div>
 
 <style>
-    .toaster-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        z-index: 100;
-    }
-
     :global(.toast) {
         background-color: var(--toast-bg, #333);
         border-left: 5px solid var(--toast-border, #000);

@@ -47,12 +47,9 @@ export default function CartPage() {
 		updateCart(newItems);
 	};
 
-	const handleRemoveItem = (index: number) => {
-		// window.confirm pode bloquear a thread, use com cuidado ou remova se preferir
-		if (window.confirm("Remover este item?")) {
-			const newItems = cartItems.filter((_, i) => i !== index);
-			updateCart(newItems);
-		}
+	const handleRemoveItem = async (index: number) => {
+		const newItems = cartItems.filter((_, i) => i !== index);
+		updateCart(newItems);
 	};
 
 	if (!isMounted)

@@ -2,25 +2,19 @@
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
-import { products } from "@/database/products";
-import {
-    getFilteredProducts,
-    getPriceRange,
-    getUniqueBrands,
-    getUniqueCategories,
-} from "@/database/productsMethods";
+import { getPaginatedProducts } from "@/database/productsMethods";
 import StarRating from "@/components/StarRating";
 import { formatPrice } from "@/lib/utils";
 
 export const prerender = false;
 
-const query = Astro.url.searchParams.get("s");
+const name = Astro.url.searchParams.get("s");
+const category = Astro.url.searchParams.get("category");
+const brand = Astro.url.searchParams.get("brand");
 
-const currentProducts = getFilteredProducts(query);
-const totalProducts = products.length;
-const categories = getUniqueCategories();
-const brands = getUniqueBrands();
-const { min: minPrice, max: maxPrice } = getPriceRange();
+const { data, options, metadata } = getPaginatedProducts(name, category, brand);
+const { brands, categories, princeRange } = options;
+const { totalProducts } = metadata;
 ---
 
 <Layout title="Emporium da Tecnologia" description="">
@@ -32,7 +26,7 @@ const { min: minPrice, max: maxPrice } = getPriceRange();
                 Todos os Produtos
             </h1>
             <p class="text-gray-500 mt-2">
-                Exibindo {currentProducts.length} de {totalProducts} produtos
+                Exibindo {data.length} de {totalProducts} produtos
             </p>
         </div>
 
@@ -88,7 +82,7 @@ const { min: minPrice, max: maxPrice } = getPriceRange();
                                                 class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                             />
                                             <span
-                                                class={`text-gray-600 group-hover/item:text-blue-600 text-sm ${cat.checked ? "font-medium" : ""}`}
+                                                class={`text-gray-600 capitalize group-hover/item:text-blue-600 text-sm ${cat.checked ? "font-medium" : ""}`}
                                             >
                                                 {cat.label}
                                             </span>
@@ -140,16 +134,16 @@ const { min: minPrice, max: maxPrice } = getPriceRange();
                         <div class="px-2">
                             <input
                                 type="range"
-                                min={minPrice}
-                                max={maxPrice}
-                                value={(maxPrice + minPrice) / 2}
+                                min={princeRange.min}
+                                max={princeRange.max}
+                                value={(princeRange.max + princeRange.min) / 2}
                                 class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                             />
                             <div
                                 class="flex justify-between mt-2 text-sm text-gray-600 font-medium"
                             >
-                                <span>${minPrice}</span>
-                                <span>${maxPrice}</span>
+                                <span>${princeRange.min}</span>
+                                <span>${princeRange.max}</span>
                             </div>
                         </div>
                     </div>
@@ -161,7 +155,7 @@ const { min: minPrice, max: maxPrice } = getPriceRange();
                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6"
                 >
                     {
-                        currentProducts.map((product) => (
+                        data.map((product) => (
                             <div class="bg-white rounded-xl shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 overflow-hidden flex flex-col group">
                                 <div class="relative h-56 bg-gray-100 overflow-hidden">
                                     <img

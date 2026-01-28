@@ -3,6 +3,7 @@ export interface ProductSummary {
 	name: string;
 	tag: string;
 	price: number;
+	category: string;
 	discountPercentage?: number;
 	images: string[];
 	rating: number;
