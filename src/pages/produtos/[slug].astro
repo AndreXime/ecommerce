@@ -2,9 +2,9 @@
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
-import { getProductById } from "@/database/productsMethods";
-import StarRating from "@/components/StarRating";
 import ProductAddToCart from "@/components/ProductAddToCart";
+import StarRating from "@/components/StarRating";
+import { getProductById } from "@/database/productsMethods";
 import { calculateOldPrice, formatPrice } from "@/lib/utils";
 
 export const prerender = false;

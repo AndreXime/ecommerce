@@ -2,17 +2,24 @@
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
-import { getPaginatedProducts } from "@/database/productsMethods";
 import StarRating from "@/components/StarRating";
+import { getPaginatedProducts } from "@/database/productsMethods";
 import { formatPrice } from "@/lib/utils";
 
 export const prerender = false;
 
-const name = Astro.url.searchParams.get("s");
-const category = Astro.url.searchParams.get("category");
-const brand = Astro.url.searchParams.get("brand");
+const params = Astro.url.searchParams;
+const paramsData = {
+    name: params.get("s"),
+    category: params.get("category"),
+    brand: params.get("brand"),
+    minPrice: params.get("minPrice"),
+    maxPrice: params.get("maxPrice"),
+    sort: params.get("sort"),
+};
 
-const { data, options, metadata } = getPaginatedProducts(name, category, brand);
+const { data, options, metadata } = getPaginatedProducts(paramsData);
+
 const { brands, categories, princeRange } = options;
 const { totalProducts } = metadata;
 ---
@@ -36,15 +43,29 @@ const { totalProducts } = metadata;
                     class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm sticky top-24"
                 >
                     <div
-                        class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100"
+                        class="flex flex-col gap-4 mb-6 pb-4 border-b border-gray-100"
                     >
-                        <span class="text-lg font-bold text-gray-900"
-                            >Filtros</span
-                        >
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg font-bold text-gray-900"
+                                >Filtros</span
+                            >
+                            <button
+                                id="btn-clean-filters"
+                                class="text-xs text-gray-400 hover:text-red-500 transition"
+                            >
+                                Limpar
+                            </button>
+                        </div>
+
                         <button
-                            class="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                            >Limpar</button
+                            id="apply-filters-btn"
+                            onclick="applyAllFilters()"
+                            disabled
+                            class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold py-2.5 rounded-lg transition shadow-md flex items-center justify-center gap-2"
                         >
+                            <i class="fas fa-check text-xs"></i>
+                            Aplicar Filtros
+                        </button>
                     </div>
 
                     <div class="flex justify-between items-center mb-6">
@@ -53,11 +74,26 @@ const { totalProducts } = metadata;
                                 >Ordenar por:</label
                             >
                             <select
+                                onchange="updateFilterState('sort', this.value, this)"
                                 class="text-sm border-gray-300 border rounded p-1 focus:ring-blue-500 focus:border-blue-500 outline-none text-gray-700"
                             >
-                                <option>Relevância</option>
-                                <option>Menor Preço</option>
-                                <option>Maior Preço</option>
+                                <option value="" selected={!paramsData.sort}>
+                                    Padrão
+                                </option>
+
+                                <option
+                                    value="asc"
+                                    selected={paramsData.sort === "asc"}
+                                >
+                                    Menor Preço
+                                </option>
+
+                                <option
+                                    value="desc"
+                                    selected={paramsData.sort === "desc"}
+                                >
+                                    Maior Preço
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -79,6 +115,7 @@ const { totalProducts } = metadata;
                                             <input
                                                 type="checkbox"
                                                 checked={cat.checked}
+                                                onchange={`updateFilterState('category', '${cat.label}', this)`}
                                                 class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                             />
                                             <span
@@ -111,6 +148,8 @@ const { totalProducts } = metadata;
                                         <label class="flex items-center space-x-3 cursor-pointer group/item">
                                             <input
                                                 type="checkbox"
+                                                checked={brand.checked}
+                                                onchange={`updateFilterState('brand', '${brand.label}', this)`}
                                                 class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                                             />
                                             <span class="text-gray-600 group-hover/item:text-blue-600 text-sm">
@@ -131,19 +170,27 @@ const { totalProducts } = metadata;
                         >
                             Faixa de Preço
                         </div>
-                        <div class="px-2">
-                            <input
-                                type="range"
-                                min={princeRange.min}
-                                max={princeRange.max}
-                                value={(princeRange.max + princeRange.min) / 2}
-                                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                            />
-                            <div
-                                class="flex justify-between mt-2 text-sm text-gray-600 font-medium"
-                            >
-                                <span>${princeRange.min}</span>
-                                <span>${princeRange.max}</span>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2">
+                                De
+                                <input
+                                    type="number"
+                                    id="min-price-input"
+                                    placeholder="Min"
+                                    min={princeRange.min}
+                                    value={princeRange.min}
+                                    oninput="updateFilterState('minPrice', this.value, this)"
+                                    class="w-full border-gray-300 border rounded-md p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                />
+                                Até
+                                <input
+                                    type="number"
+                                    id="max-price-input"
+                                    placeholder="Max"
+                                    value={princeRange.max}
+                                    oninput="updateFilterState('maxPrice', this.value, this)"
+                                    class="w-full border-gray-300 border rounded-md p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+                                />
                             </div>
                         </div>
                     </div>
@@ -244,33 +291,76 @@ const { totalProducts } = metadata;
         </div>
     </main>
 
-    <style is:inline>
-        /* Estilização customizada para o Range Slider */
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 16px;
-            width: 16px;
-            border-radius: 50%;
-            background: #2563eb;
-            cursor: pointer;
-            margin-top: -6px;
-        }
-        input[type="range"]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: #e5e7eb;
-            border-radius: 2px;
+    <script is:inline>
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 1. Estado vindo da URL (Referência)
+        const initialState = {
+            category: urlParams.get("category") || "",
+            brand: urlParams.get("brand") || "",
+            minPrice: urlParams.get("minPrice") || "",
+            maxPrice: urlParams.get("maxPrice") || "",
+            sort: urlParams.get("sort") || "",
+        };
+
+        // 2. Estado de trabalho
+        let filterState = { ...initialState };
+
+        function updateFilterState(key, value, element) {
+            // Se for checkbox desmarcado, limpa o valor no estado
+            if (element && element.type === "checkbox" && !element.checked) {
+                filterState[key] = "";
+            } else {
+                filterState[key] = value;
+            }
+            checkChanges();
         }
 
-        /* Personalização do Accordion (Details/Summary) */
-        details > summary {
-            list-style: none;
+        function checkChanges() {
+            const btn = document.getElementById("apply-filters-btn");
+            if (!btn) return;
+
+            // Compara se o que o usuário fez é diferente de como a página carregou
+            const hasChanged =
+                JSON.stringify(initialState) !== JSON.stringify(filterState);
+
+            btn.disabled = !hasChanged;
+
+            if (hasChanged) {
+                btn.classList.add("ring-4", "ring-blue-100");
+                btn.classList.replace("bg-gray-200", "bg-blue-600"); // Garante a cor se houver mudança
+            } else {
+                btn.classList.remove("ring-4", "ring-blue-100");
+            }
         }
-        details > summary::-webkit-details-marker {
-            display: none;
+
+        function applyAllFilters() {
+            const url = new URL(window.location.href);
+
+            Object.keys(filterState).forEach((key) => {
+                if (filterState[key]) {
+                    url.searchParams.set(key, filterState[key]);
+                } else {
+                    url.searchParams.delete(key);
+                }
+            });
+
+            url.searchParams.delete("page"); // Reset de paginação
+            window.location.assign(url.toString());
         }
-    </style>
+
+        // Botão Limpar: Remove tudo e recarrega
+        document
+            .getElementById("btn-clean-filters")
+            ?.addEventListener("click", () => {
+                const url = new URL(
+                    window.location.origin + window.location.pathname,
+                );
+                const search = urlParams.get("s");
+                if (search) url.searchParams.set("s", search);
+                window.location.assign(url.toString());
+            });
+    </script>
 
     <Footer />
 </Layout>

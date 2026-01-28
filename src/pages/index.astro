@@ -2,8 +2,8 @@
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
-import { getOffers, getMostSelled } from "@/database/productsMethods";
 import StarRating from "@/components/StarRating";
+import { getOffers, getMostSelled } from "@/database/productsMethods";
 import { formatPrice } from "@/lib/utils";
 
 const offers = getOffers(4);
