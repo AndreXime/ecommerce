@@ -13,25 +13,26 @@ export const getOffers = (count?: number): ProductSummary[] => {
 
 interface PaginationOptions {
 	name: string | null;
-	category: string | null;
-	brand: string | null;
+	categories: string[];
+	brands: string[];
 	minPrice: string | null;
 	maxPrice: string | null;
 	sort: string | null;
 }
 
-export const getPaginatedProducts = ({ name, category, brand, maxPrice, minPrice, sort }: PaginationOptions) => {
+export const getPaginatedProducts = ({ name, categories, brands, maxPrice, minPrice, sort }: PaginationOptions) => {
 	const searchTerm = name?.toLowerCase().trim();
-	const categoryTerm = category?.toLowerCase().trim();
-	const brandTerm = brand?.toLowerCase().trim();
+	const categoryTerms = categories.map((c) => c.toLowerCase().trim());
+	const brandTerms = brands.map((b) => b.toLowerCase().trim());
 	const minPriceNumber = Number(minPrice) || null;
 	const maxPriceNumber = Number(maxPrice) || null;
 
 	let filteredProducts = products.filter((p) => {
 		// Se o termo existe, ele DEVE bater. Se não existe (null/vazio), ignoramos o filtro (true).
 		const matchesName = searchTerm ? p.name?.toLowerCase().includes(searchTerm) : true;
-		const matchesCategory = categoryTerm ? p.category?.toLowerCase().includes(categoryTerm) : true;
-		const matchesBrand = brandTerm ? p.tag?.toLowerCase().includes(brandTerm) : true;
+		const matchesCategory = categoryTerms.length > 0 ? categoryTerms.includes(p.category?.toLowerCase()) : true;
+
+		const matchesBrand = brandTerms.length > 0 ? brandTerms.includes(p.tag?.toLowerCase()) : true;
 		const matchesMinPrice = minPriceNumber ? p.price > minPriceNumber : true;
 		const matchesMaxPrice = maxPriceNumber ? p.price < maxPriceNumber : true;
 
@@ -49,16 +50,16 @@ export const getPaginatedProducts = ({ name, category, brand, maxPrice, minPrice
 		});
 	}
 
-	const brands = new Set(products.map((p) => p.tag));
-	const avaibledBrands = Array.from(brands).map((label) => ({
+	const brandsSet = new Set(products.map((p) => p.tag));
+	const avaibledBrands = Array.from(brandsSet).map((label) => ({
 		label,
-		checked: label.toLowerCase().trim() === brandTerm,
+		checked: brandTerms.includes(label.toLowerCase()),
 	}));
 
-	const categories = new Set(products.map((p) => p.category));
-	const avaibledCategories = Array.from(categories).map((label) => ({
+	const categoriesSet = new Set(products.map((p) => p.category));
+	const avaibledCategories = Array.from(categoriesSet).map((label) => ({
 		label,
-		checked: label.toLowerCase().trim() === categoryTerm,
+		checked: categoryTerms.includes(label.toLowerCase()),
 	}));
 
 	const prices = products.map((p) => p.price);
