@@ -1,60 +1,14 @@
 ---
 import Layout from "@/layout/layout.astro";
 import AccountDashboard from "./_profile";
+import Header from "@/components/Header.astro";
 ---
 
 <Layout
     title="Minha Conta | Emporium da Tecnologia"
     description="Gerencie seus pedidos e dados"
 >
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4">
-            <div
-                class="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0"
-            >
-                <div
-                    class="flex items-center space-x-6 w-full md:w-auto justify-center md:justify-start"
-                >
-                    <a
-                        href="/"
-                        class="flex items-center text-gray-600 hover:text-blue-600 cursor-pointer transition"
-                    >
-                        <i class="fas fa-arrow-left mr-2"></i><span
-                            class="text-sm font-medium">Voltar à Loja</span
-                        >
-                    </a>
-                </div>
-                <div class="flex items-center justify-center">
-                    <a href="/" class="flex items-center group">
-                        <div
-                            class="bg-blue-600 text-white p-2 rounded-lg shadow-lg group-hover:bg-blue-700 transition transform group-hover:scale-105"
-                        >
-                            <i class="fas fa-bolt text-xl"></i>
-                        </div>
-                        <span
-                            class="ml-3 text-xl font-bold tracking-tight text-gray-900 group-hover:text-blue-700 transition"
-                            >Emporium da Tecnologia</span
-                        >
-                    </a>
-                </div>
-                <div
-                    class="flex items-center space-x-6 w-full md:w-auto justify-center md:justify-end text-sm font-medium text-gray-600"
-                >
-                    <a
-                        href="#"
-                        class="hover:text-blue-600 transition hidden sm:block"
-                        >Atendimento</a
-                    >
-                    <a
-                        href="/cart"
-                        class="relative cursor-pointer hover:text-blue-600 transition"
-                    >
-                        <i class="fas fa-shopping-bag text-xl"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
+    <Header hideSearch />
 
     <main class="flex-grow container mx-auto px-4 py-8 bg-gray-50 min-h-[85vh]">
         <AccountDashboard client:load />

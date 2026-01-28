@@ -36,16 +36,21 @@ const dbCart = {
 >
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div
-            class="container mx-auto px-4 py-4 flex justify-between items-center"
+            class="container mx-auto px-4 py-4 flex gap-3 justify-between items-center"
         >
-            <a href="/" class="flex items-center group">
-                <div class="bg-blue-600 text-white p-2 rounded-lg shadow-lg">
-                    <i class="fas fa-bolt text-xl"></i>
-                </div>
+            <a href="/" class="group flex items-center justify-center">
                 <span
-                    class="ml-3 text-xl font-bold tracking-tight text-gray-900"
-                    >Emporium da Tecnologia</span
+                    class="flex gap-2 items-center text-xl font-bold tracking-tight text-blue-700 group-hover:text-blue-900 transition"
                 >
+                    <span class="text-blue-600">
+                        <i class="fas fa-bolt text-xl"></i>
+                    </span>
+                    <span class="whitespace-nowrap">
+                        Emporium<span class="hidden min-[400px]:inline">
+                            da Tecnologia</span
+                        >
+                    </span>
+                </span>
             </a>
             <div class="flex items-center text-sm text-gray-500">
                 <i class="fas fa-lock mr-2 text-green-600"></i> Checkout Seguro
@@ -53,9 +58,7 @@ const dbCart = {
         </div>
     </header>
 
-    <main
-        class="flex-grow container mx-auto px-4 py-8 bg-gray-50/50 min-h-screen"
-    >
+    <main class="flex-grow container mx-auto px-4 py-8 bg-gray-50/50">
         <CheckoutComponent client:load initialOrder={dbCart} user={dbUser} />
     </main>
 

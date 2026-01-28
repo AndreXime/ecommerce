@@ -1,8 +1,14 @@
+---
+interface Props {
+    hideSearch?: boolean;
+}
+
+const { hideSearch } = Astro.props;
+---
+
 <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
     <div class="container mx-auto px-4 py-4">
-        <div
-            class="relative flex flex-row justify-between items-center h-10 mb-4"
-        >
+        <div class="relative flex flex-row justify-between items-center h-10">
             <div class="flex items-center gap-4 z-10 relative">
                 <button
                     id="menu-open-btn"
@@ -70,25 +76,27 @@
             </div>
         </div>
 
-        <div class="flex justify-center w-full">
-            <form
-                action="/produtos"
-                method="GET"
-                class="relative w-full max-w-2xl"
-            >
-                <div
-                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
-                >
-                    <i class="fas fa-search text-gray-400"></i>
+        {
+            !hideSearch && (
+                <div class="flex justify-center w-full mt-4">
+                    <form
+                        action="/produtos"
+                        method="GET"
+                        class="relative w-full max-w-2xl"
+                    >
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400" />
+                        </div>
+                        <input
+                            type="text"
+                            name="s"
+                            class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full leading-5 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition shadow-sm"
+                            placeholder="Buscar produtos..."
+                        />
+                    </form>
                 </div>
-                <input
-                    type="text"
-                    name="s"
-                    class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full leading-5 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition shadow-sm"
-                    placeholder="Buscar produtos..."
-                />
-            </form>
-        </div>
+            )
+        }
     </div>
 </header>
 
@@ -125,6 +133,12 @@
             class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition border-l-4 border-transparent hover:border-blue-600"
         >
             <i class="far fa-user w-6"></i> Minha Conta
+        </a>
+        <a
+            href="/carrinho"
+            class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition border-l-4 border-transparent hover:border-blue-600"
+        >
+            <i class="fa-solid fa-cart-shopping w-6"></i> Meu Carrinho
         </a>
 
         <div
