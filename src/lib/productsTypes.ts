@@ -20,7 +20,7 @@ export interface ProductDetails extends ProductSummary {
 
 export interface CartItem extends ProductSummary {
 	quantity: number;
-	selectedVariant?: string;
+	selectedVariant?: Record<string, string>;
 }
 
 export interface SelectableOption {

@@ -2,12 +2,10 @@
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
-import {
-    getProductById,
-    calculateOldPrice,
-    formatPrice,
-} from "@/lib/productsMethods";
+import { getProductById } from "@/lib/productsMethods";
 import StarRating from "@/components/StarRating";
+import ProductAddToCart from "@/components/ProductAddToCart";
+import { calculateOldPrice, formatPrice } from "@/lib/utils";
 
 export const prerender = false;
 const { slug } = Astro.params;
@@ -106,110 +104,7 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
                     {product.description}
                 </p>
 
-                <div class="space-y-6 pt-4 border-t border-gray-100">
-                    {
-                        product.options &&
-                            product.options.map((option) => (
-                                <div>
-                                    <span class="block text-sm font-semibold text-gray-900 mb-2">
-                                        {option.label}
-                                    </span>
-
-                                    {option.uiType === "color" && (
-                                        <div class="flex space-x-3">
-                                            {option.values.map((val, idx) => (
-                                                <button
-                                                    class={`w-8 h-8 rounded-full ${val} border border-gray-200 transition focus:outline-none 
-                                ${idx === 0 ? "ring-2 ring-offset-2 ring-blue-600" : "hover:ring-2 hover:ring-offset-2 hover:ring-gray-400"}`}
-                                                    aria-label={`Select ${val}`}
-                                                />
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {(option.uiType === "pill" ||
-                                        option.uiType === "select") && (
-                                        <div class="flex flex-wrap gap-3">
-                                            {option.values.map((val, idx) => (
-                                                <button
-                                                    class={`rounded-lg py-2 px-4 text-sm transition border 
-                                ${
-                                    idx === 1 // Apenas exemplo de seleção padrão no segundo item
-                                        ? "border-blue-600 bg-blue-50 text-blue-700 font-bold shadow-sm"
-                                        : "border-gray-200 bg-white text-gray-700 hover:border-blue-600 hover:text-blue-600"
-                                }`}
-                                                >
-                                                    {val}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            ))
-                    }
-                </div>
-
-                <div class="pt-6 border-t border-gray-100">
-                    <div class="flex gap-4">
-                        <div
-                            class="w-24 flex items-center border border-gray-300 rounded-xl"
-                        >
-                            <button
-                                class="w-8 h-full text-gray-500 hover:bg-gray-100 rounded-l-xl transition"
-                                >-</button
-                            >
-                            <input
-                                type="number"
-                                value="1"
-                                class="w-full text-center border-none focus:ring-0 font-semibold text-gray-900 bg-transparent h-12"
-                            />
-                            <button
-                                class="w-8 h-full text-gray-500 hover:bg-gray-100 rounded-r-xl transition"
-                                >+</button
-                            >
-                        </div>
-
-                        <button
-                            class="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg hover:shadow-blue-200/50 transition transform hover:-translate-y-0.5 flex items-center justify-center py-3 md:py-0"
-                        >
-                            Adicionar ao Carrinho <i
-                                class="fas fa-shopping-cart ml-2"></i>
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 mt-6 text-center">
-                        <div class="flex flex-col items-center">
-                            <div
-                                class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-2"
-                            >
-                                <i class="fas fa-shield-alt"></i>
-                            </div>
-                            <span class="text-xs text-gray-500 font-medium"
-                                >Garantia de 2 Anos</span
-                            >
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <div
-                                class="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-2"
-                            >
-                                <i class="fas fa-truck"></i>
-                            </div>
-                            <span class="text-xs text-gray-500 font-medium"
-                                >Frete Grátis</span
-                            >
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <div
-                                class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mb-2"
-                            >
-                                <i class="fas fa-lock"></i>
-                            </div>
-                            <span class="text-xs text-gray-500 font-medium"
-                                >Pagamento Seguro</span
-                            >
-                        </div>
-                    </div>
-                </div>
+                <ProductAddToCart product={product} client:idle />
 
                 <div class="pt-6 space-y-4">
                     <details
@@ -381,9 +276,6 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
 </Layout>
 
 <script>
-    // Script TypeScript para interação do lado do cliente
-
-    // Selecionando elementos
     const mainImage = document.getElementById("mainImage") as HTMLImageElement;
     const buttons = document.querySelectorAll(
         ".thumbnail-btn",
@@ -392,25 +284,9 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
     const changeImage = (button: HTMLButtonElement) => {
         const thumbImg = button.querySelector("img");
 
-        // Guard clause: se não houver imagem principal ou thumb, sai da função
         if (!thumbImg || !mainImage) return;
 
-        let newSrc = thumbImg.src;
-
-        // Lógica para aumentar a resolução (baseada na API do Unsplash usada no mock)
-        // Se a URL contém parâmetros de query, trocamos w=200 por w=1200
-        if (newSrc.includes("w=200")) {
-            newSrc = newSrc.replace("w=200", "w=1200");
-        }
-
-        // Animação de fade-out
-        mainImage.style.opacity = "0.5";
-
-        setTimeout(() => {
-            mainImage.src = newSrc;
-            // Animação de fade-in
-            mainImage.style.opacity = "1";
-        }, 150);
+        mainImage.src = thumbImg.src;
 
         // Atualiza estados dos botões (bordas)
         buttons.forEach((btn) => {
@@ -422,7 +298,6 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
             );
         });
 
-        // Define o botão clicado como ativo
         button.classList.remove(
             "border",
             "border-gray-200",

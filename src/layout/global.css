@@ -20,7 +20,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 input[type="number"] {
 	-moz-appearance: textfield;
-	appearance: none;
+	appearance: textfield;
 }
 
 /* Animação suave para o ícone do Accordion */
