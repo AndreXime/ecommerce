@@ -6,7 +6,7 @@ import ProductAddToCart from "@/components/ProductAddToCart";
 import StarRating from "@/components/StarRating";
 import { getProductById } from "@/database/productsMethods";
 import { calculateOldPrice, formatPrice } from "@/lib/utils";
-import { Icon } from "astro-icon/components";
+import { BadgeCheck, ChevronDown } from "lucide-preact";
 
 export const prerender = false;
 const { slug } = Astro.params;
@@ -78,8 +78,10 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
                             {product.reviewsCount} avaliações
                         </a>
                         <span class="text-gray-300">|</span>
-                        <span class="text-sm text-green-600 font-medium">
-                            <Icon name="lucide:bagde-check" class="mr-1" />
+                        <span
+                            class="text-sm text-green-600 font-medium flex gap-1"
+                        >
+                            <BadgeCheck />
                             Em Estoque
                         </span>
                     </div>
@@ -119,7 +121,7 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
                             <span
                                 class="transform group-open:rotate-180 transition duration-300 text-gray-400 group-open:text-blue-600"
                             >
-                                <Icon name="lucide:chevron-down" />
+                                <ChevronDown />
                             </span>
                         </summary>
                         <div
@@ -174,7 +176,7 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
                             <span
                                 class="transform group-open:rotate-180 transition duration-300 text-gray-400 group-open:text-blue-600"
                             >
-                                <Icon name="lucide:chevron-down" />
+                                <ChevronDown />
                             </span>
                         </summary>
                         <div

@@ -5,7 +5,7 @@ import Layout from "@/layout/layout.astro";
 import StarRating from "@/components/StarRating";
 import { getOffers, getMostSelled } from "@/database/productsMethods";
 import { formatPrice } from "@/lib/utils";
-import { Icon } from "astro-icon/components";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-preact";
 
 const offers = getOffers(4);
 const bestSellers = getMostSelled(6);
@@ -108,10 +108,9 @@ const bestSellers = getMostSelled(6);
 									</span>
 									<a
 										href={`/produtos/${product.id}`}
-										class="text-sm font-medium text-gray-500 hover:text-blue-600 flex items-center transition"
+										class="text-sm font-medium text-gray-500 hover:text-blue-600 flex gap-1 items-center transition"
 									>
-										Ver Detalhes{" "}
-										<Icon name="lucide:arrow-right" />
+										Ver Detalhes <ArrowRight size={18} />
 									</a>
 								</div>
 							</div>
@@ -137,7 +136,7 @@ const bestSellers = getMostSelled(6);
 					id="scrollLeft"
 					class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg transition duration-300 focus:outline-none hidden md:block"
 				>
-					<Icon name="lucide:chevron-left" size={22} />
+					<ChevronLeft size={22} />
 				</button>
 
 				<div
@@ -189,7 +188,7 @@ const bestSellers = getMostSelled(6);
 					id="scrollRight"
 					class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg transition duration-300 focus:outline-none hidden md:block"
 				>
-					<Icon name="lucide:chevron-right" size={22} />
+					<ChevronRight size={22} />
 				</button>
 			</div>
 		</section>

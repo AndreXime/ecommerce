@@ -1,5 +1,5 @@
 import { useState } from "preact/hooks";
-import { Icon } from "astro-icon/components";
+import { Check, MapPin, ArrowRight, ArrowLeft, CreditCard, QrCode, Barcode, Timer, Clock, Info } from "lucide-preact";
 
 interface CartItem {
 	id: number;
@@ -72,7 +72,7 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 									<div
 										className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold transition-colors duration-300 ${bgClass}`}
 									>
-										{status === "completed" ? <Icon name="lucide:check" class="w-5 h-5" /> : <span>{step}</span>}
+										{status === "completed" ? <Check class="w-5 h-5" /> : <span>{step}</span>}
 									</div>
 									<span className={`text-xs font-semibold mt-2 uppercase tracking-wide ${textClass}`}>
 										{step === 1 ? "Envio" : step === 2 ? "Pagamento" : "Confirmação"}
@@ -86,7 +86,7 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 				{currentStep === 1 && (
 					<div className="step-content active animate-fade-in">
 						<h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-							<Icon name="lucide:map-pin" class="text-blue-600 mr-3 w-6 h-6" /> Informações de Envio
+							<MapPin class="text-blue-600 mr-3 w-6 h-6" /> Informações de Envio
 						</h2>
 
 						<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
@@ -189,7 +189,7 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 									onClick={nextStep}
 									className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center"
 								>
-									Ir para Pagamento <Icon name="lucide:arrow-right" class="ml-2 w-5 h-5" />
+									Ir para Pagamento <ArrowRight class="ml-2 w-5 h-5" />
 								</button>
 							</div>
 						</div>
@@ -200,10 +200,10 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 					<div className="step-content active animate-fade-in">
 						<div className="flex items-center mb-6">
 							<button onClick={prevStep} className="text-gray-400 hover:text-gray-600 mr-4 transition">
-								<Icon name="lucide:arrow-left" class="w-6 h-6" />
+								<ArrowLeft class="w-6 h-6" />
 							</button>
 							<h2 className="text-xl font-bold text-gray-900 flex items-center">
-								<Icon name="lucide:credit-card" class="text-blue-600 mr-3 w-6 h-6" /> Detalhes do Pagamento
+								<CreditCard class="text-blue-600 mr-3 w-6 h-6" /> Detalhes do Pagamento
 							</h2>
 						</div>
 
@@ -213,21 +213,21 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 									onClick={() => setPaymentMethod("card")}
 									className={`border rounded-lg p-3 text-center transition hover:border-blue-300 ${paymentMethod === "card" ? "border-blue-600 bg-blue-50 text-blue-700" : "border-gray-200"}`}
 								>
-									<Icon name="lucide:credit-card" class="mx-auto mb-1 w-6 h-6 block" />
+									<CreditCard class="mx-auto mb-1 w-6 h-6 block" />
 									<span className="text-sm font-medium">Cartão</span>
 								</button>
 								<button
 									onClick={() => setPaymentMethod("pix")}
 									className={`border rounded-lg p-3 text-center transition hover:border-blue-300 ${paymentMethod === "pix" ? "border-blue-600 bg-blue-50 text-blue-700" : "border-gray-200"}`}
 								>
-									<Icon name="lucide:qr-code" class="mx-auto mb-1 w-6 h-6 block" />
+									<QrCode class="mx-auto mb-1 w-6 h-6 block" />
 									<span className="text-sm font-medium">Pix</span>
 								</button>
 								<button
 									onClick={() => setPaymentMethod("boleto")}
 									className={`border rounded-lg p-3 text-center transition hover:border-blue-300 ${paymentMethod === "boleto" ? "border-blue-600 bg-blue-50 text-blue-700" : "border-gray-200"}`}
 								>
-									<Icon name="lucide:barcode" class="mx-auto mb-1 w-6 h-6 block" />
+									<Barcode class="mx-auto mb-1 w-6 h-6 block" />
 									<span className="text-sm font-medium">Boleto</span>
 								</button>
 							</div>
@@ -246,7 +246,7 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 												placeholder="0000 0000 0000 0000"
 											/>
 											<div className="absolute left-3 top-2.5 text-gray-400">
-												<Icon name="lucide:credit-card" class="w-5 h-5" />
+												<CreditCard class="w-5 h-5" />
 											</div>
 										</div>
 									</div>
@@ -280,21 +280,21 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 							{paymentMethod === "pix" && (
 								<div className="text-center py-6 animate-fade-in">
 									<div className="bg-blue-50 border border-blue-100 rounded-xl p-6 mb-4 inline-block">
-										<Icon name="lucide:qr-code" class="w-16 h-16 text-gray-800" />
+										<QrCode class="w-16 h-16 text-gray-800" />
 									</div>
 									<p className="text-sm text-gray-600 mb-2">O código Pix será gerado após a finalização do pedido.</p>
 									<p className="text-xs text-blue-600 font-semibold flex items-center justify-center">
-										<Icon name="lucide:timer" class="mr-1 w-4 h-4" /> Aprovação imediata
+										<Timer class="mr-1 w-4 h-4" /> Aprovação imediata
 									</p>
 								</div>
 							)}
 
 							{paymentMethod === "boleto" && (
 								<div className="text-center py-6 animate-fade-in">
-									<Icon name="lucide:barcode" class="w-14 h-14 text-gray-400 mb-4 mx-auto" />
+									<Barcode class="w-14 h-14 text-gray-400 mb-4 mx-auto" />
 									<p className="text-sm text-gray-600 mb-2">O boleto será gerado na próxima tela.</p>
 									<p className="text-xs text-orange-500 font-semibold flex items-center justify-center">
-										<Icon name="lucide:clock" class="mr-1 w-4 h-4" /> Aprovação em 1 a 3 dias úteis
+										<Clock class="mr-1 w-4 h-4" /> Aprovação em 1 a 3 dias úteis
 									</p>
 								</div>
 							)}
@@ -306,7 +306,7 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 									onClick={nextStep}
 									className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center w-full md:w-auto justify-center"
 								>
-									Finalizar Pedido <Icon name="lucide:check" class="ml-2 w-5 h-5" />
+									Finalizar Pedido <Check class="ml-2 w-5 h-5" />
 								</button>
 							</div>
 						</div>
@@ -316,7 +316,7 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 				{currentStep === 3 && (
 					<div className="text-center py-8 animate-fade-in">
 						<div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-							<Icon name="lucide:check" class="text-green-600 w-10 h-10" />
+							<Check class="text-green-600 w-10 h-10" />
 						</div>
 						<h2 className="text-3xl font-bold text-gray-900 mb-2">Pedido Recebido!</h2>
 						<p className="text-gray-500 text-lg mb-8">Obrigado pela sua compra, André.</p>
@@ -324,7 +324,7 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 						<div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 max-w-lg mx-auto mb-8 text-left">
 							<div className="flex">
 								<div className="flex-shrink-0">
-									<Icon name="lucide:info" class="text-yellow-600 w-6 h-6" />
+									<Info class="text-yellow-600 w-6 h-6" />
 								</div>
 								<div className="ml-4">
 									<h3 className="text-sm font-bold text-yellow-800">

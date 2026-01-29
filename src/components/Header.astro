@@ -1,5 +1,14 @@
 ---
-import { Icon } from "astro-icon/components";
+import {
+    Headset,
+    Menu,
+    Package,
+    Search,
+    ShoppingBag,
+    User,
+    X,
+    Zap,
+} from "lucide-preact";
 
 interface Props {
     hideSearch?: boolean;
@@ -17,14 +26,14 @@ const { hideSearch } = Astro.props;
                     class="md:hidden text-gray-600 hover:text-blue-600 transition focus:outline-none"
                     aria-label="Abrir menu"
                 >
-                    <Icon name="lucide:menu" size={26} />
+                    <Menu size={26} />
                 </button>
 
                 <a
                     href="/login"
                     class="hidden md:flex items-center text-gray-600 hover:text-blue-600 cursor-pointer transition"
                 >
-                    <Icon name="lucide:user" class="size-5 mr-2" />
+                    <User class="size-5 mr-2" />
                     <span class="text-sm font-medium">Minha Conta</span>
                 </a>
             </div>
@@ -37,7 +46,7 @@ const { hideSearch } = Astro.props;
                         class="flex gap-2 items-center text-xl font-bold tracking-tight text-blue-700 group-hover:text-blue-900 transition"
                     >
                         <span class="text-blue-600">
-                            <Icon name="lucide:zap" class="text-xl" />
+                            <Zap class="text-xl" />
                         </span>
                         <span class="whitespace-nowrap">
                             Emporium<span class="hidden min-[400px]:inline">
@@ -67,7 +76,7 @@ const { hideSearch } = Astro.props;
                     href="/carrinho"
                     class="relative cursor-pointer text-gray-600 hover:text-blue-600 transition flex items-center"
                 >
-                    <Icon name="lucide:shopping-bag" class="text-2xl" />
+                    <ShoppingBag class="text-2xl" />
                     <span
                         id="cart-count"
                         class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
@@ -87,7 +96,7 @@ const { hideSearch } = Astro.props;
                         class="relative w-full max-w-2xl"
                     >
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Icon name="lucide:search" class="text-gray-400" />
+                            <Search class="text-gray-400" />
                         </div>
                         <input
                             type="text"
@@ -120,7 +129,7 @@ const { hideSearch } = Astro.props;
             id="menu-close-btn"
             class="text-gray-500 hover:text-red-500 transition outline-none"
         >
-            <Icon name="lucide:x" class="text-xl" />
+            <X class="text-xl" />
         </button>
     </div>
 
@@ -134,13 +143,13 @@ const { hideSearch } = Astro.props;
             href="/login"
             class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition border-l-4 border-transparent hover:border-blue-600"
         >
-            <Icon name="lucide:user" class="w-6 mr-2" /> Minha Conta
+            <User class="w-6 mr-2" /> Minha Conta
         </a>
         <a
             href="/carrinho"
             class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition border-l-4 border-transparent hover:border-blue-600"
         >
-            <Icon name="lucide:shopping-cart" class="w-6 mr-2" /> Meu Carrinho
+            <ShoppingBag class="w-6 mr-2" /> Meu Carrinho
         </a>
 
         <div
@@ -152,13 +161,13 @@ const { hideSearch } = Astro.props;
             href="/produtos"
             class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition border-l-4 border-transparent hover:border-blue-600"
         >
-            <Icon name="lucide:package" class="w-6 mr-2" /> Produtos
+            <Package class="w-6 mr-2" /> Produtos
         </a>
         <a
             href="/atendimento"
             class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition border-l-4 border-transparent hover:border-blue-600"
         >
-            <Icon name="lucide:headset" class="w-6 mr-2" /> Atendimento
+            <Headset class="w-6 mr-2" /> Atendimento
         </a>
     </nav>
 </aside>

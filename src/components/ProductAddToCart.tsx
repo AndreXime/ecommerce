@@ -1,7 +1,7 @@
 import type { CartItem, ProductDetails } from "@/database/productsTypes";
 import { toast } from "@/lib/toast";
 import { useState } from "preact/hooks";
-import { Icon } from "astro-icon/components";
+import { Minus, Plus, ShoppingCart } from "lucide-preact";
 
 export default function ProductAddToCart({ product }: { product: ProductDetails }) {
 	const [selections, setSelections] = useState<Record<string, string>>({});
@@ -83,7 +83,7 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 							onClick={() => setQuantity((q) => Math.max(1, q - 1))}
 							class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-l-xl transition"
 						>
-							<Icon name="lucide:minus" class="w-4 h-4" />
+							<Minus class="w-4 h-4" />
 						</button>
 						<input
 							type="number"
@@ -95,7 +95,7 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 							onClick={() => setQuantity((q) => q + 1)}
 							class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-r-xl transition"
 						>
-							<Icon name="lucide:plus" class="w-4 h-4" />
+							<Plus class="w-4 h-4" />
 						</button>
 					</div>
 
@@ -104,7 +104,7 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 						class="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg flex items-center justify-center py-3"
 					>
 						Adicionar ao Carrinho
-						<Icon name="lucide:shopping-cart" class="ml-2 w-5 h-5" />
+						<ShoppingCart class="ml-2 w-5 h-5" />
 					</button>
 				</div>
 			</div>

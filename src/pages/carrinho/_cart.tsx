@@ -1,6 +1,6 @@
 import type { CartItem } from "@/database/productsTypes";
+import { Loader2, Minus, Plus, ShoppingBasket, Trash2 } from "lucide-preact";
 import { useState, useEffect } from "preact/hooks";
-import { Icon } from "astro-icon/components";
 
 const formatPrice = (value: number) => {
 	return new Intl.NumberFormat("pt-BR", {
@@ -56,7 +56,7 @@ export default function CartPage() {
 	if (!isMounted)
 		return (
 			<div class="pt-20 w-full flex justify-center items-center ">
-				<Icon name="lucide:loader-2" class="w-8 h-8 animate-spin" />
+				<Loader2 class="w-8 h-8 animate-spin" />
 			</div>
 		);
 
@@ -67,7 +67,7 @@ export default function CartPage() {
 		return (
 			<div class="flex flex-col items-center justify-center py-20 text-center">
 				<div class="bg-gray-100 text-gray-400 w-20 h-20 rounded-full flex items-center justify-center mb-4 text-3xl">
-					<Icon name="lucide:shopping-basket" class="w-10 h-10" />
+					<ShoppingBasket class="w-10 h-10" />
 				</div>
 				<h2 class="text-xl font-bold text-gray-900">Seu carrinho está vazio</h2>
 				<a href="/produtos" class="mt-6 text-blue-600 hover:underline">
@@ -110,14 +110,14 @@ export default function CartPage() {
 									class="px-3 hover:bg-gray-100 h-full text-gray-600 rounded-l-lg"
 									disabled={item.quantity <= 1}
 								>
-									-
+									<Minus size={16} />
 								</button>
 								<span class="w-10 text-center font-semibold text-gray-900">{item.quantity}</span>
 								<button
 									onClick={() => handleUpdateQuantity(index, 1)}
 									class="px-3 hover:bg-gray-100 h-full text-gray-600 rounded-r-lg"
 								>
-									+
+									<Plus size={16} />
 								</button>
 							</div>
 
@@ -127,7 +127,7 @@ export default function CartPage() {
 									onClick={() => handleRemoveItem(index)}
 									class="text-xs text-red-500 hover:text-red-700 mt-1 flex items-center"
 								>
-									<Icon name="lucide:trash-2" class="mr-1 w-3 h-3" /> Remover
+									<Trash2 class="mr-1 w-3 h-3" /> Remover
 								</button>
 							</div>
 						</div>

@@ -1,7 +1,7 @@
 import { toast } from "@/lib/toast";
 import { actions } from "astro:actions";
 import { useState } from "preact/hooks";
-import { Icon } from "astro-icon/components";
+import { Eye, EyeOff } from "lucide-preact";
 
 export default function Auth() {
 	const [activeTab, setActiveTab] = useState<"login" | "register">("login");
@@ -134,11 +134,7 @@ export default function Auth() {
 											onClick={() => setShowPassword(!showPassword)}
 											className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
 										>
-											{showPassword ? (
-												<Icon name="lucide:eye-off" class="w-5 h-5" />
-											) : (
-												<Icon name="lucide:eye" class="w-5 h-5" />
-											)}
+											{showPassword ? <EyeOff class="w-5 h-5" /> : <Eye class="w-5 h-5" />}
 										</button>
 									</div>
 								</div>

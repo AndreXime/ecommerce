@@ -7,8 +7,6 @@ import preact from "@astrojs/preact";
 
 import vercel from "@astrojs/vercel";
 
-import icon from "astro-icon";
-
 // https://astro.build/config
 export default defineConfig({
 	site: "https://ecommerce.andreximenes.xyzs",
@@ -16,14 +14,9 @@ export default defineConfig({
 	vite: {
 		plugins: [tailwindcss()],
 	},
-
-	integrations: [
-		preact(),
-		icon({
-			include: {
-				lucide: ["*"],
-			},
-		}),
-	],
+	build: {
+		inlineStylesheets: "always",
+	},
+	integrations: [preact()],
 	adapter: vercel(),
 });
