@@ -1,10 +1,14 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
 <footer class="bg-white border-t border-gray-200 pt-12 pb-8">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12 text-center">
             <div class="flex flex-col items-center lg:items-start lg:text-left">
                 <div class="flex items-center mb-4">
                     <div class="bg-blue-600 text-white p-2 rounded-lg">
-                        <i class="fas fa-bolt text-lg"></i>
+                        <Icon name="lucide:zap" class="text-lg" />
                     </div>
                     <span class="ml-3 text-xl font-bold text-gray-900">
                         Emporium
@@ -29,25 +33,29 @@
                         <a
                             href="/"
                             class="text-gray-500 hover:text-blue-600 transition"
-                            >Início</a>
+                            >Início</a
+                        >
                     </li>
                     <li>
                         <a
                             href="/produtos"
                             class="text-gray-500 hover:text-blue-600 transition"
-                            >Produtos</a>
+                            >Produtos</a
+                        >
                     </li>
                     <li>
                         <a
                             href="/atendimento"
                             class="text-gray-500 hover:text-blue-600 transition"
-                            >Atendimento</a>
+                            >Atendimento</a
+                        >
                     </li>
                     <li>
                         <a
                             href="/carrinho"
                             class="text-gray-500 hover:text-blue-600 transition"
-                            >Meu Carrinho</a>
+                            >Meu Carrinho</a
+                        >
                     </li>
                 </ul>
             </div>
@@ -66,24 +74,26 @@
                         href="#"
                         class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-blue-100 hover:text-blue-600 transition"
                     >
-                        <i class="fab fa-facebook-f"></i>
+                        <Icon name="lucide:facebook" class="w-5 h-5" />
                     </a>
                     <a
                         href="#"
                         class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-pink-100 hover:text-pink-600 transition"
                     >
-                        <i class="fab fa-instagram"></i>
+                        <Icon name="lucide:instagram" class="w-5 h-5" />
                     </a>
                     <a
                         href="#"
                         class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:bg-blue-50 hover:text-blue-400 transition"
                     >
-                        <i class="fab fa-twitter"></i>
+                        <Icon name="lucide:twitter" class="w-5 h-5" />
                     </a>
                 </div>
 
-                <p class="text-sm text-gray-500">
-                    <i class="fas fa-envelope mr-2"></i> contato@emporium.com
+                <p
+                    class="text-sm text-gray-500 flex items-center justify-center lg:justify-end gap-2"
+                >
+                    <Icon name="lucide:mail" class="w-4 h-4" /> contato@emporium.com
                 </p>
             </div>
         </div>

@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layout/layout.astro";
 import CheckoutComponent from "./_checkout";
+import { Icon } from "astro-icon/components";
 
 const dbUser = {
     name: "André Ximenes",
@@ -43,7 +44,7 @@ const dbCart = {
                     class="flex gap-2 items-center text-xl font-bold tracking-tight text-blue-700 group-hover:text-blue-900 transition"
                 >
                     <span class="text-blue-600">
-                        <i class="fas fa-bolt text-xl"></i>
+                        <Icon name="lucide:zap" class="text-xl" />
                     </span>
                     <span class="whitespace-nowrap">
                         Emporium<span class="hidden min-[400px]:inline">
@@ -53,7 +54,8 @@ const dbCart = {
                 </span>
             </a>
             <div class="flex items-center text-sm text-gray-500">
-                <i class="fas fa-lock mr-2 text-green-600"></i> Checkout Seguro
+                <Icon name="lucide:shield-check" class="mr-2 text-green-600" />
+                Checkout Seguro
             </div>
         </div>
     </header>

@@ -1,5 +1,6 @@
 import type { User } from "@/database/users";
 import { useState, useEffect } from "preact/hooks";
+import { Icon } from "astro-icon/components";
 
 type Tab = "orders" | "profile" | "addresses" | "payments" | "wishlist";
 
@@ -27,7 +28,6 @@ export default function AccountDashboard({ user }: { user: User }) {
 
 	return (
 		<div className="flex flex-col md:flex-row gap-8">
-			{/* SIDEBAR DE NAVEGAÇÃO */}
 			<aside className="w-full md:w-1/4 flex-shrink-0">
 				<div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6 flex items-center gap-4">
 					<div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow-md capitalize">
@@ -42,18 +42,18 @@ export default function AccountDashboard({ user }: { user: User }) {
 
 				<nav className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
 					{[
-						{ id: "orders", label: "Meus Pedidos", icon: "fas fa-box-open" },
-						{ id: "profile", label: "Dados Pessoais", icon: "far fa-user" },
-						{ id: "addresses", label: "Endereços", icon: "fas fa-map-marker-alt" },
-						{ id: "payments", label: "Pagamentos", icon: "far fa-credit-card" },
-						{ id: "wishlist", label: "Lista de Desejos", icon: "far fa-heart" },
+						{ id: "orders", label: "Meus Pedidos", icon: "lucide:package" },
+						{ id: "profile", label: "Dados Pessoais", icon: "lucide:user" },
+						{ id: "addresses", label: "Endereços", icon: "lucide:map-pin" },
+						{ id: "payments", label: "Pagamentos", icon: "lucide:credit-card" },
+						{ id: "wishlist", label: "Lista de Desejos", icon: "lucide:heart" },
 					].map((item) => (
 						<button
 							key={item.id}
 							onClick={() => setActiveTab(item.id as Tab)}
 							className={`w-full text-left px-6 py-4 flex items-center transition border-l-4 ${activeTab === item.id ? "bg-blue-50 text-blue-600 border-blue-600" : "hover:bg-gray-50 text-gray-700 border-transparent"}`}
 						>
-							<i className={`${item.icon} w-6 text-center mr-3`}></i> {item.label}
+							<Icon name={item.icon} class="w-5 h-5 mr-3" /> {item.label}
 						</button>
 					))}
 					<div className="h-px bg-gray-100 my-1"></div>
@@ -61,14 +61,12 @@ export default function AccountDashboard({ user }: { user: User }) {
 						href="/login"
 						className="w-full text-left px-6 py-4 flex items-center text-red-500 hover:bg-red-50 transition"
 					>
-						<i className="fas fa-sign-out-alt w-6 text-center mr-3"></i> Sair
+						<Icon name="lucide:log-out" class="w-5 h-5 mr-3" /> Sair
 					</a>
 				</nav>
 			</aside>
 
-			{/* CONTEÚDO DAS ABAS */}
 			<div className="flex-grow w-full md:w-3/4">
-				{/* ABA 1: MEUS PEDIDOS */}
 				{activeTab === "orders" && (
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Histórico de Pedidos</h2>
@@ -115,7 +113,6 @@ export default function AccountDashboard({ user }: { user: User }) {
 					</div>
 				)}
 
-				{/* ABA 2: DADOS PESSOAIS - CORREÇÃO DE ACESSIBILIDADE APLICADA */}
 				{activeTab === "profile" && (
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Dados Pessoais</h2>
@@ -179,13 +176,12 @@ export default function AccountDashboard({ user }: { user: User }) {
 					</div>
 				)}
 
-				{/* ABA 3: ENDEREÇOS */}
 				{activeTab === "addresses" && (
 					<div className="space-y-6 animate-fade-in">
 						<div className="flex justify-between items-center mb-4">
 							<h2 className="text-2xl font-bold text-gray-900">Meus Endereços</h2>
 							<button className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition flex items-center">
-								<i className="fas fa-plus mr-2"></i> Novo Endereço
+								<Icon name="lucide:plus" class="w-4 h-4 mr-2" /> Novo Endereço
 							</button>
 						</div>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -200,7 +196,10 @@ export default function AccountDashboard({ user }: { user: User }) {
 										</span>
 									)}
 									<div className="flex items-start gap-3 mb-3">
-										<i className={`fas ${addr.type === "Casa" ? "fa-home" : "fa-building"} text-gray-400 mt-1`}></i>
+										<Icon
+											name={addr.type === "Casa" ? "lucide:home" : "lucide:building"}
+											class="text-gray-400 mt-1 w-5 h-5"
+										/>
 										<div>
 											<h4 className="font-bold text-gray-900">{addr.type}</h4>
 											<p className="text-sm text-gray-600 mt-1">
@@ -223,7 +222,6 @@ export default function AccountDashboard({ user }: { user: User }) {
 					</div>
 				)}
 
-				{/* ABA 4: PAGAMENTOS */}
 				{activeTab === "payments" && (
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Cartões Salvos</h2>
@@ -236,9 +234,9 @@ export default function AccountDashboard({ user }: { user: User }) {
 								>
 									<div className="absolute right-0 top-0 h-24 w-24 bg-white opacity-5 rounded-full transform translate-x-8 -translate-y-8"></div>
 									<div className="flex justify-between items-start mb-8">
-										<i className={`fab fa-cc-${card.brand} text-3xl`}></i>
+										<Icon name="lucide:credit-card" class="w-8 h-8" />
 										<div className="text-gray-400 hover:text-white transition">
-											<i className="fas fa-edit"></i>
+											<Icon name="lucide:pencil" class="w-4 h-4" />
 										</div>
 									</div>
 									<div className="font-mono text-xl tracking-widest mb-4">•••• •••• •••• {card.last4}</div>
@@ -255,19 +253,17 @@ export default function AccountDashboard({ user }: { user: User }) {
 								</div>
 							))}
 
-							{/* Trigger do Modal */}
 							<div
 								onClick={() => setIsModalOpen(true)}
 								className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-gray-400 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition cursor-pointer h-full min-h-[180px]"
 							>
-								<i className="fas fa-plus-circle text-3xl mb-2"></i>
+								<Icon name="lucide:plus-circle" class="w-10 h-10 mb-2" />
 								<span className="font-medium">Adicionar Novo Cartão</span>
 							</div>
 						</div>
 					</div>
 				)}
 
-				{/* ABA 5: LISTA DE DESEJOS */}
 				{activeTab === "wishlist" && (
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Lista de Desejos</h2>
@@ -317,7 +313,6 @@ export default function AccountDashboard({ user }: { user: User }) {
 				)}
 			</div>
 
-			{/* MODAL DE CARTÃO - CORREÇÃO DE ACESSIBILIDADE APLICADA */}
 			{isModalOpen && (
 				<div
 					id="modal-overlay"
@@ -328,7 +323,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 						<div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
 							<h3 className="text-lg font-bold text-gray-900">Adicionar Cartão</h3>
 							<button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition">
-								<i className="fas fa-times text-xl"></i>
+								<Icon name="lucide:x" class="w-5 h-5" />
 							</button>
 						</div>
 						<div className="p-6">
@@ -352,7 +347,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 												placeholder="0000 0000 0000 0000"
 											/>
 											<div className="absolute left-3 top-2.5 text-gray-400">
-												<i className="far fa-credit-card"></i>
+												<Icon name="lucide:credit-card" class="w-5 h-5" />
 											</div>
 										</div>
 									</div>
@@ -391,7 +386,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 													placeholder="123"
 												/>
 												<div className="absolute right-3 top-2.5 text-gray-400 cursor-help" title="3 dígitos no verso">
-													<i className="far fa-question-circle"></i>
+													<Icon name="lucide:circle-help" class="w-5 h-5" />
 												</div>
 											</div>
 										</div>

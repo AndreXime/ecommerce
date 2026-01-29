@@ -1,5 +1,6 @@
 import type { CartItem } from "@/database/productsTypes";
 import { useState, useEffect } from "preact/hooks";
+import { Icon } from "astro-icon/components";
 
 const formatPrice = (value: number) => {
 	return new Intl.NumberFormat("pt-BR", {
@@ -10,7 +11,7 @@ const formatPrice = (value: number) => {
 
 export default function CartPage() {
 	const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-		if (typeof window === "undefined") return []; // Proteção SSR
+		if (typeof window === "undefined") return [];
 		try {
 			const saved = localStorage.getItem("cart");
 			return saved ? JSON.parse(saved) : [];
@@ -55,7 +56,7 @@ export default function CartPage() {
 	if (!isMounted)
 		return (
 			<div class="pt-20 w-full flex justify-center items-center ">
-				<i class="fa-solid fa-spinner fa-xl animate-spin"></i>
+				<Icon name="lucide:loader-2" class="w-8 h-8 animate-spin" />
 			</div>
 		);
 
@@ -66,7 +67,7 @@ export default function CartPage() {
 		return (
 			<div class="flex flex-col items-center justify-center py-20 text-center">
 				<div class="bg-gray-100 text-gray-400 w-20 h-20 rounded-full flex items-center justify-center mb-4 text-3xl">
-					<i class="fas fa-shopping-basket"></i>
+					<Icon name="lucide:shopping-basket" class="w-10 h-10" />
 				</div>
 				<h2 class="text-xl font-bold text-gray-900">Seu carrinho está vazio</h2>
 				<a href="/produtos" class="mt-6 text-blue-600 hover:underline">
@@ -78,7 +79,6 @@ export default function CartPage() {
 
 	return (
 		<div class="flex flex-col lg:flex-row gap-8">
-			{/* LISTA DE ITENS */}
 			<div class="flex-grow space-y-4">
 				{cartItems.map((item, index) => (
 					<div
@@ -127,7 +127,7 @@ export default function CartPage() {
 									onClick={() => handleRemoveItem(index)}
 									class="text-xs text-red-500 hover:text-red-700 mt-1 flex items-center"
 								>
-									<i class="fas fa-trash mr-1"></i> Remover
+									<Icon name="lucide:trash-2" class="mr-1 w-3 h-3" /> Remover
 								</button>
 							</div>
 						</div>

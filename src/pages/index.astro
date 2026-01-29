@@ -5,6 +5,7 @@ import Layout from "@/layout/layout.astro";
 import StarRating from "@/components/StarRating";
 import { getOffers, getMostSelled } from "@/database/productsMethods";
 import { formatPrice } from "@/lib/utils";
+import { Icon } from "astro-icon/components";
 
 const offers = getOffers(4);
 const bestSellers = getMostSelled(6);
@@ -110,7 +111,7 @@ const bestSellers = getMostSelled(6);
 										class="text-sm font-medium text-gray-500 hover:text-blue-600 flex items-center transition"
 									>
 										Ver Detalhes{" "}
-										<i class="fas fa-arrow-right ml-1 text-xs" />
+										<Icon name="lucide:arrow-right" />
 									</a>
 								</div>
 							</div>
@@ -134,9 +135,9 @@ const bestSellers = getMostSelled(6);
 			<div class="relative group/slider">
 				<button
 					id="scrollLeft"
-					class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg opacity-0 group-hover/slider:opacity-100 transition duration-300 focus:outline-none hidden md:block"
+					class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg transition duration-300 focus:outline-none hidden md:block"
 				>
-					<i class="fas fa-chevron-left"></i>
+					<Icon name="lucide:chevron-left" size={22} />
 				</button>
 
 				<div
@@ -186,9 +187,9 @@ const bestSellers = getMostSelled(6);
 
 				<button
 					id="scrollRight"
-					class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg opacity-0 group-hover/slider:opacity-100 transition duration-300 focus:outline-none hidden md:block"
+					class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg transition duration-300 focus:outline-none hidden md:block"
 				>
-					<i class="fas fa-chevron-right"></i>
+					<Icon name="lucide:chevron-right" size={22} />
 				</button>
 			</div>
 		</section>

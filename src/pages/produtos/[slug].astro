@@ -6,6 +6,7 @@ import ProductAddToCart from "@/components/ProductAddToCart";
 import StarRating from "@/components/StarRating";
 import { getProductById } from "@/database/productsMethods";
 import { calculateOldPrice, formatPrice } from "@/lib/utils";
+import { Icon } from "astro-icon/components";
 
 export const prerender = false;
 const { slug } = Astro.params;
@@ -78,7 +79,8 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
                         </a>
                         <span class="text-gray-300">|</span>
                         <span class="text-sm text-green-600 font-medium">
-                            <i class="fas fa-check-circle mr-1"></i>Em Estoque
+                            <Icon name="lucide:bagde-check" class="mr-1" />
+                            Em Estoque
                         </span>
                     </div>
                 </div>
@@ -117,7 +119,7 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
                             <span
                                 class="transform group-open:rotate-180 transition duration-300 text-gray-400 group-open:text-blue-600"
                             >
-                                <i class="fas fa-chevron-down"></i>
+                                <Icon name="lucide:chevron-down" />
                             </span>
                         </summary>
                         <div
@@ -172,7 +174,7 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
                             <span
                                 class="transform group-open:rotate-180 transition duration-300 text-gray-400 group-open:text-blue-600"
                             >
-                                <i class="fas fa-chevron-down"></i>
+                                <Icon name="lucide:chevron-down" />
                             </span>
                         </summary>
                         <div

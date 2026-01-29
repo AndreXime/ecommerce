@@ -1,7 +1,9 @@
 @import "tailwindcss";
 
 body {
-	font-family: "Inter", sans-serif;
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
+		"Segoe UI Emoji";
 }
 
 .hide-scroll::-webkit-scrollbar {

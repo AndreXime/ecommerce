@@ -1,6 +1,7 @@
 import type { CartItem, ProductDetails } from "@/database/productsTypes";
 import { toast } from "@/lib/toast";
 import { useState } from "preact/hooks";
+import { Icon } from "astro-icon/components";
 
 export default function ProductAddToCart({ product }: { product: ProductDetails }) {
 	const [selections, setSelections] = useState<Record<string, string>>({});
@@ -80,21 +81,21 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 					<div class="w-24 flex items-center border border-gray-300 rounded-xl px-3">
 						<button
 							onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-							class="w-7 h-7 text-gray-500 hover:bg-gray-100 rounded-l-xl transition"
+							class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-l-xl transition"
 						>
-							<i class="fa-solid fa-minus"></i>
+							<Icon name="lucide:minus" class="w-4 h-4" />
 						</button>
 						<input
 							type="number"
 							value={quantity}
-							readOnly // Controlado pelo React/Preact
+							readOnly
 							class="w-full text-center border-none focus:ring-0 font-semibold text-gray-900 bg-transparent h-12 px-2"
 						/>
 						<button
 							onClick={() => setQuantity((q) => q + 1)}
-							class="w-7 h-7 text-gray-500 hover:bg-gray-100 rounded-r-xl transition"
+							class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-r-xl transition"
 						>
-							<i class="fa-solid fa-plus"></i>
+							<Icon name="lucide:plus" class="w-4 h-4" />
 						</button>
 					</div>
 
@@ -102,7 +103,8 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 						onClick={handleAddToCart}
 						class="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg flex items-center justify-center py-3"
 					>
-						Adicionar ao Carrinho <i class="fas fa-shopping-cart ml-2"></i>
+						Adicionar ao Carrinho
+						<Icon name="lucide:shopping-cart" class="ml-2 w-5 h-5" />
 					</button>
 				</div>
 			</div>

@@ -1,6 +1,7 @@
 import { toast } from "@/lib/toast";
 import { actions } from "astro:actions";
 import { useState } from "preact/hooks";
+import { Icon } from "astro-icon/components";
 
 export default function Auth() {
 	const [activeTab, setActiveTab] = useState<"login" | "register">("login");
@@ -55,7 +56,6 @@ export default function Auth() {
 
 	return (
 		<div className="bg-white w-full max-w-md rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-			{/* Tabs de Navegação */}
 			<div className="flex border-b border-gray-100">
 				<button
 					onClick={() => setActiveTab("login")}
@@ -72,7 +72,6 @@ export default function Auth() {
 			</div>
 
 			<div className="p-8 min-h-[500px]">
-				{/* FORMULÁRIO DE LOGIN */}
 				{activeTab === "login" && (
 					<div className="animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-2">Bem-vindo de volta!</h2>
@@ -135,7 +134,11 @@ export default function Auth() {
 											onClick={() => setShowPassword(!showPassword)}
 											className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
 										>
-											<i className={`far ${showPassword ? "fa-eye-slash" : "fa-eye"}`}></i>
+											{showPassword ? (
+												<Icon name="lucide:eye-off" class="w-5 h-5" />
+											) : (
+												<Icon name="lucide:eye" class="w-5 h-5" />
+											)}
 										</button>
 									</div>
 								</div>
@@ -173,7 +176,7 @@ export default function Auth() {
 						</p>
 					</div>
 				)}
-				{/* FORMULÁRIO DE CADASTRO */}
+
 				{activeTab === "register" && (
 					<div className="animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-2">Criar conta</h2>
