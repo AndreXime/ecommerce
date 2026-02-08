@@ -1,7 +1,7 @@
 import { toast } from "@/lib/toast";
-import { actions } from "astro:actions";
 import { useState } from "preact/hooks";
 import { Eye, EyeOff } from "lucide-preact";
+import { request } from "@/lib/request";
 
 export default function Auth() {
 	const [activeTab, setActiveTab] = useState<"login" | "register">("login");
@@ -15,13 +15,19 @@ export default function Auth() {
 		const formData = new FormData(e.currentTarget as HTMLFormElement);
 		const email = formData.get("email") as string;
 		const password = formData.get("password") as string;
-		const rememberMe = formData.get("remember") === "on";
 
-		const { data, error } = await actions.login({ email, password, rememberMe });
+		const response = await request.post("/auth/login", { email, password });
 
-		if (error) {
-			toast.error(`Erro ao entrar: ${error.message}`);
-		} else if (data?.success) {
+		if (!response.ok) {
+			if (response.errors) {
+				response.errors.forEach((error) => {
+					toast.error(error.message);
+				});
+			} else {
+				toast.error(response.message);
+			}
+		} else {
+			toast.success("Login feito com sucesso");
 			window.location.href = "/perfil";
 		}
 
@@ -38,16 +44,23 @@ export default function Auth() {
 		const password = formData.get("password") as string;
 		const confirmPassword = formData.get("confirmPassword") as string;
 
-		const { data, error } = await actions.register({
+		const response = await request.post("/auth/register", {
 			name,
 			email,
 			password,
 			confirmPassword,
 		});
 
-		if (error) {
-			toast.error(`Erro no cadastro: ${error.message || "Dados inválidos"}`);
-		} else if (data?.success) {
+		if (!response.ok) {
+			if (response.errors) {
+				response.errors.forEach((error) => {
+					toast.error(error.message);
+				});
+			} else {
+				toast.error(response.message);
+			}
+		} else {
+			toast.success("Registro feito com sucesso");
 			window.location.href = "/perfil";
 		}
 
