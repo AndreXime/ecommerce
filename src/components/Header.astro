@@ -25,8 +25,10 @@ const { hideSearch } = Astro.props;
                     id="menu-open-btn"
                     class="md:hidden text-gray-600 hover:text-blue-600 transition focus:outline-none"
                     aria-label="Abrir menu"
+                    aria-expanded="false"
+                    aria-controls="sidebar-menu"
                 >
-                    <Menu size={26} />
+                    <Menu size={26} aria-hidden="true" />
                 </button>
 
                 <a
@@ -73,12 +75,15 @@ const { hideSearch } = Astro.props;
 
                 <a
                     href="/carrinho"
+                    aria-label="Carrinho de compras"
                     class="relative cursor-pointer text-gray-600 hover:text-blue-600 transition flex items-center"
                 >
-                    <ShoppingBag class="text-2xl" />
+                    <ShoppingBag class="text-2xl" aria-hidden="true" />
                     <span
                         id="cart-count"
-                        class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center"
+                        aria-live="polite"
+                        aria-label="itens no carrinho"
+                        class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center hidden"
                     >
                         0
                     </span>
@@ -97,9 +102,11 @@ const { hideSearch } = Astro.props;
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <Search class="text-gray-400" />
                         </div>
+                        <label for="header-search" class="sr-only">Buscar produtos</label>
                         <input
-                            type="text"
+                            type="search"
                             name="s"
+                            id="header-search"
                             class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full leading-5 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm transition shadow-sm"
                             placeholder="Buscar produtos..."
                         />
@@ -118,6 +125,8 @@ const { hideSearch } = Astro.props;
 
 <aside
     id="sidebar-menu"
+    aria-label="Menu principal"
+    aria-hidden="true"
     class="fixed top-0 left-0 w-72 h-full bg-white z-[70] shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col"
 >
     <div
@@ -127,8 +136,9 @@ const { hideSearch } = Astro.props;
         <button
             id="menu-close-btn"
             class="text-gray-500 hover:text-red-500 transition outline-none"
+            aria-label="Fechar menu"
         >
-            <X class="text-xl" />
+            <X class="text-xl" aria-hidden="true" />
         </button>
     </div>
 
@@ -178,17 +188,19 @@ const { hideSearch } = Astro.props;
     const sidebarMenu = document.getElementById("sidebar-menu");
 
     function toggleMenu() {
-        if (sidebarMenu?.classList.contains("-translate-x-full")) {
+        const isOpen = !sidebarMenu?.classList.contains("-translate-x-full");
+
+        if (!isOpen) {
             sidebarMenu?.classList.remove("-translate-x-full");
-            sidebarOverlay?.classList.remove(
-                "invisible",
-                "opacity-0",
-                "hidden",
-            );
-            document.body.style.overflow = "hidden"; // Impede rolagem do fundo
+            sidebarMenu?.setAttribute("aria-hidden", "false");
+            sidebarOverlay?.classList.remove("invisible", "opacity-0", "hidden");
+            menuOpenBtn?.setAttribute("aria-expanded", "true");
+            document.body.style.overflow = "hidden";
         } else {
             sidebarMenu?.classList.add("-translate-x-full");
+            sidebarMenu?.setAttribute("aria-hidden", "true");
             sidebarOverlay?.classList.add("invisible", "opacity-0", "hidden");
+            menuOpenBtn?.setAttribute("aria-expanded", "false");
             document.body.style.overflow = "";
         }
     }
