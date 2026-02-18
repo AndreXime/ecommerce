@@ -2,21 +2,18 @@
 import Layout from "@/layout/layout.astro";
 import AccountDashboard from "./_profile";
 import Header from "@/components/Header.astro";
-import { users } from "@/database/users";
-import { readToken } from "@/actions";
+import { serverGet } from "@/lib/serverApi";
+import type { User } from "@/database/users";
 
 export const prerender = false;
 
-const token = Astro.cookies.get("auth_token")?.value;
-const payload = await readToken(token);
+const cookieHeader = Astro.request.headers.get("cookie");
 
-if (!payload || !payload.email) {
-    Astro.cookies.delete("auth_token");
+const { data: userData, status } = await serverGet<User>("/users/me", cookieHeader);
+
+if (status === 401 || !userData) {
     return Astro.redirect("/login");
 }
-
-// Para demonstração
-const userData = users[0];
 ---
 
 <Layout
@@ -37,46 +34,19 @@ const userData = users[0];
 
     <style is:inline>
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(5px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes fadeOverlay {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-
         @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
-
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        .animate-fade-overlay {
-            animation: fadeOverlay 0.2s ease-out forwards;
-        }
-
-        .animate-scale-in {
-            animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+        .animate-fade-overlay { animation: fadeOverlay 0.2s ease-out forwards; }
+        .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
     </style>
 </Layout>

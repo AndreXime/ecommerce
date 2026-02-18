@@ -2,32 +2,43 @@
 import Layout from "@/layout/layout.astro";
 import CheckoutComponent from "./_checkout";
 import { ShieldCheck, Zap } from "lucide-preact";
+import { serverGet } from "@/lib/serverApi";
+import type { User } from "@/database/users";
+import type { CartItem } from "@/database/productsTypes";
 
-const dbUser = {
-    name: "André Ximenes",
-    email: "andre@exemplo.com",
-};
+export const prerender = false;
 
-const dbCart = {
-    items: [
-        {
-            id: 1,
-            name: "AeroBook Pro 15 - Real Data",
-            price: 1499.0,
-            quantity: 1,
-            img: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&q=80&w=100",
-        },
-        {
-            id: 2,
-            name: "SoundScape ANC",
-            price: 299.0,
-            quantity: 1,
-            img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=100",
-        },
-    ],
-    subtotal: 1798.0,
+const cookieHeader = Astro.request.headers.get("cookie");
+
+interface ApiCart {
+    id: string;
+    items: CartItem[];
+}
+
+const [userRes, cartRes] = await Promise.all([
+    serverGet<User>("/users/me", cookieHeader),
+    serverGet<ApiCart>("/cart", cookieHeader),
+]);
+
+if (userRes.status === 401 || !userRes.data) {
+    return Astro.redirect("/login");
+}
+
+const user = { name: userRes.data.personalData.name, email: userRes.data.personalData.email };
+
+const cartItems = cartRes.data?.items ?? [];
+const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+const orderSummary = {
+    items: cartItems.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        img: item.images[0] ?? "",
+        quantity: item.quantity,
+    })),
+    subtotal,
     shipping: 0,
-    total: 1798.0,
+    total: subtotal,
 };
 ---
 
@@ -61,7 +72,7 @@ const dbCart = {
     </header>
 
     <main class="flex-grow container mx-auto px-4 py-8 bg-gray-50/50">
-        <CheckoutComponent client:load initialOrder={dbCart} user={dbUser} />
+        <CheckoutComponent client:load initialOrder={orderSummary} user={user} />
     </main>
 
     <footer
@@ -73,34 +84,20 @@ const dbCart = {
     </footer>
 
     <style is:inline>
-        /* Classes utilitárias para esconder/mostrar etapas */
-        .step-content {
-            display: none;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-        .step-content.active {
-            display: block;
-        }
+        .step-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .step-content.active { display: block; }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Estilo para abas de pagamento selecionadas */
         .payment-tab.active {
             border-color: #2563eb;
             background-color: #eff6ff;
             color: #1e40af;
         }
 
-        /* Esconder ícone de check no progresso inativo */
         .step-indicator.active .step-number {
             background-color: #2563eb;
             color: white;
@@ -111,8 +108,6 @@ const dbCart = {
             color: white;
             border-color: #10b981;
         }
-        .step-indicator.completed .step-text {
-            color: #10b981;
-        }
+        .step-indicator.completed .step-text { color: #10b981; }
     </style>
 </Layout>
