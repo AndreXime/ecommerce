@@ -4,17 +4,19 @@ import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
 import ProductAddToCart from "@/components/ProductAddToCart";
 import StarRating from "@/components/StarRating";
-import { getProductById } from "@/database/productsMethods";
+import { serverGet } from "@/lib/serverApi";
 import { calculateOldPrice, formatPrice } from "@/lib/utils";
 import { BadgeCheck, ChevronDown } from "lucide-preact";
+import type { ProductDetails } from "@/database/productsTypes";
 
 export const prerender = false;
 const { slug } = Astro.params;
-const product = getProductById(slug || "");
+
+const { data: product } = await serverGet<ProductDetails>(`/products/${slug}`);
 
 if (!product) return Astro.redirect("/404");
 
-const oldPrice = calculateOldPrice(product.price, product.discountPercentage);
+const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? undefined);
 ---
 
 <Layout title={product.name} description={product.description}>

@@ -3,12 +3,26 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
 import StarRating from "@/components/StarRating";
-import { getOffers, getMostSelled } from "@/database/productsMethods";
+import { serverGet } from "@/lib/serverApi";
 import { formatPrice } from "@/lib/utils";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-preact";
+import type { PaginatedResponse, ProductSummary } from "@/database/productsTypes";
 
-const offers = getOffers(4);
-const bestSellers = getMostSelled(6);
+const [offersRes, bestSellersRes] = await Promise.all([
+	serverGet<PaginatedResponse<ProductSummary>>("/products", null, {
+		limit: 4,
+		sortBy: "createdAt",
+		sortOrder: "desc",
+	}),
+	serverGet<PaginatedResponse<ProductSummary>>("/products", null, {
+		limit: 6,
+		sortBy: "rating",
+		sortOrder: "desc",
+	}),
+]);
+
+const offers = offersRes.data?.data ?? [];
+const bestSellers = bestSellersRes.data?.data ?? [];
 ---
 
 <Layout title="Emporium da Tecnologia" description="">
