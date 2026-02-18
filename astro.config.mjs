@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 import preact from "@astrojs/preact";
 
-import vercel from "@astrojs/vercel";
+import node from "@astrojs/node";
 
 // https://astro.build/config
 export default defineConfig({
@@ -18,5 +18,7 @@ export default defineConfig({
 		inlineStylesheets: "always",
 	},
 	integrations: [preact()],
-	adapter: vercel(),
+	adapter: node({
+		mode: "standalone",
+	}),
 });
