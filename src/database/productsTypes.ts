@@ -4,11 +4,12 @@ export interface ProductSummary {
 	tag: string;
 	price: number;
 	category: string;
-	discountPercentage?: number;
+	discountPercentage?: number | null;
 	images: string[];
 	rating: number;
 	reviewsCount: number;
 	isNew?: boolean;
+	inStock: boolean;
 }
 
 export interface ProductDetails extends ProductSummary {
@@ -21,23 +22,39 @@ export interface ProductDetails extends ProductSummary {
 
 export interface CartItem extends ProductSummary {
 	quantity: number;
-	selectedVariant?: Record<string, string>;
+	selectedVariant?: Record<string, string> | null;
+	cartItemId: string;
 }
 
 export interface SelectableOption {
-	id: string; // ex: "color", "storage", "voltage", "size"
-	label: string; // ex: "Cor", "Armazenamento", "Tamanho"
+	id: string;
+	label: string;
 	uiType: "color" | "pill" | "select";
-	values: string[]; // ex: ["bg-red-500", "bg-blue-500"] ou ["256GB", "512GB"]
+	values: string[];
 }
 
 export interface Review {
 	id: string;
 	author: string;
-	avatar?: string;
-	initials?: string;
+	avatar?: string | null;
+	initials?: string | null;
 	rating: number;
 	date: string;
 	title: string;
 	content: string;
+}
+
+export interface PaginatedResponse<T> {
+	data: T[];
+	meta: {
+		page: number;
+		limit: number;
+		total: number;
+		totalPages: number;
+	};
+}
+
+export interface Category {
+	id: string;
+	name: string;
 }
