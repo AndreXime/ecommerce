@@ -164,19 +164,23 @@ const bestSellers = bestSellersRes.data?.data ?? [];
 			<div class="relative group/slider">
 				<button
 					id="scrollLeft"
+					aria-label="Rolar para a esquerda"
 					class="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg transition duration-300 focus:outline-none hidden md:block"
 				>
-					<ChevronLeft size={22} />
+					<ChevronLeft size={22} aria-hidden="true" />
 				</button>
 
 				<div
 					id="sliderContainer"
+					role="list"
+					aria-label="Produtos mais vendidos"
 					class="flex overflow-x-auto space-x-6 pb-6 hide-scroll scroll-smooth"
 				>
 					{
 						bestSellers.map((product) => (
 							<a
 								href={`/produtos/${product.id}`}
+								role="listitem"
 								class="min-w-[280px] md:min-w-[300px] bg-white rounded-xl group shadow-sm border border-gray-100 overflow-hidden flex flex-col"
 							>
 								<div class="h-48 bg-gray-100 overflow-hidden">
@@ -216,9 +220,10 @@ const bestSellers = bestSellersRes.data?.data ?? [];
 
 				<button
 					id="scrollRight"
+					aria-label="Rolar para a direita"
 					class="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 bg-white border border-gray-200 text-gray-700 hover:text-blue-600 p-3 rounded-full shadow-lg transition duration-300 focus:outline-none hidden md:block"
 				>
-					<ChevronRight size={22} />
+					<ChevronRight size={22} aria-hidden="true" />
 				</button>
 			</div>
 		</section>
