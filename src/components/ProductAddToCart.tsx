@@ -67,6 +67,8 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 							return (
 								<button
 									onClick={() => handleSelect(option.label, val)}
+									aria-label={option.uiType === "color" ? `${option.label}: ${val}` : undefined}
+									aria-pressed={isSelected}
 									class={`transition focus:outline-none ${
 										option.uiType === "color"
 											? `w-8 h-8 rounded-full border border-gray-200 ${val}`
@@ -83,24 +85,27 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 
 			<div class="pt-6 border-t border-gray-100">
 				<div class="flex gap-4">
-					<div class="w-24 flex items-center border border-gray-300 rounded-xl px-3">
+					<div class="w-24 flex items-center border border-gray-300 rounded-xl px-3" role="group" aria-label="Quantidade">
 						<button
 							onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+							aria-label="Diminuir quantidade"
 							class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-l-xl transition"
 						>
-							<Minus class="w-4 h-4" />
+							<Minus class="w-4 h-4" aria-hidden="true" />
 						</button>
 						<input
 							type="number"
 							value={quantity}
 							readOnly
+							aria-label="Quantidade selecionada"
 							class="w-full text-center border-none focus:ring-0 font-semibold text-gray-900 bg-transparent h-12 px-2"
 						/>
 						<button
 							onClick={() => setQuantity((q) => q + 1)}
+							aria-label="Aumentar quantidade"
 							class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-r-xl transition"
 						>
-							<Plus class="w-4 h-4" />
+							<Plus class="w-4 h-4" aria-hidden="true" />
 						</button>
 					</div>
 

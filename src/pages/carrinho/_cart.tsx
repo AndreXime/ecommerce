@@ -103,20 +103,22 @@ export default function CartPage() {
 								<p class="font-medium text-gray-900">{formatPrice(item.price)}</p>
 							</div>
 
-							<div class="flex items-center border border-gray-300 rounded-lg h-10">
+							<div class="flex items-center border border-gray-300 rounded-lg h-10" role="group" aria-label={`Quantidade de ${item.name}`}>
 								<button
 									onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+									aria-label={`Diminuir quantidade de ${item.name}`}
 									class="px-3 hover:bg-gray-100 h-full text-gray-600 rounded-l-lg"
 									disabled={item.quantity <= 1}
 								>
-									<Minus size={16} />
+									<Minus size={16} aria-hidden="true" />
 								</button>
-								<span class="w-10 text-center font-semibold text-gray-900">{item.quantity}</span>
+								<span class="w-10 text-center font-semibold text-gray-900" aria-live="polite" aria-atomic="true">{item.quantity}</span>
 								<button
 									onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+									aria-label={`Aumentar quantidade de ${item.name}`}
 									class="px-3 hover:bg-gray-100 h-full text-gray-600 rounded-r-lg"
 								>
-									<Plus size={16} />
+									<Plus size={16} aria-hidden="true" />
 								</button>
 							</div>
 
@@ -124,9 +126,10 @@ export default function CartPage() {
 								<p class="font-bold text-lg text-gray-900">{formatPrice(item.price * item.quantity)}</p>
 								<button
 									onClick={() => handleRemoveItem(item.id)}
+									aria-label={`Remover ${item.name} do carrinho`}
 									class="text-xs text-red-500 hover:text-red-700 mt-1 flex items-center"
 								>
-									<Trash2 class="mr-1 w-3 h-3" /> Remover
+									<Trash2 class="mr-1 w-3 h-3" aria-hidden="true" /> Remover
 								</button>
 							</div>
 						</div>
