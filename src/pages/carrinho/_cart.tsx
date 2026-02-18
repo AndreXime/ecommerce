@@ -1,72 +1,69 @@
 import type { CartItem } from "@/database/productsTypes";
+import { request } from "@/lib/request";
 import { Loader2, Minus, Plus, ShoppingBasket, Trash2 } from "lucide-preact";
 import { useState, useEffect } from "preact/hooks";
 
-const formatPrice = (value: number) => {
-	return new Intl.NumberFormat("pt-BR", {
-		style: "currency",
-		currency: "BRL",
-	}).format(value);
-};
+const formatPrice = (value: number) =>
+	new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+
+interface ApiCart {
+	id: string;
+	items: CartItem[];
+}
 
 export default function CartPage() {
-	const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-		if (typeof window === "undefined") return [];
-		try {
-			const saved = localStorage.getItem("cart");
-			return saved ? JSON.parse(saved) : [];
-		} catch {
-			return [];
-		}
-	});
-
-	const [isMounted, setIsMounted] = useState(false);
+	const [cartItems, setCartItems] = useState<CartItem[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [unauthenticated, setUnauthenticated] = useState(false);
 
 	useEffect(() => {
-		setIsMounted(true);
+		request.get<ApiCart>("/cart").then((res) => {
+			if (!res.ok) {
+				if (res.message.includes("conexão") === false) setUnauthenticated(true);
+			} else {
+				setCartItems(res.data.items);
+			}
+			setLoading(false);
+		});
 	}, []);
 
-	const updateCart = (newItems: CartItem[]) => {
-		setCartItems(newItems);
-
-		if (typeof window !== "undefined") {
-			localStorage.setItem("cart", JSON.stringify(newItems));
-			window.dispatchEvent(new Event("cart-updated"));
-		}
+	const handleUpdateQuantity = async (productId: string, quantity: number) => {
+		const res = await request.patch<ApiCart>(`/cart/items/${productId}`, { quantity });
+		if (res.ok) setCartItems(res.data.items);
 	};
 
-	const handleUpdateQuantity = (index: number, delta: number) => {
-		const newItems = [...cartItems];
-		const item = { ...newItems[index] };
-
-		const newQuantity = item.quantity + delta;
-		if (newQuantity < 1) return;
-
-		item.quantity = newQuantity;
-		newItems[index] = item;
-
-		updateCart(newItems);
+	const handleRemoveItem = async (productId: string) => {
+		const res = await request.delete<ApiCart>(`/cart/items/${productId}`);
+		if (res.ok) setCartItems(res.data.items);
 	};
 
-	const handleRemoveItem = async (index: number) => {
-		const newItems = cartItems.filter((_, i) => i !== index);
-		updateCart(newItems);
-	};
-
-	if (!isMounted)
+	if (loading)
 		return (
-			<div class="pt-20 w-full flex justify-center items-center ">
+			<div class="pt-20 w-full flex justify-center items-center">
 				<Loader2 class="w-8 h-8 animate-spin" />
 			</div>
 		);
 
-	const totalItems = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
-	const cartTotal = cartItems.reduce((acc, item) => acc + item.price * (item.quantity || 1), 0);
+	if (unauthenticated)
+		return (
+			<div class="flex flex-col items-center justify-center py-20 text-center">
+				<div class="bg-gray-100 text-gray-400 w-20 h-20 rounded-full flex items-center justify-center mb-4">
+					<ShoppingBasket class="w-10 h-10" />
+				</div>
+				<h2 class="text-xl font-bold text-gray-900">Faça login para ver seu carrinho</h2>
+				<a href="/login" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition">
+					Entrar
+				</a>
+			</div>
+		);
+
+	const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+	const cartTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
 	if (cartItems.length === 0) {
 		return (
 			<div class="flex flex-col items-center justify-center py-20 text-center">
-				<div class="bg-gray-100 text-gray-400 w-20 h-20 rounded-full flex items-center justify-center mb-4 text-3xl">
+				<div class="bg-gray-100 text-gray-400 w-20 h-20 rounded-full flex items-center justify-center mb-4">
 					<ShoppingBasket class="w-10 h-10" />
 				</div>
 				<h2 class="text-xl font-bold text-gray-900">Seu carrinho está vazio</h2>
@@ -80,9 +77,9 @@ export default function CartPage() {
 	return (
 		<div class="flex flex-col lg:flex-row gap-8">
 			<div class="flex-grow space-y-4">
-				{cartItems.map((item, index) => (
+				{cartItems.map((item) => (
 					<div
-						key={`${item.id}-${index}`}
+						key={item.cartItemId}
 						class="bg-white p-4 rounded-xl border border-gray-200 flex flex-col md:flex-row gap-4 items-center"
 					>
 						<div class="flex items-center w-full md:w-auto flex-grow">
@@ -93,7 +90,9 @@ export default function CartPage() {
 							/>
 							<div class="ml-4">
 								<h3 class="font-bold text-gray-800">{item.name}</h3>
-								<p class="text-sm text-gray-500">{Object.values(item.selectedVariant || {}).map((value) => value)}</p>
+								<p class="text-sm text-gray-500">
+									{item.selectedVariant ? Object.values(item.selectedVariant).join(", ") : ""}
+								</p>
 								<span class="md:hidden font-bold text-blue-600 mt-1 block">{formatPrice(item.price)}</span>
 							</div>
 						</div>
@@ -106,7 +105,7 @@ export default function CartPage() {
 
 							<div class="flex items-center border border-gray-300 rounded-lg h-10">
 								<button
-									onClick={() => handleUpdateQuantity(index, -1)}
+									onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
 									class="px-3 hover:bg-gray-100 h-full text-gray-600 rounded-l-lg"
 									disabled={item.quantity <= 1}
 								>
@@ -114,7 +113,7 @@ export default function CartPage() {
 								</button>
 								<span class="w-10 text-center font-semibold text-gray-900">{item.quantity}</span>
 								<button
-									onClick={() => handleUpdateQuantity(index, 1)}
+									onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
 									class="px-3 hover:bg-gray-100 h-full text-gray-600 rounded-r-lg"
 								>
 									<Plus size={16} />
@@ -124,7 +123,7 @@ export default function CartPage() {
 							<div class="text-right flex flex-col items-end min-w-[100px]">
 								<p class="font-bold text-lg text-gray-900">{formatPrice(item.price * item.quantity)}</p>
 								<button
-									onClick={() => handleRemoveItem(index)}
+									onClick={() => handleRemoveItem(item.id)}
 									class="text-xs text-red-500 hover:text-red-700 mt-1 flex items-center"
 								>
 									<Trash2 class="mr-1 w-3 h-3" /> Remover
@@ -147,9 +146,12 @@ export default function CartPage() {
 							<span>Total</span>
 							<span>{formatPrice(cartTotal)}</span>
 						</div>
-						<button class="w-full bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-700 transition">
+						<a
+							href="/checkout"
+							class="w-full bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-700 transition block text-center"
+						>
 							Finalizar Compra
-						</button>
+						</a>
 					</div>
 				</div>
 			</div>

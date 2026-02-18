@@ -2,7 +2,7 @@ import { useState } from "preact/hooks";
 import { Check, MapPin, ArrowRight, ArrowLeft, CreditCard, QrCode, Barcode, Timer, Clock, Info } from "lucide-preact";
 
 interface CartItem {
-	id: number;
+	id: string;
 	name: string;
 	price: number;
 	img: string;

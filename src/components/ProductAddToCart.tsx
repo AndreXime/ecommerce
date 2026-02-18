@@ -1,42 +1,47 @@
-import type { CartItem, ProductDetails } from "@/database/productsTypes";
+import type { ProductDetails } from "@/database/productsTypes";
+import { request } from "@/lib/request";
 import { toast } from "@/lib/toast";
 import { useState } from "preact/hooks";
-import { Minus, Plus, ShoppingCart } from "lucide-preact";
+import { Loader2, Minus, Plus, ShoppingCart } from "lucide-preact";
 
 export default function ProductAddToCart({ product }: { product: ProductDetails }) {
 	const [selections, setSelections] = useState<Record<string, string>>({});
 	const [quantity, setQuantity] = useState(1);
+	const [loading, setLoading] = useState(false);
 
 	const handleSelect = (optionLabel: string, value: string) => {
 		setSelections((prev) => ({ ...prev, [optionLabel]: value }));
 	};
 
-	const handleAddToCart = () => {
+	const handleAddToCart = async () => {
 		const missingOptions = product.options?.filter((opt) => !selections[opt.label]);
 
-		if (!missingOptions || missingOptions.length > 0) {
-			toast.error(`Por favor, selecione: ${missingOptions?.map((o) => o.label).join(", ")}`);
+		if (missingOptions && missingOptions.length > 0) {
+			toast.error(`Por favor, selecione: ${missingOptions.map((o) => o.label).join(", ")}`);
 			return;
 		}
 
-		const cartItem = {
-			id: product.id,
-			name: product.name,
-			tag: product.tag,
-			price: product.price,
-			discountPercentage: product.discountPercentage,
-			images: product.images,
-			rating: product.rating,
-			reviewsCount: product.reviewsCount,
-			isNew: product.isNew,
-			quantity,
-			selectedVariant: selections,
-		} as CartItem;
+		setLoading(true);
 
-		const currentCart = JSON.parse(localStorage.getItem("cart") || "[]");
-		localStorage.setItem("cart", JSON.stringify([...currentCart, cartItem]));
-		toast.success("Produto adicionado ao carrinho com sucesso!");
-		window.dispatchEvent(new Event("cart-updated"));
+		const res = await request.post("/cart/items", {
+			productId: product.id,
+			quantity,
+			selectedVariant: Object.keys(selections).length > 0 ? selections : undefined,
+		});
+
+		if (!res.ok) {
+			if (res.message.includes("autenti") || res.message.includes("401")) {
+				toast.error("Faça login para adicionar ao carrinho");
+				setTimeout(() => { window.location.href = "/login"; }, 1500);
+			} else {
+				toast.error(res.message || "Erro ao adicionar ao carrinho");
+			}
+		} else {
+			toast.success("Produto adicionado ao carrinho!");
+			window.dispatchEvent(new Event("cart-updated"));
+		}
+
+		setLoading(false);
 	};
 
 	return (
@@ -101,10 +106,17 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 
 					<button
 						onClick={handleAddToCart}
-						class="flex-grow bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg flex items-center justify-center py-3"
+						disabled={loading}
+						class="flex-grow bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold rounded-xl shadow-lg flex items-center justify-center py-3 transition"
 					>
-						Adicionar ao Carrinho
-						<ShoppingCart class="ml-2 w-5 h-5" />
+						{loading ? (
+							<Loader2 class="w-5 h-5 animate-spin" />
+						) : (
+							<>
+								Adicionar ao Carrinho
+								<ShoppingCart class="ml-2 w-5 h-5" />
+							</>
+						)}
 					</button>
 				</div>
 			</div>

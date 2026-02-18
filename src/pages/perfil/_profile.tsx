@@ -50,7 +50,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 					</div>
 					<div>
 						<h2 className="font-bold text-gray-900">{user.personalData.name}</h2>
-						<p className="text-xs text-gray-500">Membro desde {user.personalData.registredAt.getFullYear()}</p>
+						<p className="text-xs text-gray-500">Membro desde {new Date(user.personalData.registredAt).getFullYear()}</p>
 					</div>
 				</div>
 
@@ -98,8 +98,12 @@ export default function AccountDashboard({ user }: { user: User }) {
 										</div>
 										<div>
 											<span className="block text-gray-500 text-xs uppercase font-bold">Status</span>
-											<span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-												{order.status}
+													<span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+												order.status === "delivered" ? "bg-green-100 text-green-800" :
+												order.status === "intransit" ? "bg-blue-100 text-blue-800" :
+												"bg-red-100 text-red-800"
+											}`}>
+												{order.status === "delivered" ? "Entregue" : order.status === "intransit" ? "Em Trânsito" : "Cancelado"}
 											</span>
 										</div>
 									</div>
@@ -111,7 +115,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 											key={idx}
 											className={`flex items-center gap-4 ${idx > 0 ? "pt-4 border-t border-gray-100" : ""}`}
 										>
-											<img src={item.img} className="w-16 h-16 object-cover rounded-md bg-gray-100" alt={item.name} />
+											<img src={item.img ?? "/placeholder.png"} className="w-16 h-16 object-cover rounded-md bg-gray-100" alt={item.name} />
 											<div className="flex-grow">
 												<h4 className="font-bold text-gray-900 text-sm">{item.name}</h4>
 												<p className="text-xs text-gray-500">{item.variant}</p>
@@ -290,7 +294,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 								>
 									<div className="relative w-16 h-16 flex-shrink-0">
 										<img
-											src={item.image}
+											src={item.images?.[0] ?? "/placeholder.png"}
 											className={`w-full h-full object-cover rounded-md ${!item.inStock ? "grayscale" : ""}`}
 											alt={item.name}
 										/>
