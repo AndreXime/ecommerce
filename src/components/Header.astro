@@ -126,7 +126,7 @@ const { hideSearch } = Astro.props;
 <aside
     id="sidebar-menu"
     aria-label="Menu principal"
-    aria-hidden="true"
+    inert
     class="fixed top-0 left-0 w-72 h-full bg-white z-[70] shadow-2xl transform -translate-x-full transition-transform duration-300 flex flex-col"
 >
     <div
@@ -192,16 +192,18 @@ const { hideSearch } = Astro.props;
 
         if (!isOpen) {
             sidebarMenu?.classList.remove("-translate-x-full");
-            sidebarMenu?.setAttribute("aria-hidden", "false");
+            sidebarMenu?.removeAttribute("inert");
             sidebarOverlay?.classList.remove("invisible", "opacity-0", "hidden");
             menuOpenBtn?.setAttribute("aria-expanded", "true");
             document.body.style.overflow = "hidden";
+            menuCloseBtn?.focus();
         } else {
             sidebarMenu?.classList.add("-translate-x-full");
-            sidebarMenu?.setAttribute("aria-hidden", "true");
+            sidebarMenu?.setAttribute("inert", "");
             sidebarOverlay?.classList.add("invisible", "opacity-0", "hidden");
             menuOpenBtn?.setAttribute("aria-expanded", "false");
             document.body.style.overflow = "";
+            menuOpenBtn?.focus();
         }
     }
 
