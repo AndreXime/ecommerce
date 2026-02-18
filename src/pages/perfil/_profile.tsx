@@ -54,34 +54,38 @@ export default function AccountDashboard({ user }: { user: User }) {
 					</div>
 				</div>
 
-				<nav className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-					{[
-						{ id: "orders", label: "Meus Pedidos", icon: Package },
-						{ id: "profile", label: "Dados Pessoais", icon: UserIcon },
-						{ id: "addresses", label: "Endereços", icon: MapPin },
-						{ id: "payments", label: "Pagamentos", icon: CreditCard },
-						{ id: "wishlist", label: "Lista de Desejos", icon: Heart },
-					].map((item) => (
-						<button
-							key={item.id}
-							onClick={() => setActiveTab(item.id as Tab)}
-							className={`w-full text-left px-6 py-4 flex items-center transition border-l-4 ${activeTab === item.id ? "bg-blue-50 text-blue-600 border-blue-600" : "hover:bg-gray-50 text-gray-700 border-transparent"}`}
-						>
-							<item.icon class="w-5 h-5 mr-3" /> {item.label}
-						</button>
-					))}
+			<div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden" role="tablist" aria-label="Seções da conta">
+				{[
+					{ id: "orders", label: "Meus Pedidos", icon: Package },
+					{ id: "profile", label: "Dados Pessoais", icon: UserIcon },
+					{ id: "addresses", label: "Endereços", icon: MapPin },
+					{ id: "payments", label: "Pagamentos", icon: CreditCard },
+					{ id: "wishlist", label: "Lista de Desejos", icon: Heart },
+				].map((item) => (
+					<button
+						key={item.id}
+						role="tab"
+						aria-selected={activeTab === item.id}
+						aria-controls={`tabpanel-${item.id}`}
+						id={`tab-${item.id}`}
+						onClick={() => setActiveTab(item.id as Tab)}
+						className={`w-full text-left px-6 py-4 flex items-center transition border-l-4 ${activeTab === item.id ? "bg-blue-50 text-blue-600 border-blue-600" : "hover:bg-gray-50 text-gray-700 border-transparent"}`}
+					>
+						<item.icon class="w-5 h-5 mr-3" aria-hidden="true" /> {item.label}
+					</button>
+				))}
 					<div className="h-px bg-gray-100 my-1"></div>
 					<a
 						href="/login"
 						className="w-full text-left px-6 py-4 flex items-center text-red-500 hover:bg-red-50 transition"
 					>
-						<LogOut class="w-5 h-5 mr-3" /> Sair
+						<LogOut class="w-5 h-5 mr-3" aria-hidden="true" /> Sair
 					</a>
-				</nav>
+				</div>
 			</aside>
 
-			<div className="flex-grow w-full md:w-3/4">
-				{activeTab === "orders" && (
+		<div className="flex-grow w-full md:w-3/4" role="tabpanel" id={`tabpanel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
+			{activeTab === "orders" && (
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Histórico de Pedidos</h2>
 						{user.ordersHistory.map((order) => (
@@ -333,17 +337,20 @@ export default function AccountDashboard({ user }: { user: User }) {
 			</div>
 
 			{isModalOpen && (
-				<div
-					id="modal-overlay"
-					onClick={handleModalClickOutside}
-					className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 animate-fade-overlay"
-				>
-					<div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden m-4 animate-scale-in">
+		<div
+				id="modal-overlay"
+				onClick={handleModalClickOutside}
+				role="dialog"
+				aria-modal="true"
+				aria-label="Adicionar cartão de pagamento"
+				className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 animate-fade-overlay"
+			>
+				<div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden m-4 animate-scale-in">
 						<div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
 							<h3 className="text-lg font-bold text-gray-900">Adicionar Cartão</h3>
-							<button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition">
-								<X class="w-5 h-5" />
-							</button>
+					<button onClick={() => setIsModalOpen(false)} aria-label="Fechar modal" className="text-gray-400 hover:text-gray-600 transition">
+							<X class="w-5 h-5" aria-hidden="true" />
+						</button>
 						</div>
 						<div className="p-6">
 							<form
