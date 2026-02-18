@@ -44,15 +44,18 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? 
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-4 gap-4" id="thumbnails">
+                    <div class="grid grid-cols-4 gap-4" id="thumbnails" role="list" aria-label="Galeria de imagens do produto">
                         {
                             product.images.map((src, index) => (
                                 <button
+                                    role="listitem"
                                     class={`thumbnail-btn aspect-square rounded-lg border p-1 bg-white overflow-hidden transition ${index === 0 ? "border-2 border-blue-600" : "border-gray-200 hover:border-blue-400"}`}
-                                    aria-label={`View image ${index + 1}`}
+                                    aria-label={`Ver imagem ${index + 1} de ${product.images.length}`}
+                                    aria-pressed={index === 0}
                                 >
                                     <img
                                         src={src}
+                                        alt={`${product.name} — imagem ${index + 1}`}
                                         class="w-full h-full object-cover rounded pointer-events-none"
                                     />
                                 </button>
@@ -293,23 +296,17 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? 
         if (!thumbImg || !mainImage) return;
 
         mainImage.src = thumbImg.src;
+        mainImage.alt = thumbImg.alt;
 
-        // Atualiza estados dos botões (bordas)
         buttons.forEach((btn) => {
             btn.classList.remove("border-2", "border-blue-600");
-            btn.classList.add(
-                "border",
-                "border-gray-200",
-                "hover:border-blue-400",
-            );
+            btn.classList.add("border", "border-gray-200", "hover:border-blue-400");
+            btn.setAttribute("aria-pressed", "false");
         });
 
-        button.classList.remove(
-            "border",
-            "border-gray-200",
-            "hover:border-blue-400",
-        );
+        button.classList.remove("border", "border-gray-200", "hover:border-blue-400");
         button.classList.add("border-2", "border-blue-600");
+        button.setAttribute("aria-pressed", "true");
     };
 
     // Adicionando Event Listeners
