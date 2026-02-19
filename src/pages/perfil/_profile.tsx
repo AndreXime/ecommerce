@@ -88,7 +88,17 @@ export default function AccountDashboard({ user }: { user: User }) {
 			{activeTab === "orders" && (
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Histórico de Pedidos</h2>
-						{user.ordersHistory.map((order) => (
+						{user.ordersHistory.length === 0 && (
+						<div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 flex flex-col items-center text-center">
+							<Package class="w-12 h-12 text-gray-300 mb-4" />
+							<h3 className="font-bold text-gray-700 mb-1">Nenhum pedido encontrado</h3>
+							<p className="text-sm text-gray-400">Seus pedidos aparecerão aqui após a primeira compra.</p>
+							<a href="/" className="mt-6 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-6 py-2 rounded-lg transition">
+								Explorar produtos
+							</a>
+						</div>
+					)}
+					{user.ordersHistory.map((order) => (
 							<div key={order.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
 								<div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 									<div className="flex gap-6 text-sm">
@@ -171,7 +181,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 										<input
 											id="profileCpf"
 											type="text"
-											defaultValue={user.personalData.registration}
+											defaultValue={user.personalData.registration ?? undefined}
 											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50"
 											readOnly
 										/>
@@ -183,7 +193,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 										<input
 											id="profilePhone"
 											type="text"
-											defaultValue={user.personalData.phone}
+											defaultValue={user.personalData.phone ?? undefined}
 											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
 										/>
 									</div>
@@ -207,6 +217,13 @@ export default function AccountDashboard({ user }: { user: User }) {
 							</button>
 						</div>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+							{user.addresses.length === 0 && (
+								<div className="col-span-full bg-white rounded-xl border border-dashed border-gray-300 p-12 flex flex-col items-center text-center">
+									<MapPin class="w-12 h-12 text-gray-300 mb-4" />
+									<h3 className="font-bold text-gray-700 mb-1">Nenhum endereço cadastrado</h3>
+									<p className="text-sm text-gray-400">Adicione um endereço para agilizar suas compras.</p>
+								</div>
+							)}
 							{user.addresses.map((addr) => (
 								<div
 									key={addr.id}
@@ -249,6 +266,13 @@ export default function AccountDashboard({ user }: { user: User }) {
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Cartões Salvos</h2>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+							{user.paymentCards.length === 0 && (
+								<div className="bg-white rounded-xl border border-dashed border-gray-300 p-12 flex flex-col items-center text-center">
+									<CreditCard class="w-12 h-12 text-gray-300 mb-4" />
+									<h3 className="font-bold text-gray-700 mb-1">Nenhum cartão salvo</h3>
+									<p className="text-sm text-gray-400">Adicione um cartão para facilitar o pagamento.</p>
+								</div>
+							)}
 							{user.paymentCards.map((card) => (
 								<div
 									key={card.id}
@@ -291,6 +315,16 @@ export default function AccountDashboard({ user }: { user: User }) {
 					<div className="space-y-6 animate-fade-in">
 						<h2 className="text-2xl font-bold text-gray-900 mb-4">Lista de Desejos</h2>
 						<div className="space-y-4">
+							{user.wishlistProducts.length === 0 && (
+								<div className="bg-white rounded-xl border border-dashed border-gray-300 p-12 flex flex-col items-center text-center">
+									<Heart class="w-12 h-12 text-gray-300 mb-4" />
+									<h3 className="font-bold text-gray-700 mb-1">Sua lista de desejos está vazia</h3>
+									<p className="text-sm text-gray-400">Salve produtos que você gostaria de comprar futuramente.</p>
+									<a href="/" className="mt-6 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-6 py-2 rounded-lg transition">
+										Explorar produtos
+									</a>
+								</div>
+							)}
 							{user.wishlistProducts.map((item) => (
 								<div
 									key={item.id}
