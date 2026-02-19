@@ -2,6 +2,16 @@
 import Layout from "@/layout/layout.astro";
 import AuthComponent from "./_auth";
 import Header from "@/components/Header.astro";
+import { serverGet } from "@/lib/serverApi";
+
+export const prerender = false;
+
+const cookieHeader = Astro.request.headers.get("cookie");
+const { status } = await serverGet("/users/me", cookieHeader);
+
+if (status !== 401) {
+    return Astro.redirect("/perfil");
+}
 ---
 
 <Layout title="Login | Emporium da Tecnologia" description="Acesse sua conta">
