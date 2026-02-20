@@ -4,6 +4,7 @@ export interface User {
 		email: string;
 		registration: string | null;
 		phone: string | null;
+		role: "ADMIN" | "CUSTOMER" | "SUPPORT";
 		registredAt: string;
 	};
 	ordersHistory: {
