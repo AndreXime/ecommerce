@@ -1,0 +1,52 @@
+---
+import { Loader2 } from "lucide-preact";
+import Layout from "@/layout/layout.astro";
+import Header from "@/components/Header.astro";
+
+export const prerender = false;
+---
+
+<Layout
+	title="Atualizando sessão | Emporium da Tecnologia"
+	description="Aguarde..."
+>
+	<Header hideSearch />
+	<main
+		class="flex-grow container mx-auto px-4 py-12 flex flex-col items-center justify-center gap-4 bg-gray-50 min-h-[60vh]"
+		transition:animate="fade"
+	>
+		<Loader2
+			class="w-10 h-10 text-gray-600 animate-spin"
+			aria-hidden="true"
+		/>
+		<p class="text-gray-600">Atualizando sessão...</p>
+	</main>
+</Layout>
+
+<script>
+	import { navigate } from "astro:transitions/client";
+
+	const apiUrl = import.meta.env.PUBLIC_API_URL;
+
+	const params = new URLSearchParams(window.location.search);
+	let redirect = params.get("redirect") ?? "/perfil";
+	if (!redirect.startsWith("/") || redirect.startsWith("//")) {
+		redirect = "/perfil";
+	}
+
+	fetch(`${apiUrl}/auth/refresh`, {
+		method: "POST",
+		credentials: "include",
+		headers: { "Content-Type": "application/json" },
+	})
+		.then((res) => {
+			if (res.ok) {
+				navigate(redirect, { history: "replace" });
+			} else {
+				navigate("/login", { history: "replace" });
+			}
+		})
+		.catch(() => {
+			navigate("/login", { history: "replace" });
+		});
+</script>
