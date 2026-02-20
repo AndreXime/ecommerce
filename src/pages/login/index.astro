@@ -3,14 +3,18 @@ import Layout from "@/layout/layout.astro";
 import AuthComponent from "./_auth";
 import Header from "@/components/Header.astro";
 import { serverGet } from "@/lib/serverApi";
+import type { User } from "@/database/users";
 
 export const prerender = false;
 
-const cookieHeader = Astro.request.headers.get("cookie");
-const { status } = await serverGet("/users/me", cookieHeader);
-
-if (status !== 401) {
-    return Astro.redirect("/perfil");
+const cookieHeader = Astro.request.headers.get("cookie") ?? "";
+if (cookieHeader.trim()) {
+    const { data, status } = await serverGet<User>("/users/me", cookieHeader);
+    if (status !== 401 && data) {
+        return Astro.redirect(
+            data.personalData.role === "ADMIN" ? "/admin" : "/perfil",
+        );
+    }
 }
 ---
 
