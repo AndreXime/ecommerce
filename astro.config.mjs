@@ -13,6 +13,9 @@ export default defineConfig({
 
 	vite: {
 		plugins: [tailwindcss()],
+		optimizeDeps: {
+			include: ["nanostores", "@nanostores/preact"],
+		},
 	},
 	build: {
 		inlineStylesheets: "always",
