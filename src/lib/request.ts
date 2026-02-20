@@ -1,6 +1,8 @@
 interface FetchOptions extends RequestInit {
 	params?: Record<string, string | undefined | null | number>;
 	formData?: boolean;
+	/** interno: evita loop ao reenviar após refresh */
+	_isRetry?: boolean;
 }
 
 export interface ApiValidationError {
@@ -34,6 +36,24 @@ interface BackendErrorResponse {
 
 class Request {
 	private baseURL = import.meta.env.PUBLIC_API_URL as string;
+	private refreshPromise: Promise<boolean> | null = null;
+
+	private async tryRefresh(): Promise<boolean> {
+		if (this.refreshPromise) return this.refreshPromise;
+		this.refreshPromise = (async () => {
+			try {
+				const res = await fetch(`${this.baseURL}/auth/refresh`, {
+					method: "POST",
+					credentials: "include",
+					headers: { "Content-Type": "application/json" },
+				});
+				return res.ok;
+			} finally {
+				this.refreshPromise = null;
+			}
+		})();
+		return this.refreshPromise;
+	}
 
 	private async request<T>(path: string, options: FetchOptions = {}): Promise<ServiceResponse<T>> {
 		const safePath = path.startsWith("/") ? path : `/${path}`;
@@ -79,9 +99,15 @@ class Request {
 			responseBody = null;
 		}
 
-		console.log(`[HTTP] ${response.status} ${url.pathname}`, responseBody);
-
 		if (!response.ok) {
+			if (response.status === 401 && !options._isRetry) {
+				const refreshed = await this.tryRefresh();
+				if (refreshed) {
+					const retryOpts = { ...options, _isRetry: true as const };
+					return this.request<T>(path, retryOpts);
+				}
+			}
+
 			const errorData = responseBody as BackendErrorResponse | null;
 
 			let errorMessage = "Ocorreu um erro ao processar a requisição.";
