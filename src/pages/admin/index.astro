@@ -6,12 +6,12 @@ import { serverGet } from "@/lib/serverApi";
 
 export const prerender = false;
 
-const cookieHeader = Astro.request.headers.get("cookie");
+const cookieHeader = Astro.request.headers.get("cookie") ?? "";
+if (!cookieHeader.trim()) return Astro.redirect("/login");
 
-// GET /users is ADMIN-only — 401 = não logado, 403 = sem permissão
 const { status } = await serverGet("/users", cookieHeader, { limit: 1 });
 
-if (status === 401) return Astro.redirect("/login");
+if (status === 401) return Astro.redirect(`/auth/refresh?redirect=${encodeURIComponent("/admin")}`);
 if (status === 403) return Astro.redirect("/");
 ---
 

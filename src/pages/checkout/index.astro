@@ -8,7 +8,8 @@ import type { CartItem } from "@/database/productsTypes";
 
 export const prerender = false;
 
-const cookieHeader = Astro.request.headers.get("cookie");
+const cookieHeader = Astro.request.headers.get("cookie") ?? "";
+if (!cookieHeader.trim()) return Astro.redirect("/login");
 
 interface ApiCart {
     id: string;
@@ -21,7 +22,7 @@ const [userRes, cartRes] = await Promise.all([
 ]);
 
 if (userRes.status === 401 || !userRes.data) {
-    return Astro.redirect("/login");
+	return Astro.redirect(`/auth/refresh?redirect=${encodeURIComponent("/checkout")}`);
 }
 
 const user = { name: userRes.data.personalData.name, email: userRes.data.personalData.email };
