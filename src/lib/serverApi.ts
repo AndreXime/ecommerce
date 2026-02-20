@@ -4,7 +4,7 @@ type Params = Record<string, string | number | boolean | null | undefined>;
 
 export async function serverGet<T>(
 	path: string,
-	cookieHeader?: string | null,
+	cookieHeader: string | null,
 	params?: Params,
 ): Promise<{ data: T | null; status: number }> {
 	const url = new URL(`${BASE_URL}${path}`);
@@ -25,7 +25,9 @@ export async function serverGet<T>(
 			},
 		});
 
-		if (!res.ok) return { data: null, status: res.status };
+		if (!res.ok) {
+			return { data: null, status: res.status };
+		}
 
 		const data = await res.json();
 		return { data: data as T, status: res.status };
