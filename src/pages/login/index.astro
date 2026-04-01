@@ -3,11 +3,16 @@ import Layout from "@/layout/layout.astro";
 import AuthComponent from "./_auth";
 import Header from "@/components/Header.astro";
 import { serverGet } from "@/lib/serverApi";
+import { prepareLoginPageSession } from "@/lib/platform/loginSession";
 import type { User } from "@/database/users";
 
 export const prerender = false;
 
-const cookieHeader = Astro.request.headers.get("cookie") ?? "";
+const cookieHeader = prepareLoginPageSession({
+    cookies: Astro.cookies,
+    cookieHeader: Astro.request.headers.get("cookie"),
+    searchParams: Astro.url.searchParams,
+});
 if (cookieHeader.trim()) {
     const { data, status } = await serverGet<User>("/users/me", cookieHeader);
     if (status !== 401 && data) {

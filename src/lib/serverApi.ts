@@ -1,3 +1,6 @@
+import { handleDemoRequest } from "./demo-api";
+import { isDemoMode } from "./demo-mode";
+
 const BASE_URL = import.meta.env.PUBLIC_API_URL as string;
 
 type Params = Record<string, string | number | boolean | null | undefined>;
@@ -7,6 +10,15 @@ export async function serverGet<T>(
 	cookieHeader: string | null,
 	params?: Params,
 ): Promise<{ data: T | null; status: number }> {
+	if (isDemoMode) {
+		return await handleDemoRequest<T>({
+			method: "GET",
+			path,
+			params,
+			cookieHeader,
+		});
+	}
+
 	const url = new URL(`${BASE_URL}${path}`);
 
 	if (params) {

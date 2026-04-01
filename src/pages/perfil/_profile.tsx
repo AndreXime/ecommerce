@@ -76,7 +76,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 				))}
 					<div className="h-px bg-gray-100 my-1"></div>
 					<a
-						href="/login"
+						href="/login?logout=1"
 						className="w-full text-left px-6 py-4 flex items-center text-red-500 hover:bg-red-50 transition"
 					>
 						<LogOut class="w-5 h-5 mr-3" aria-hidden="true" /> Sair

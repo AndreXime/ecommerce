@@ -5,6 +5,7 @@ import { Pagination } from "../Pagination";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "@/lib/toast";
 import { request } from "@/lib/request";
+import { uploadProductImage } from "@/lib/platform/uploadProductImage";
 import type { Category, Product, ProductDetails, ProductDetailsWithImageIds, ProductImage } from "../types";
 import { productsStore, loadProducts, setProductsPage, setProductsSearch } from "../stores/productsStore";
 import { categoriesStore, loadCategories } from "../stores/categoriesStore";
@@ -208,37 +209,19 @@ export function ProductsTab() {
 
 		setUploadingImage(true);
 
-		const presignRes = await request.post<{
-			uploadUrl: string;
-			image: { id: string; url: string; key: string; position: number };
-		}>(`/products/${productModal.id}/images`, {
-			contentType: file.type,
-		});
-
-		if (!presignRes.ok) {
-			toast.error(presignRes.message);
+		const uploadResult = await uploadProductImage(productModal.id, file);
+		if (!uploadResult.ok) {
+			toast.error(uploadResult.message);
 			setUploadingImage(false);
 			input.value = "";
 			return;
 		}
 
-		const { uploadUrl, image } = presignRes.data;
-
-		const uploadRes = await fetch(uploadUrl, {
-			method: "PUT",
-			headers: { "Content-Type": file.type },
-			body: file,
-		});
-
-		if (!uploadRes.ok) {
-			toast.error("Erro ao enviar imagem para o storage.");
-			setUploadingImage(false);
-			input.value = "";
-			return;
-		}
-
-		setPUploadedImages((prev) => [...prev, { id: image.id, url: image.url }]);
-		setPImageUrls((prev) => [...prev, image.url]);
+		setPUploadedImages((prev) => [
+			...prev,
+			{ id: uploadResult.data.image.id, url: uploadResult.data.image.url },
+		]);
+		setPImageUrls((prev) => [...prev, uploadResult.data.image.url]);
 		toast.success("Imagem enviada com sucesso");
 		loadProducts({ force: true });
 		setUploadingImage(false);

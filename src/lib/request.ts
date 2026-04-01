@@ -1,3 +1,6 @@
+import { handleDemoClientRequest } from "./demo-api";
+import { hasDemoSession, isDemoMode } from "./demo-mode";
+
 interface FetchOptions extends RequestInit {
 	params?: Record<string, string | undefined | null | number>;
 	formData?: boolean;
@@ -39,6 +42,10 @@ class Request {
 	private refreshPromise: Promise<boolean> | null = null;
 
 	private async tryRefresh(): Promise<boolean> {
+		if (isDemoMode) {
+			return hasDemoSession(typeof document === "undefined" ? null : document.cookie);
+		}
+
 		if (this.refreshPromise) return this.refreshPromise;
 		this.refreshPromise = (async () => {
 			try {
@@ -57,6 +64,17 @@ class Request {
 
 	private async request<T>(path: string, options: FetchOptions = {}): Promise<ServiceResponse<T>> {
 		const safePath = path.startsWith("/") ? path : `/${path}`;
+
+		if (isDemoMode) {
+			return handleDemoClientRequest<T>({
+				method: options.method ?? "GET",
+				path: safePath,
+				params: options.params,
+				body: options.body,
+				cookieHeader: typeof document === "undefined" ? null : document.cookie,
+			});
+		}
+
 		const urlString = path.startsWith("http") ? path : `${this.baseURL}${safePath}`;
 		const url = new URL(urlString);
 

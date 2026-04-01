@@ -25,28 +25,9 @@ export const prerender = false;
 
 <script>
 	import { navigate } from "astro:transitions/client";
+	import { resolveRefreshRedirect } from "@/lib/platform/refreshSession";
 
-	const apiUrl = import.meta.env.PUBLIC_API_URL;
-
-	const params = new URLSearchParams(window.location.search);
-	let redirect = params.get("redirect") ?? "/perfil";
-	if (!redirect.startsWith("/") || redirect.startsWith("//")) {
-		redirect = "/perfil";
-	}
-
-	fetch(`${apiUrl}/auth/refresh`, {
-		method: "POST",
-		credentials: "include",
-		headers: { "Content-Type": "application/json" },
-	})
-		.then((res) => {
-			if (res.ok) {
-				navigate(redirect, { history: "replace" });
-			} else {
-				navigate("/login", { history: "replace" });
-			}
-		})
-		.catch(() => {
-			navigate("/login", { history: "replace" });
-		});
+	resolveRefreshRedirect().then((redirect) => {
+		navigate(redirect, { history: "replace" });
+	});
 </script>
