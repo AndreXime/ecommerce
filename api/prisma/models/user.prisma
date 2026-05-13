@@ -47,8 +47,8 @@ model RefreshToken {
 model PasswordResetToken {
   id        String    @id @default(uuid(7)) @db.Uuid
   token     String    @unique
-  expiresAt DateTime
-  usedAt    DateTime?
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
   createdAt DateTime  @default(now()) @map("created_at")
 
   userId String @db.Uuid
