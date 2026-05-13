@@ -3,9 +3,11 @@ import { defineConfig } from "astro/config";
 
 import tailwindcss from "@tailwindcss/vite";
 
+import node from "@astrojs/node";
 import preact from "@astrojs/preact";
-
 import vercel from "@astrojs/vercel";
+
+const useNodeAdapter = process.env.ASTRO_ADAPTER === "node";
 
 // https://astro.build/config
 export default defineConfig({
@@ -21,5 +23,5 @@ export default defineConfig({
 		inlineStylesheets: "always",
 	},
 	integrations: [preact()],
-	adapter: vercel(),
+	adapter: useNodeAdapter ? node({ mode: "standalone" }) : vercel(),
 });
