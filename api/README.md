@@ -78,9 +78,13 @@ cp .env.example .env
 
 ### 2. Subir serviços (PostgreSQL, Redis, LocalStack, Mailpit)
 
+Na raiz do repositório
+
 ```bash
 docker compose up -d
 ```
+
+Os passos seguintes são executados na pasta `api/`.
 
 ### 3. Instalar dependências
 

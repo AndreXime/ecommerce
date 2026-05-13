@@ -23,7 +23,7 @@ services:
     volumes:
       - "localstack_data:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./setup-localstack.sh:/etc/localstack/init/ready.d/provision.sh"
+      - "./docker/setup-localstack.sh:/etc/localstack/init/ready.d/provision.sh"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -50,7 +50,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - "./prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -65,9 +65,9 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
-      - "./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro"
-      - "./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro"
-      - "./grafana/dashboards:/etc/grafana/provisioning/dashboards-json:ro"
+      - "./docker/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro"
+      - "./docker/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro"
+      - "./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards-json:ro"
       - grafana_data:/var/lib/grafana
 
 volumes:

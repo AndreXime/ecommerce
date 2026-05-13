@@ -39,9 +39,9 @@ Monorepo com **API REST** (`api/`) e **loja web** (`web/`) integradas. O backend
 ### 1. API
 
 ```bash
+docker compose up -d
 cd api
 cp .env.example .env
-docker compose up -d
 bun install
 bunx prisma migrate dev
 bunx prisma db seed
