@@ -1,0 +1,71 @@
+model User {
+  id           String  @id @unique @default(uuid(7)) @db.Uuid
+  email        String  @unique
+  password     String
+  name         String
+  registration String?
+  phone        String?
+
+  role Roles @default(CUSTOMER)
+
+  notifications UserNotification[]
+  refreshTokens RefreshToken[]
+  addresses          Address[]
+  paymentCards       PaymentCard[]
+  wishlistItems      WishlistItem[]
+  orders             Order[]
+  reviews            Review[]
+  cart               Cart?
+  passwordResetTokens PasswordResetToken[]
+  sessionVersion     Int      @default(0) @map("session_version")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("users")
+}
+
+enum Roles {
+  ADMIN
+  CUSTOMER
+  SUPPORT
+}
+
+model RefreshToken {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  hashedToken String   @unique
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revoked     Boolean  @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model UserNotification {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  message   String
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
