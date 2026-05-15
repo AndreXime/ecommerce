@@ -1,6 +1,6 @@
 # E-commerce Astro
 
-Um projeto de comércio eletrónico moderno, rápido e leve, construído com **Astro**, **Preact** e **Tailwind CSS v4**. Este projeto demonstra uma aplicação de e-commerce performante com funcionalidades como gestão de carrinho, autenticação e listagem de produtos.
+Um projeto de comércio eletrônico moderno, rápido e leve, construído com **Astro**, **Preact** e **Tailwind CSS v4**. Frontend de vitrine, carrinho, checkout e área logada contra uma **API REST** configurada por `PUBLIC_API_URL`.
 
 ## Tecnologias Utilizadas
 
@@ -18,8 +18,8 @@ Com base na estrutura do projeto, a aplicação inclui:
 * **Catálogo de Produtos**: Listagem e página de detalhes de produtos (eletrónica, periféricos, etc.).
 * **Carrinho de Compras**: Gestão de estado do carrinho (adicionar/remover itens).
 * **Checkout**: Fluxo de finalização de compra.
-* **Autenticação**: Sistema de Login e Perfil de utilizador.
-* **Base de Dados Mock**: Dados estáticos tipados via TypeScript para produtos e utilizadores.
+* **Autenticação**: Login, refresh de sessão e perfil do usuário integrados à API (cookies).
+* **Tipos compartilhados**: Contratos em TypeScript em `src/database/` (ex.: usuário e produto) alinhados às respostas da API.
 * **Astro Actions**: Utilização de Server Actions para lógica de backend segura.
 
 ## Estrutura do Projeto
@@ -30,14 +30,14 @@ Com base na estrutura do projeto, a aplicação inclui:
 ├── src/
 │   ├── actions/        # Astro Actions (lógica de backend)
 │   ├── components/     # Componentes UI (Astro e Preact)
-│   ├── database/       # Mock data (produtos.ts, users.ts)
+│   ├── database/       # Tipos TypeScript (produtos, usuário)
 │   ├── layout/         # Layouts globais e CSS
 │   ├── lib/            # Utilitários (toast, utils)
-│   └── pages/          # Rotas baseadas em ficheiros
+│   └── pages/          # Rotas baseadas em arquivos
 │       ├── carrinho/   # Página do carrinho
 │       ├── checkout/   # Página de pagamento
 │       ├── login/      # Autenticação
-│       ├── perfil/     # Área do utilizador
+│       ├── perfil/     # Área do usuário
 │       └── produtos/   # Listagem e detalhes ([slug].astro)
 ├── astro.config.mjs    # Configuração do Astro e integrações
 └── package.json        # Dependências e scripts

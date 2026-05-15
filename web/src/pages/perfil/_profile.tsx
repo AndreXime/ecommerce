@@ -1,4 +1,5 @@
 import type { User } from "@/database/users";
+import { request } from "@/lib/request";
 import { useState, useEffect } from "preact/hooks";
 import {
 	Package,
@@ -40,6 +41,11 @@ export default function AccountDashboard({ user }: { user: User }) {
 		}
 	};
 
+	const handleLogout = async (): Promise<void> => {
+		await request.post("/auth/logout");
+		window.location.href = "/login";
+	};
+
 	return (
 		<div className="flex flex-col md:flex-row gap-8">
 			<aside className="w-full md:w-1/4 flex-shrink-0">
@@ -75,12 +81,13 @@ export default function AccountDashboard({ user }: { user: User }) {
 					</button>
 				))}
 					<div className="h-px bg-gray-100 my-1"></div>
-					<a
-						href="/login?logout=1"
+					<button
+						type="button"
+						onClick={() => void handleLogout()}
 						className="w-full text-left px-6 py-4 flex items-center text-red-500 hover:bg-red-50 transition"
 					>
 						<LogOut class="w-5 h-5 mr-3" aria-hidden="true" /> Sair
-					</a>
+					</button>
 				</div>
 			</aside>
 

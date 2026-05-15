@@ -6,7 +6,7 @@
 > - [Modelo de Dados](./BANCO_DE_DADOS.md)
 > - [Fluxos](./FLUXO.md)
 
-Monorepo com **API REST** (`api/`) e **loja web** (`web/`) integradas. O backend cobre catálogo, carrinho, wishlist, pedidos e perfil com autenticação JWT em cookies. O frontend é o **Emporium da Tecnologia**: vitrine Astro, carrinho e checkout contra a API, painel admin e modo demonstração sem backend.
+Monorepo com **API REST** (`api/`) e **loja web** (`web/`) integradas. O backend cobre catálogo, carrinho, wishlist, pedidos e perfil com autenticação JWT em cookies. O frontend é o **Emporium da Tecnologia**: vitrine Astro, carrinho e checkout contra a API e painel admin, sempre usando o backend configurado em `PUBLIC_API_URL`.
 
 ---
 

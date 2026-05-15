@@ -1,5 +1,3 @@
-import { hasDemoSession, isDemoMode } from "@/lib/demo-mode";
-
 function getSafeRedirect(): string {
 	const params = new URLSearchParams(window.location.search);
 	const redirect = params.get("redirect") ?? "/perfil";
@@ -13,11 +11,6 @@ function getSafeRedirect(): string {
 
 export async function resolveRefreshRedirect(): Promise<string> {
 	const redirect = getSafeRedirect();
-
-	if (isDemoMode) {
-		return hasDemoSession(document.cookie) ? redirect : "/login";
-	}
-
 	const apiUrl = import.meta.env.PUBLIC_API_URL;
 
 	try {

@@ -10,17 +10,15 @@ Descrição dos fluxos principais entre navegador, web (Astro) e API (Hono). Tod
 
 ---
 
-## 1. Modo de dados: API real x demo
+## 1. Integração com a API (web)
+
+A loja envia todas as requisições para a base definida em `PUBLIC_API_URL`. No servidor (SSR), [web/src/lib/serverApi.ts](./web/src/lib/serverApi.ts) repassa o header `Cookie`; no browser, [web/src/lib/request.ts](./web/src/lib/request.ts) usa `fetch` com `credentials: "include"`. Configure a URL no ambiente (ex.: [web/.env.example](./web/.env.example)); sem ela as chamadas não atingem o backend.
 
 ```mermaid
 flowchart TD
-  A[Requisição no browser] --> B{PUBLIC_API_URL definido e DEMO off?}
-  B -->|Sim| C[fetch para API com credentials]
-  B -->|Não| D[demo-api em memória + cookies demo]
+  A[Requisição SSR ou no browser] --> B["fetch(PUBLIC_API_URL + rota)"]
+  B --> C[API REST e cookies de sessão]
 ```
-
-- **API real**: `PUBLIC_API_URL` apontando para o backend e `PUBLIC_DEMO_MODE` diferente de `true` (ou omitido conforme [web/src/lib/demo-mode.ts](./web/src/lib/demo-mode.ts)).
-- **Demo**: sem URL pública da API ou com demo ligado; não há PostgreSQL no browser.
 
 ---
 
@@ -33,7 +31,7 @@ flowchart TD
 
 **Refresh**: se uma página SSR receber `401` ao chamar a API, pode redirecionar para `/auth/refresh?redirect=...`. O fluxo de refresh usa `POST /auth/refresh` para renovar o access token e devolver o usuário à rota original.
 
-**Logout**: fluxo via query `logout` no login que limpa sessão (e demo, se ativo).
+**Logout**: em `/perfil`, o cliente chama `POST /auth/logout` e redireciona para `/login`, revogando a sessão na API.
 
 ---
 

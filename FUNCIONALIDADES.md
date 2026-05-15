@@ -79,9 +79,9 @@ Visão do que a **API** expõe e do que a **web** utiliza ou simula.
 
 - **`/admin`**: acesso só se `GET /users` retornar sucesso (papel `ADMIN`); abas de usuários, pedidos (atualização de status), categorias e produtos (inclui upload de imagem).
 
-### Modo demo
+### Frontend e API
 
-- Sem `PUBLIC_API_URL` ou com `PUBLIC_DEMO_MODE=true`, as requisições são atendidas por [web/src/lib/demo-api.ts](./web/src/lib/demo-api.ts) (dados em memória, cookies de sessão demo).
+- A web depende de `PUBLIC_API_URL` apontando para o backend; não há simulação de API no bundle. SSR e cliente usam a mesma base (ver [web/.env.example](./web/.env.example)).
 
 ---
 

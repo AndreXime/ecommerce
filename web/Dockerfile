@@ -11,10 +11,8 @@ COPY public ./public
 COPY src ./src
 
 ARG PUBLIC_API_URL=http://localhost:8080
-ARG PUBLIC_DEMO_MODE=false
 ENV ASTRO_ADAPTER=node \
-	PUBLIC_API_URL=${PUBLIC_API_URL} \
-	PUBLIC_DEMO_MODE=${PUBLIC_DEMO_MODE}
+	PUBLIC_API_URL=${PUBLIC_API_URL}
 
 RUN bun run build \
 	&& rm -rf node_modules \
