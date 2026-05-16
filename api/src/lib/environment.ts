@@ -55,6 +55,10 @@ const SchemaEnvironment = z.object({
 	FRONTEND_URL: z.url(),
 
 	S3_ENDPOINT_URL: z.url(),
+	S3_PUBLIC_URL: z.preprocess(
+		(val) => (val === undefined || val === "" ? undefined : val),
+		z.url().optional(),
+	),
 	S3_BUCKET: z.string(),
 	S3_REGION: z.string(),
 	S3_ACCESS_KEY: z.string(),

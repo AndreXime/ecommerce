@@ -14,6 +14,18 @@ RUN bun install --frozen-lockfile \
 	&& bunx prisma generate \
 	&& bun build src/index.ts --compile --outfile /serve
 
+FROM oven/bun:1.3.11 AS migrate
+WORKDIR /src
+
+COPY package.json bun.lock prisma.config.ts tsconfig.json ./
+COPY prisma ./prisma
+
+ENV HUSKY=0
+
+RUN bun install --frozen-lockfile
+
+CMD ["bunx", "prisma", "migrate", "deploy"]
+
 FROM debian:bookworm-slim AS runner
 
 RUN apt-get update \

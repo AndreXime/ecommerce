@@ -12,10 +12,10 @@ import { log } from "./dev";
 
 class StorageProvider {
 	private client: S3Client;
+	private presignClient: S3Client;
 
 	constructor() {
-		this.client = new S3Client({
-			endpoint: environment.S3_ENDPOINT_URL,
+		const clientConfig = {
 			apiVersion: "latest",
 			region: environment.S3_REGION,
 			credentials: {
@@ -23,6 +23,14 @@ class StorageProvider {
 				secretAccessKey: environment.S3_SECRET_KEY,
 			},
 			forcePathStyle: true,
+		};
+		this.client = new S3Client({
+			...clientConfig,
+			endpoint: environment.S3_ENDPOINT_URL,
+		});
+		this.presignClient = new S3Client({
+			...clientConfig,
+			endpoint: environment.S3_PUBLIC_URL ?? environment.S3_ENDPOINT_URL,
 		});
 	}
 
@@ -37,7 +45,7 @@ class StorageProvider {
 			const fileKey = options.fileKey ?? randomUUID();
 
 			const signedUrl = await getSignedUrl(
-				this.client,
+				this.presignClient,
 				new PutObjectCommand({
 					Bucket: environment.S3_BUCKET,
 					Key: fileKey,
@@ -61,7 +69,7 @@ class StorageProvider {
 		if (!fileKey) return { url: "" };
 		try {
 			const signedUrl = await getSignedUrl(
-				this.client,
+				this.presignClient,
 				new GetObjectCommand({
 					Bucket: environment.S3_BUCKET,
 					Key: fileKey,
@@ -149,7 +157,9 @@ class StorageProvider {
 
 	/** URL pública sem autenticação — funciona quando o bucket tem leitura pública */
 	getPublicUrl(fileKey: string) {
-		return `${environment.S3_ENDPOINT_URL}/${environment.S3_BUCKET}/${fileKey}`;
+		const base =
+			environment.S3_PUBLIC_URL ?? environment.S3_ENDPOINT_URL;
+		return `${base}/${environment.S3_BUCKET}/${fileKey}`;
 	}
 
 	async testConnection(): Promise<boolean> {

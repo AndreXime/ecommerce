@@ -4,7 +4,7 @@ import type { AppBindings } from "@/@types/declarations";
 import environment from "@/lib/environment";
 
 const cors: MiddlewareHandler<AppBindings> = Cors({
-	origin: [environment.FRONTEND_URL, environment.S3_ENDPOINT_URL],
+	origin: [environment.FRONTEND_URL],
 	allowMethods: ["POST", "PATCH", "PUT", "GET", "DELETE"],
 	credentials: true,
 });

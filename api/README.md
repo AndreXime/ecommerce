@@ -25,7 +25,7 @@ API REST completa para uma aplicação de ecommerce, desenvolvida com **Bun** e 
 
 ### Infraestrutura
 - **Rate Limiting:** global (100 req/15min) e específico para rotas de auth (10 req/15min), via Redis.
-- **S3:** upload e download com URLs pré-assinadas (simulado com LocalStack em dev).
+- **S3:** upload e download com URLs pré-assinadas (MinIO em dev).
 - **Filas e Email:** processamento assíncrono com BullMQ + Nodemailer.
 - **Documentação:** OpenAPI 3.0 gerada automaticamente com Scalar UI em `/docs`.
 - **Métricas:** endpoint Prometheus disponível em `/metrics`.
@@ -52,36 +52,25 @@ API REST completa para uma aplicação de ecommerce, desenvolvida com **Bun** e 
 
 ## Como rodar
 
+### Opção A: API no Docker Compose (raiz do monorepo)
+
+Na raiz, `cp .env.example .env`, depois `docker compose up -d --build`. O serviço `api-migrate` aplica `prisma migrate deploy` antes da API. Variáveis da API vêm do `.env` da raiz (veja o arquivo e o bloco `api` no `docker-compose.yml`).
+
+### Opção B: API com Bun no host
+
 ### 1. Variáveis de ambiente
 
 ```bash
 cp .env.example .env
 ```
 
-| Variável | Descrição | Exemplo |
-|---|---|---|
-| `ENV` | Modo de execução | `DEV` |
-| `PORT` | Porta da API | `8080` |
-| `FRONTEND_URL` | Origem permitida pelo CORS | `http://localhost:3000` |
-| `DATABASE_URL` | Connection string do PostgreSQL | `postgresql://user:pass@localhost:5432/db` |
-| `REDIS_URL` | URL do Redis | `redis://localhost:6379` |
-| `JWT_SECRET` | Chave secreta para assinar JWTs | string base64 de 32 bytes |
-| `JWT_ACCESS_EXPIRATION` | Expiração do access token | `15m` |
-| `JWT_REFRESH_EXPIRATION` | Expiração do refresh token | `1d` |
-| `S3_ENDPOINT_URL` | Endpoint do S3 (LocalStack em dev) | `http://127.0.0.1:4566` |
-| `S3_ACCESS_KEY` | Chave de acesso S3 | `test` |
-| `S3_SECRET_KEY` | Chave secreta S3 | `test` |
-| `S3_REGION` | Região S3 | `us-east-1` |
-| `S3_BUCKET` | Nome do bucket | `files` |
-| `EMAIL_SERVICE_HOST` | Host do servidor SMTP | `localhost` |
-| `EMAIL_SERVICE_PORT` | Porta do servidor SMTP | `1025` |
-
-### 2. Subir serviços (PostgreSQL, Redis, LocalStack, Mailpit)
+### 2. Subir serviços (PostgreSQL, Redis, MinIO, Mailpit)
 
 Na raiz do repositório
 
 ```bash
-docker compose up -d
+cp .env.example .env
+docker compose up -d db redis minio minio-init mailpit
 ```
 
 Os passos seguintes são executados na pasta `api/`.
