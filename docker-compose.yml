@@ -31,7 +31,7 @@ services:
         condition: service_healthy
       api-migrate:
         condition: service_completed_successfully
-      minio-init:
+      minio-setup:
         condition: service_completed_successfully
       minio:
         condition: service_started
@@ -108,7 +108,7 @@ services:
         condition: service_healthy
       api-migrate:
         condition: service_completed_successfully
-      minio-init:
+      minio-setup:
         condition: service_completed_successfully
     restart: "no"
 
@@ -124,23 +124,37 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_API_CORS_ALLOW_ORIGIN: ${MINIO_API_CORS_ALLOW_ORIGIN}
+      MINIO_SERVER_URL: ${MINIO_SERVER_URL:-}
+      MINIO_BROWSER_REDIRECT_URL: ${MINIO_BROWSER_REDIRECT_URL:-}
     volumes:
       - minio_data:/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mc alias set local http://localhost:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} >/dev/null 2>&1 && mc ready local >/dev/null 2>&1",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
-  minio-init:
+  minio-setup:
     image: minio/mc:latest
-    container_name: minio-init-ecommerce
+    container_name: minio-setup-ecommerce
+    restart: "no"
     depends_on:
-      - minio
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    entrypoint:
-      - /bin/sh
-      - -c
-      - |
-        until mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} 2>/dev/null; do sleep 1; done
-        mc mb local/${MINIO_BUCKET} --ignore-existing
-        mc anonymous set download local/${MINIO_BUCKET}
+      minio:
+        condition: service_healthy
+    volumes:
+      - ./docker/minio-cors.xml:/config/cors.xml:ro
+      - ./docker/setup-minio.sh:/setup-minio.sh:ro
+    environment:
+      MINIO_HOST: minio
+      MINIO_PORT: "9000"
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    entrypoint: ["/bin/sh", "/setup-minio.sh"]
 
   redis:
     image: redis:alpine
