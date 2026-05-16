@@ -13,11 +13,8 @@ class PrismaService {
 	private initialDelayMs: number = 1000;
 
 	private configPrisma() {
-		const isRDS = environment.DATABASE_URL.includes("amazonaws.com") || environment.ENV === "PROD";
-
 		const pool = new Pool({
 			connectionString: environment.DATABASE_URL,
-			ssl: isRDS ? { rejectUnauthorized: false } : undefined,
 		});
 		const adapter = new PrismaPg(pool);
 
