@@ -26,6 +26,17 @@ RUN bun install --frozen-lockfile
 
 CMD ["bunx", "prisma", "migrate", "deploy"]
 
+FROM migrate AS seed
+
+COPY src ./src
+
+ENV DATABASE_URL="postgresql://build:build@127.0.0.1:5432/build"
+
+RUN bun install --frozen-lockfile \
+	&& bunx prisma generate
+
+CMD ["bunx", "prisma", "db", "seed"]
+
 FROM debian:bookworm-slim AS runner
 
 RUN apt-get update \
