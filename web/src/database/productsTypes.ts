@@ -1,3 +1,9 @@
+export interface ProductImage {
+	id: string;
+	url: string;
+	position: number;
+}
+
 export interface ProductSummary {
 	id: string;
 	name: string;
@@ -12,10 +18,11 @@ export interface ProductSummary {
 	inStock: boolean;
 }
 
-export interface ProductDetails extends ProductSummary {
+export interface ProductDetails extends Omit<ProductSummary, "images"> {
 	quantitySold: number;
 	description: string;
 	specs: Record<string, string>;
+	images: ProductImage[];
 	options?: SelectableOption[];
 	fullReviews?: Review[];
 }
