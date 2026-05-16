@@ -7,9 +7,11 @@
 		"dev": "astro dev",
 		"build": "astro build",
 		"preview": "astro preview",
+		"check":"npx astro check",
 		"astro": "astro"
 	},
 	"dependencies": {
+		"@astrojs/check": "^0.9.9",
 		"@astrojs/node": "^10.0.0",
 		"@astrojs/preact": "^5.1.0",
 		"@astrojs/vercel": "^10.0.3",
@@ -20,6 +22,7 @@
 		"nanostores": "^1.2.0",
 		"preact": "^10.29.0",
 		"simple-icons": "^16.14.0",
-		"tailwindcss": "^4.2.2"
+		"tailwindcss": "^4.2.2",
+		"typescript": "^6.0.3"
 	}
 }

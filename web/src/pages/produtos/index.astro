@@ -32,7 +32,7 @@ const [productsRes, categoriesRes] = await Promise.all([
         sortBy,
         sortOrder,
     }),
-    serverGet<Category[]>("/categories"),
+    serverGet<Category[]>("/categories", null),
 ]);
 
 const products = productsRes.data?.data ?? [];
