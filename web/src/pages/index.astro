@@ -8,6 +8,8 @@ import { formatPrice } from "@/lib/utils";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-preact";
 import type { PaginatedResponse, ProductSummary } from "@/database/productsTypes";
 
+export const prerender = false;
+
 const [offersRes, bestSellersRes] = await Promise.all([
 	serverGet<PaginatedResponse<ProductSummary>>("/products", null, {
 		limit: 4,
