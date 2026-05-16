@@ -1,4 +1,5 @@
 import type { Prisma } from "@/database/client/client";
+import storage from "@/lib/storage";
 
 type ProductWithRelations = Prisma.ProductGetPayload<{
 	include: {
@@ -21,7 +22,9 @@ export function toProductSummary(p: ProductSummaryPayload) {
 		price: Number(p.price),
 		category: p.category.name,
 		discountPercentage: p.discountPercentage !== null ? Number(p.discountPercentage) : null,
-		images: p.images.sort((a, b) => a.position - b.position).map((img) => img.url),
+		images: p.images
+			.sort((a, b) => a.position - b.position)
+			.map((img) => storage.resolvePublicUrl(img)),
 		rating: Number(p.rating),
 		reviewsCount: p.reviewsCount,
 		isNew: p.isNew,
@@ -38,7 +41,11 @@ export function toProductDetails(p: ProductWithRelations) {
 		specs: p.specs as Record<string, string>,
 		images: p.images
 			.sort((a, b) => a.position - b.position)
-			.map((img) => ({ id: img.id, url: img.url, position: img.position })),
+			.map((img) => ({
+				id: img.id,
+				url: storage.resolvePublicUrl(img),
+				position: img.position,
+			})),
 		options: p.options?.map((opt) => ({
 			id: opt.id,
 			label: opt.label,

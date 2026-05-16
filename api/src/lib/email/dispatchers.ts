@@ -1,5 +1,6 @@
 import { database } from "@/database/database";
 import { log } from "@/lib/dev";
+import storage from "@/lib/storage";
 import type { AbandonedCartItem, AbandonedCartJob, EmailJobData, PromotionJob, PromotionProduct } from "./types";
 
 // Importado no queue.ts para evitar dependência circular
@@ -30,7 +31,7 @@ export async function dispatchPromotions(addBulk: AddBulkFn) {
 		name: p.name,
 		price: Number(p.price),
 		discountPercentage: p.discountPercentage ? Number(p.discountPercentage) : null,
-		image: p.images[0]?.url ?? "",
+		image: p.images[0] ? storage.resolvePublicUrl(p.images[0]) : "",
 	}));
 
 	const jobs = users.map((user) => ({
@@ -69,7 +70,7 @@ export async function dispatchAbandonedCarts(addBulk: AddBulkFn) {
 	const jobs = carts.map((cart) => {
 		const items: AbandonedCartItem[] = cart.items.map((i) => ({
 			name: i.product.name,
-			image: i.product.images[0]?.url ?? "",
+			image: i.product.images[0] ? storage.resolvePublicUrl(i.product.images[0]) : "",
 			price: Number(i.product.price),
 			quantity: i.quantity,
 		}));

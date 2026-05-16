@@ -1,6 +1,7 @@
 import type { z } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
 import { database } from "@/database/database";
+import storage from "@/lib/storage";
 import { toOrder } from "@/modules/shared/utils/orderMapper";
 import { formatSelectedVariant, validateSelectedVariant } from "@/modules/shared/utils/variantValidation";
 import type { OrderCreateBodySchema } from "./create.schema";
@@ -50,7 +51,7 @@ export async function createOrder(userId: string, body: Body) {
 				productId: item.productId,
 				name: product.name,
 				variant: formatSelectedVariant(selectedVariant, product.options),
-				img: product.images[0]?.url ?? null,
+				img: product.images[0] ? storage.resolvePublicUrl(product.images[0]) : null,
 				quantity: item.quantity,
 				unitPrice,
 				discountPercentage,

@@ -30,7 +30,7 @@ export async function generateProductImageUpload(productId: string, body: Body) 
 		uploadUrl,
 		image: {
 			id: image.id,
-			url: image.url,
+			url: storage.resolvePublicUrl(image),
 			key: fileKey,
 			position: image.position,
 		},

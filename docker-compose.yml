@@ -96,7 +96,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
+      S3_ENDPOINT_URL: ${S3_ENDPOINT_URL}
+      S3_PUBLIC_URL: ${S3_PUBLIC_URL}
       S3_BUCKET: ${MINIO_BUCKET}
+      S3_REGION: ${S3_REGION}
       S3_ACCESS_KEY: ${MINIO_ROOT_USER}
       S3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       EMAIL_SERVICE_PORT: ${MAILPIT_SMTP_CONTAINER_PORT}

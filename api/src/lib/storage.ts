@@ -162,6 +162,21 @@ class StorageProvider {
 		return `${base}/${environment.S3_BUCKET}/${fileKey}`;
 	}
 
+	/** Reaplica S3_PUBLIC_URL atual; aceita key explícita ou extrai do path /{bucket}/{key} */
+	resolvePublicUrl(image: { url: string; key?: string | null }) {
+		if (image.key) {
+			return this.getPublicUrl(image.key);
+		}
+
+		const marker = `/${environment.S3_BUCKET}/`;
+		const markerIndex = image.url.indexOf(marker);
+		if (markerIndex !== -1) {
+			return this.getPublicUrl(image.url.slice(markerIndex + marker.length));
+		}
+
+		return image.url;
+	}
+
 	async testConnection(): Promise<boolean> {
 		try {
 			await this.client.send(new ListBucketsCommand({}));
