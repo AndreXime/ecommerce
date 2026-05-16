@@ -27,8 +27,8 @@ async function seedProducts(tx: Prisma.TransactionClient, categoryIds: string[])
 			specs: { Autonomia: "30h", Conectividade: "Bluetooth 5.3", Peso: "250g" },
 			categoryId: eletronicos,
 			images: [
-				{ label: "Fone Bluetooth Pro", bg: "#1e1e2e", textColor: "#89b4fa", position: 0 },
-				{ label: "Vista Traseira", bg: "#181825", textColor: "#cba6f7", position: 1 },
+				{ file: "image1.webp", position: 0 },
+				{ file: "image2.webp", position: 1 },
 			] satisfies ImageDef[],
 			options: [{ label: "Cor", uiType: "color" as const, values: ["bg-black", "bg-white", "bg-blue-600"] }],
 		},
@@ -42,7 +42,7 @@ async function seedProducts(tx: Prisma.TransactionClient, categoryIds: string[])
 			description: "Smartwatch com monitoramento de saúde avançado, GPS integrado e tela AMOLED.",
 			specs: { Tela: 'AMOLED 1.9"', GPS: "Sim", Resistência: "IP68", Bateria: "7 dias" },
 			categoryId: eletronicos,
-			images: [{ label: "Smartwatch Ultra", bg: "#24273a", textColor: "#f5a97f", position: 0 }] satisfies ImageDef[],
+			images: [{ file: "image3.webp", position: 0 }] satisfies ImageDef[],
 			options: [{ label: "Cor", uiType: "color" as const, values: ["bg-gray-800", "bg-yellow-500"] }],
 		},
 		{
@@ -55,7 +55,7 @@ async function seedProducts(tx: Prisma.TransactionClient, categoryIds: string[])
 			description: "Camiseta 100% algodão premium, corte moderno e confortável.",
 			specs: { Material: "100% Algodão", Lavagem: "Máquina" },
 			categoryId: roupas,
-			images: [{ label: "Camiseta Premium", bg: "#eff1f5", textColor: "#4c4f69", position: 0 }] satisfies ImageDef[],
+			images: [{ file: "image4.webp", position: 0 }] satisfies ImageDef[],
 			options: [
 				{ label: "Tamanho", uiType: "pill" as const, values: ["P", "M", "G", "GG"] },
 				{ label: "Cor", uiType: "color" as const, values: ["bg-white", "bg-black", "bg-blue-500"] },
@@ -71,7 +71,7 @@ async function seedProducts(tx: Prisma.TransactionClient, categoryIds: string[])
 			description: "Tênis de corrida com amortecimento avançado e solado antiderrapante.",
 			specs: { Solado: "Borracha antiderrapante", Cabedal: "Mesh respirável", Drop: "8mm" },
 			categoryId: calcados,
-			images: [{ label: "Runner 360", bg: "#11111b", textColor: "#f38ba8", position: 0 }] satisfies ImageDef[],
+			images: [{ file: "image5.webp", position: 0 }] satisfies ImageDef[],
 			options: [
 				{ label: "Numeração", uiType: "pill" as const, values: ["38", "39", "40", "41", "42", "43"] },
 				{ label: "Cor", uiType: "color" as const, values: ["bg-red-500", "bg-black", "bg-white"] },
