@@ -11,7 +11,7 @@ export interface User {
 		id: string;
 		date: string;
 		total: number;
-		status: "delivered" | "intransit" | "cancelled";
+		status: "pending" | "delivered" | "intransit" | "cancelled";
 		items: {
 			id: string;
 			name: string;

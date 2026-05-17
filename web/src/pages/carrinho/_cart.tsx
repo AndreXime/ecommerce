@@ -27,13 +27,13 @@ export default function CartPage() {
 		});
 	}, []);
 
-	const handleUpdateQuantity = async (productId: string, quantity: number) => {
-		const res = await request.patch<ApiCart>(`/cart/items/${productId}`, { quantity });
+	const handleUpdateQuantity = async (cartItemId: string, quantity: number) => {
+		const res = await request.patch<ApiCart>(`/cart/items/${cartItemId}`, { quantity });
 		if (res.ok) setCartItems(res.data.items);
 	};
 
-	const handleRemoveItem = async (productId: string) => {
-		const res = await request.delete<ApiCart>(`/cart/items/${productId}`);
+	const handleRemoveItem = async (cartItemId: string) => {
+		const res = await request.delete<ApiCart>(`/cart/items/${cartItemId}`);
 		if (res.ok) setCartItems(res.data.items);
 	};
 
@@ -105,7 +105,7 @@ export default function CartPage() {
 
 							<div class="flex items-center border border-gray-300 rounded-lg h-10" role="group" aria-label={`Quantidade de ${item.name}`}>
 								<button
-									onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+									onClick={() => handleUpdateQuantity(item.cartItemId, item.quantity - 1)}
 									aria-label={`Diminuir quantidade de ${item.name}`}
 									class="px-3 hover:bg-gray-100 h-full text-gray-600 rounded-l-lg"
 									disabled={item.quantity <= 1}
@@ -114,7 +114,7 @@ export default function CartPage() {
 								</button>
 								<span class="w-10 text-center font-semibold text-gray-900" aria-live="polite" aria-atomic="true">{item.quantity}</span>
 								<button
-									onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+									onClick={() => handleUpdateQuantity(item.cartItemId, item.quantity + 1)}
 									aria-label={`Aumentar quantidade de ${item.name}`}
 									class="px-3 hover:bg-gray-100 h-full text-gray-600 rounded-r-lg"
 								>
@@ -125,7 +125,7 @@ export default function CartPage() {
 							<div class="text-right flex flex-col items-end min-w-[100px]">
 								<p class="font-bold text-lg text-gray-900">{formatPrice(item.price * item.quantity)}</p>
 								<button
-									onClick={() => handleRemoveItem(item.id)}
+									onClick={() => handleRemoveItem(item.cartItemId)}
 									aria-label={`Remover ${item.name} do carrinho`}
 									class="text-xs text-red-500 hover:text-red-700 mt-1 flex items-center"
 								>

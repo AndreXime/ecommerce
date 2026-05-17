@@ -9,9 +9,17 @@ import type { Order } from "../types";
 import { ordersStore, loadOrders, setOrdersPage } from "../stores/ordersStore";
 
 const STATUS_STYLES: Record<Order["status"], string> = {
+	pending: "bg-yellow-100 text-yellow-800",
 	delivered: "bg-green-100 text-green-800",
 	intransit: "bg-blue-100 text-blue-800",
 	cancelled: "bg-red-100 text-red-800",
+};
+
+const STATUS_OPTIONS: Record<Order["status"], string> = {
+	pending: "Pendente",
+	intransit: "Em Trânsito",
+	delivered: "Entregue",
+	cancelled: "Cancelado",
 };
 
 export function OrdersTab() {
@@ -83,9 +91,11 @@ export function OrdersTab() {
 												}
 												className={`text-xs font-medium px-2.5 py-1 rounded-full border-0 outline-none cursor-pointer ${STATUS_STYLES[order.status]}`}
 											>
-												<option value="intransit">Em Trânsito</option>
-												<option value="delivered">Entregue</option>
-												<option value="cancelled">Cancelado</option>
+												{(Object.keys(STATUS_OPTIONS) as Order["status"][]).map((status) => (
+													<option key={status} value={status}>
+														{STATUS_OPTIONS[status]}
+													</option>
+												))}
 											</select>
 										</td>
 									</tr>
