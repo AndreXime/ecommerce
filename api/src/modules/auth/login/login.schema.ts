@@ -8,6 +8,7 @@ export const LoginRequestSchema = UserSchema.pick({
 
 export const LoginResponseSchema = z.object({
 	message: z.string().openapi({ example: "Login com sucesso" }),
+	role: UserSchema.shape.role,
 });
 
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;

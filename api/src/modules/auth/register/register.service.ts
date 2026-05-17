@@ -20,7 +20,9 @@ async function signUp(data: RegisterRequest) {
 
 		sendWelcomeEmail(user);
 
-		return generateAuthTokens(user.id, user.email, user.name, user.role, user.sessionVersion);
+		const tokens = await generateAuthTokens(user.id, user.email, user.name, user.role, user.sessionVersion);
+
+		return { ...tokens, role: user.role };
 	} catch (error: unknown) {
 		if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
 			throw new HTTPException(409, { message: "Este e-mail já está cadastrado." });

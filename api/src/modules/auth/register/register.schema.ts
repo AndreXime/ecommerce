@@ -20,6 +20,7 @@ export const RegisterRequestSchema = UserSchema.omit({
 
 export const RegisterResponseSchema = z.object({
 	message: z.string().openapi({ example: "Cadastro enviado com sucesso" }),
+	role: UserSchema.shape.role,
 });
 
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;

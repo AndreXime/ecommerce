@@ -17,7 +17,9 @@ async function signIn({ email, password }: LoginRequest) {
 		throw new HTTPException(401, { message: "Email ou senha inválidos" });
 	}
 
-	return generateAuthTokens(user.id, user.email, user.name, user.role, user.sessionVersion);
+	const tokens = await generateAuthTokens(user.id, user.email, user.name, user.role, user.sessionVersion);
+
+	return { ...tokens, role: user.role };
 }
 
 export { signIn };

@@ -2,7 +2,10 @@ import { toast } from "@/lib/toast";
 import { useState } from "preact/hooks";
 import { Eye, EyeOff } from "lucide-preact";
 import { request } from "@/lib/request";
-import type { User } from "@/database/users";
+interface AuthResponse {
+	message: string;
+	role: "ADMIN" | "CUSTOMER" | "SUPPORT";
+}
 
 export default function Auth() {
 	const [activeTab, setActiveTab] = useState<"login" | "register">("login");
@@ -17,7 +20,7 @@ export default function Auth() {
 		const email = formData.get("email") as string;
 		const password = formData.get("password") as string;
 
-		const response = await request.post<User>("/auth/login", { email, password });
+		const response = await request.post<AuthResponse>("/auth/login", { email, password });
 
 		if (!response.ok) {
 			if (response.errors) {
@@ -29,8 +32,7 @@ export default function Auth() {
 			}
 		} else {
 			toast.success("Login feito com sucesso");
-			window.location.href =
-				response.data.personalData.role === "ADMIN" ? "/admin" : "/perfil";
+			window.location.href = response.data.role === "ADMIN" ? "/admin" : "/perfil";
 		}
 
 		setLoading(false);
@@ -46,7 +48,7 @@ export default function Auth() {
 		const password = formData.get("password") as string;
 		const confirmPassword = formData.get("confirmPassword") as string;
 
-		const response = await request.post<User>("/auth/register", {
+		const response = await request.post<AuthResponse>("/auth/register", {
 			name,
 			email,
 			password,
@@ -63,8 +65,7 @@ export default function Auth() {
 			}
 		} else {
 			toast.success("Registro feito com sucesso");
-			window.location.href =
-				response.data.personalData.role === "ADMIN" ? "/admin" : "/perfil";
+			window.location.href = response.data.role === "ADMIN" ? "/admin" : "/perfil";
 		}
 
 		setLoading(false);

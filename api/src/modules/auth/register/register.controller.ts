@@ -8,11 +8,11 @@ const registerRoutesSignUp = (server: OpenAPIHono<AppBindings>) => {
 	server.openapi(RegisterRoute, async (ctx) => {
 		const validatedData = ctx.req.valid("json");
 
-		const { accessToken, refreshToken } = await signUp(validatedData);
+		const { accessToken, refreshToken, role } = await signUp(validatedData);
 
 		setAuthCookies(ctx, accessToken, refreshToken);
 
-		return ctx.json({ message: "Cadastro enviado com sucesso" }, 201);
+		return ctx.json({ message: "Cadastro enviado com sucesso", role }, 201);
 	});
 };
 
