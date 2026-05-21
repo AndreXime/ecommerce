@@ -27,6 +27,9 @@ export default defineConfig({
 		optimizeDeps: {
 			include: ["nanostores", "@nanostores/preact"],
 		},
+		ssr: {
+			noExternal: ["lucide-preact"],
+		},
 	},
 	build: {
 		inlineStylesheets: "always",
