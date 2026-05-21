@@ -45,6 +45,8 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
+Com a API no Compose, `DATABASE_URL`, `REDIS_URL` e `S3_ENDPOINT_URL` devem apontar para os **servicos** (`db`, `redis`, `minio`), nao para `host.docker.internal`. Esse host e para quando a API roda no host e so a infra esta no Compose.
+
 - Loja: `http://localhost:<WEB_PORT>` (definido no `.env`)
 - API: `http://localhost:<API_PORT>`
 - OpenAPI / Scalar (só com `ENV=DEV` na API): `http://localhost:<API_PORT>/docs`
