@@ -22,7 +22,7 @@ if (status === 401 || !userData) {
 >
     <Header hideSearch />
 
-    <main class="flex-grow container mx-auto px-4 py-8 bg-gray-50 min-h-[85vh]" transition:animate="fade">
+    <main class="flex-grow container mx-auto px-4 py-8 bg-gray-50 min-h-[85vh]">
         <AccountDashboard client:load user={userData} />
     </main>
 

@@ -13,7 +13,6 @@ export const prerender = false;
 	<Header hideSearch />
 	<main
 		class="flex-grow container mx-auto px-4 py-12 flex flex-col items-center justify-center gap-4 bg-gray-50 min-h-[60vh]"
-		transition:animate="fade"
 	>
 		<Loader2
 			class="w-10 h-10 text-gray-600 animate-spin"
@@ -24,10 +23,9 @@ export const prerender = false;
 </Layout>
 
 <script>
-	import { navigate } from "astro:transitions/client";
 	import { resolveRefreshRedirect } from "@/lib/platform/refreshSession";
 
 	resolveRefreshRedirect().then((redirect) => {
-		navigate(redirect, { history: "replace" });
+		location.replace(redirect);
 	});
 </script>
