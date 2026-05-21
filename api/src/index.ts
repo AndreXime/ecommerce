@@ -47,11 +47,21 @@ if (environment.ENV === "DEV") {
 server.notFound((c) => c.json({ message: "Rota não econtrada" }, 404));
 
 log(`Iniciando servidor no modo: ${environment.ENV}`, "info");
+
+log("Verificando S3...", "info");
 await storage.testConnection();
+
+log("Verificando banco de dados...", "info");
 await PrismaDatabase.testConnection();
+
+log("Verificando Redis...", "info");
 await redis.testConnection();
+
+log("Inicializando fila de email...", "info");
 await setupEmailWorker();
 await setupPromotionScheduler();
 await setupAbandonedCartScheduler();
+
+log(`Servidor pronto na porta ${environment.PORT}.`, "success");
 
 export default server;

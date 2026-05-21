@@ -1,6 +1,6 @@
 import { Queue, Worker } from "bullmq";
 import nodemailer from "nodemailer";
-import { log } from "@/lib/dev";
+import { log, withStartupTimeout } from "@/lib/dev";
 import environment from "@/lib/environment";
 import { dispatchAbandonedCarts, dispatchPromotions } from "./dispatchers";
 import { abandonedCartTemplate, forgotPasswordTemplate, promotionTemplate, welcomeTemplate } from "./templates";
@@ -15,11 +15,13 @@ const jobOptions = { attempts: 3, backoff: { type: "exponential", delay: 5000 } 
 
 export const emailQueue = new Queue<EmailJobData>("email-queue", { connection });
 
+const smtpSecure = environment.EMAIL_SERVICE_PORT === 465;
+
 const transport = nodemailer.createTransport({
 	host: environment.EMAIL_SERVICE_HOST,
 	port: environment.EMAIL_SERVICE_PORT,
-	secure: environment.ENV === "PROD",
-	tls: { rejectUnauthorized: environment.ENV === "PROD" },
+	secure: smtpSecure,
+	...(smtpSecure ? { tls: { rejectUnauthorized: environment.ENV === "PROD" } } : {}),
 });
 
 // ─── Enfileiradores públicos ──────────────────────────────────────────────────
@@ -98,7 +100,7 @@ export const setupEmailWorker = async () => {
 	});
 
 	try {
-		await transport.verify();
+		await withStartupTimeout("SMTP", 10_000, transport.verify());
 		log("Conexão com serviço de email bem-sucedida.", "success");
 	} catch {
 		log("Falha na conexão com o SMTP.", "error");

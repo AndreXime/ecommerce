@@ -8,7 +8,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import environment from "@/lib/environment";
-import { log } from "./dev";
+import { log, withStartupTimeout } from "./dev";
 
 class StorageProvider {
 	private client: S3Client;
@@ -179,7 +179,11 @@ class StorageProvider {
 
 	async testConnection(): Promise<boolean> {
 		try {
-			await this.client.send(new ListBucketsCommand({}));
+			await withStartupTimeout(
+				"S3",
+				15_000,
+				this.client.send(new ListBucketsCommand({}), { requestTimeout: 10_000 }),
+			);
 
 			log("Conexão S3 bem-sucedida.", "success");
 			return true;

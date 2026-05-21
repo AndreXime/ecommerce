@@ -13,6 +13,15 @@ export function log(message: string, cor: keyof typeof CORES_ANSI) {
 	console.log(CORES_ANSI[cor] + message + CORES_ANSI.reset);
 }
 
+export function withStartupTimeout<T>(label: string, ms: number, promise: Promise<T>): Promise<T> {
+	return Promise.race([
+		promise,
+		new Promise<never>((_, reject) => {
+			setTimeout(() => reject(new Error(`${label}: timeout após ${ms}ms`)), ms);
+		}),
+	]);
+}
+
 export function setupDocs(server: ServerType) {
 	server.doc("/docs-json", {
 		openapi: "3.0.0",
