@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.PUBLIC_API_URL as string;
+import { PUBLIC_API_URL } from "astro:env/client";
 
 type Params = Record<string, string | number | boolean | null | undefined>;
 
@@ -7,7 +7,13 @@ export async function serverGet<T>(
 	cookieHeader: string | null,
 	params?: Params,
 ): Promise<{ data: T | null; status: number }> {
-	const url = new URL(`${BASE_URL}${path}`);
+	let url: URL;
+	try {
+		url = new URL(`${PUBLIC_API_URL}${path}`);
+	} catch {
+		console.error("PUBLIC_API_URL inválida:", PUBLIC_API_URL);
+		return { data: null, status: 0 };
+	}
 
 	if (params) {
 		for (const [key, value] of Object.entries(params)) {

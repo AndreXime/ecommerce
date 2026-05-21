@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 
 import tailwindcss from "@tailwindcss/vite";
 
@@ -12,6 +12,15 @@ const useNodeAdapter = process.env.ASTRO_ADAPTER === "node";
 // https://astro.build/config
 export default defineConfig({
 	site: "https://ecommerce.andreximenes.xyz",
+
+	env: {
+		schema: {
+			PUBLIC_API_URL: envField.string({
+				context: "client",
+				access: "public",
+			}),
+		},
+	},
 
 	vite: {
 		plugins: [tailwindcss()],
