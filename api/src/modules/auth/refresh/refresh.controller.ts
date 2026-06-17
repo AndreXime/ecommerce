@@ -1,6 +1,6 @@
 import { getCookie } from "hono/cookie";
 import { HTTPException } from "hono/http-exception";
-import { setAuthCookies } from "../shared/tokens";
+import { setAuthCookies } from "../shared/cookies";
 import { RefreshRoute } from "./refresh.docs";
 import { generateRefreshTokens } from "./refresh.service";
 

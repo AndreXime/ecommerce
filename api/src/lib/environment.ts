@@ -53,6 +53,13 @@ const SchemaEnvironment = z.object({
 	DATABASE_URL: z.url(),
 	REDIS_URL: z.url(),
 	FRONTEND_URL: z.url(),
+	COOKIE_DOMAIN: z.preprocess(
+		(val) => (val === undefined || val === "" ? undefined : val),
+		z
+			.string()
+			.regex(/^\./, { message: "COOKIE_DOMAIN deve começar com '.' (ex: .ecommerce.com)" })
+			.optional(),
+	),
 
 	S3_ENDPOINT_URL: z.url(),
 	S3_PUBLIC_URL: z.preprocess(

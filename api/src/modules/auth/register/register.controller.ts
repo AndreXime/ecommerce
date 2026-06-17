@@ -1,6 +1,6 @@
 import type { OpenAPIHono } from "@hono/zod-openapi";
 import type { AppBindings } from "@/@types/declarations";
-import { setAuthCookies } from "../shared/tokens";
+import { setAuthCookies } from "../shared/cookies";
 import { RegisterRoute } from "./register.docs";
 import { signUp } from "./register.service";
 

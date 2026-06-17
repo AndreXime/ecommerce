@@ -1,4 +1,4 @@
-import { setAuthCookies } from "../shared/tokens";
+import { setAuthCookies } from "../shared/cookies";
 import { LoginRoute } from "./login.docs";
 import { signIn } from "./login.service";
 

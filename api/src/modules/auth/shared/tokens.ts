@@ -1,5 +1,3 @@
-import type { Context } from "hono";
-import { setCookie } from "hono/cookie";
 import { sign } from "hono/jwt";
 import type { Prisma } from "prisma";
 import type { Roles } from "@/database/client/enums";
@@ -64,22 +62,4 @@ export async function generateAuthTokens(
 	return { accessToken, refreshToken };
 }
 
-export function setAuthCookies(ctx: Context, accessToken: string, refreshToken: string) {
-	const isProd = environment.ENV === "PROD";
-
-	setCookie(ctx, "accessToken", accessToken, {
-		httpOnly: true,
-		secure: isProd,
-		sameSite: "Strict",
-		path: "/",
-		maxAge: environment.JWT_ACCESS_EXPIRATION,
-	});
-
-	setCookie(ctx, "refreshToken", refreshToken, {
-		httpOnly: true,
-		secure: isProd,
-		sameSite: "Strict",
-		path: "/auth", // Só é enviado para rotas de autenticação
-		maxAge: environment.JWT_REFRESH_EXPIRATION,
-	});
-}
+export { setAuthCookies, clearAuthCookies } from "./cookies";

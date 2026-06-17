@@ -1,4 +1,5 @@
-import { deleteCookie, getCookie } from "hono/cookie";
+import { getCookie } from "hono/cookie";
+import { clearAuthCookies } from "../shared/cookies";
 import { LogoutRoute } from "./logout.docs";
 import { invalidateSession } from "./logout.service";
 
@@ -9,8 +10,7 @@ export const registerRoutesLogout = (server: ServerType) => {
 
 		await invalidateSession(accessToken, refreshToken);
 
-		deleteCookie(ctx, "accessToken", { path: "/" });
-		deleteCookie(ctx, "refreshToken", { path: "/auth" });
+		clearAuthCookies(ctx);
 
 		return ctx.json({ message: "Logout com sucesso" }, 200);
 	});

@@ -1,11 +1,12 @@
 import type { MiddlewareHandler } from "hono";
-import { deleteCookie, getCookie } from "hono/cookie";
+import { getCookie } from "hono/cookie";
 import { verify } from "hono/jwt";
 import type { AppBindings, JWT } from "@/@types/declarations";
 import type { Roles } from "@/database/client/enums";
 import { database } from "@/database/database";
 import environment from "@/lib/environment";
 import blocklist from "@/modules/auth/shared/blocklist";
+import { clearAuthCookies } from "@/modules/auth/shared/cookies";
 
 export default function auth(requiredRoles: Roles[]): MiddlewareHandler<AppBindings> {
 	return async (ctx, next) => {
@@ -45,14 +46,14 @@ export default function auth(requiredRoles: Roles[]): MiddlewareHandler<AppBindi
 			}
 
 			if (user.sessionVersion !== userPayload.sessionVersion) {
-				deleteCookie(ctx, "accessToken");
+				clearAuthCookies(ctx);
 				return ctx.json({ message: "Sessão expirada. Faça login novamente." }, 401);
 			}
 
 			if (userPayload.jti) {
 				const isBlocked = await blocklist.isBlocked(userPayload.jti);
 				if (isBlocked) {
-					deleteCookie(ctx, "accessToken");
+					clearAuthCookies(ctx);
 					return ctx.json({ message: "Token revogado. Faça login novamente." }, 401);
 				}
 			}
