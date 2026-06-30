@@ -1,0 +1,380 @@
+---
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Layout from "@/layout/layout.astro";
+import ContactForm from "./_contactForm";
+import {
+	Clock,
+	CreditCard,
+	Headphones,
+	Mail,
+	MapPin,
+	MessageCircle,
+	Package,
+	RotateCcw,
+	Shield,
+	User,
+} from "lucide-preact";
+
+const supportEmail = "contato@emporium.com";
+
+const channels = [
+	{
+		icon: Mail,
+		title: "Email",
+		description: "Resposta em até 1 dia útil.",
+		href: `mailto:${supportEmail}`,
+		action: supportEmail,
+	},
+	{
+		icon: User,
+		title: "Área logada",
+		description: "Pedidos, endereços e dados da conta.",
+		href: "/perfil",
+		action: "Acessar minha conta",
+	},
+	{
+		icon: Package,
+		title: "Rastrear pedido",
+		description: "Histórico e status na sua conta.",
+		href: "/perfil",
+		action: "Ver meus pedidos",
+	},
+	{
+		icon: Clock,
+		title: "Horário",
+		description:
+			"Segunda a sexta, 9h às 18h · Sábado, 9h às 13h (horário de Brasília).",
+		href: null,
+		action: null,
+	},
+];
+
+const faqSections = [
+	{
+		id: "pedidos",
+		title: "Pedidos e entrega",
+		icon: Package,
+		items: [
+			{
+				q: "Como acompanho meu pedido?",
+				a: "Após a confirmação do pagamento, você recebe um email com o status. Também pode consultar em Minha Conta → Meus Pedidos, com atualizações de processamento, envio e entrega.",
+			},
+			{
+				q: "Qual o prazo de entrega?",
+				a: "O prazo padrão é de 5 a 7 dias úteis para todo o Brasil, contados após a confirmação do pagamento. O prazo exato aparece no checkout antes de finalizar a compra.",
+			},
+			{
+				q: "Posso alterar o endereço depois de comprar?",
+				a: "Se o pedido ainda estiver em processamento, entre em contato o quanto antes pelo formulário abaixo informando o número do pedido. Após o envio, não é possível alterar o destino.",
+			},
+			{
+				q: "Meu pedido está atrasado. O que faço?",
+				a: "Verifique o rastreamento na sua conta. Se o prazo estimado já passou, envie uma mensagem com o número do pedido para que nossa equipe verifique com a transportadora.",
+			},
+		],
+	},
+	{
+		id: "pagamentos",
+		title: "Pagamentos",
+		icon: CreditCard,
+		items: [
+			{
+				q: "Quais formas de pagamento são aceitas?",
+				a: "Cartão de crédito, Pix e boleto bancário. As opções disponíveis aparecem na etapa de pagamento do checkout.",
+			},
+			{
+				q: "O pagamento via Pix é confirmado na hora?",
+				a: "Sim. Após o pagamento do Pix, a confirmação costuma ser imediata e você recebe o email de confirmação em seguida.",
+			},
+			{
+				q: "Posso parcelar no cartão?",
+				a: "Sim. Na página do produto exibimos parcelamento em até 12x sem juros, conforme condições do emissor do cartão no momento da compra.",
+			},
+			{
+				q: "Fui cobrado mas o pedido não apareceu. E agora?",
+				a: "Aguarde alguns minutos e atualize a área de pedidos. Se persistir, envie comprovante e data da transação pelo formulário de contato.",
+			},
+		],
+	},
+	{
+		id: "trocas",
+		title: "Trocas e devoluções",
+		icon: RotateCcw,
+		items: [
+			{
+				q: "Qual o prazo para devolver um produto?",
+				a: "Até 30 dias após o recebimento, desde que o item esteja na embalagem original, sem sinais de uso indevido e com todos os acessórios.",
+			},
+			{
+				q: "Como solicito uma troca ou devolução?",
+				a: "Envie uma mensagem pelo formulário abaixo com o número do pedido, motivo da solicitação e fotos do produto, se necessário. Nossa equipe envia as instruções de postagem ou coleta.",
+			},
+			{
+				q: "Quem paga o frete da devolução?",
+				a: "Em caso de defeito ou erro no envio, o frete é por nossa conta. Em desistência dentro do prazo legal, o custo de retorno pode ser do cliente, conforme política informada no ato da solicitação.",
+			},
+			{
+				q: "Quando recebo o reembolso?",
+				a: "Após recebermos e inspecionarmos o produto, o reembolso é processado no mesmo meio de pagamento em até 10 dias úteis, dependendo da operadora ou banco.",
+			},
+		],
+	},
+	{
+		id: "conta",
+		title: "Conta e login",
+		icon: User,
+		items: [
+			{
+				q: "Esqueci minha senha. Como recupero?",
+				a: "Na página de login, use a opção de recuperação de senha. Se não receber o email em alguns minutos, verifique a caixa de spam ou fale conosco pelo formulário.",
+			},
+			{
+				q: "Como atualizo meus dados pessoais?",
+				a: "Em Minha Conta → Dados Pessoais você pode editar nome e telefone. O email de login não pode ser alterado pelo painel; solicite a mudança pelo atendimento.",
+			},
+			{
+				q: "Posso comprar sem criar conta?",
+				a: "É necessário estar logado para finalizar a compra e acompanhar pedidos. O cadastro é rápido e permite salvar endereços e cartões para próximas compras.",
+			},
+		],
+	},
+	{
+		id: "produtos",
+		title: "Produtos e garantia",
+		icon: Shield,
+		items: [
+			{
+				q: "Os produtos têm garantia?",
+				a: "Todos os itens possuem garantia do fabricante. O prazo e o tipo (fabricante ou loja) constam na página de cada produto e na nota fiscal.",
+			},
+			{
+				q: "Recebi um produto com defeito. O que fazer?",
+				a: "Não utilize o item. Entre em contato em até 7 dias informando o defeito e anexe fotos ou vídeos. Providenciamos troca, reparo ou reembolso conforme o caso.",
+			},
+			{
+				q: "A embalagem veio danificada. Devo recusar?",
+				a: "Se o dano for apenas na embalagem externa, verifique o produto antes de recusar. Se houver avaria no item, registre na entrega quando possível e nos avise imediatamente.",
+			},
+		],
+	},
+];
+---
+
+<Layout
+	title="Atendimento | Emporium da Tecnologia"
+	description="Central de ajuda do Emporium da Tecnologia. Tire dúvidas sobre pedidos, entregas, pagamentos, trocas e fale com nossa equipe."
+>
+	<Header />
+
+	<main class="page-shell flex-grow py-8 lg:py-12">
+		<header class="mb-10 lg:mb-14 max-w-2xl">
+			<h1 class="font-display font-semibold text-display-s text-ink mb-3">
+				Central de atendimento
+			</h1>
+			<p class="text-ink-2 leading-relaxed">
+				Dúvidas sobre pedidos, entrega, pagamento ou troca? Confira as
+				respostas abaixo ou envie uma mensagem para nossa equipe.
+			</p>
+		</header>
+
+		<section class="mb-12 lg:mb-16" aria-labelledby="channels-heading">
+			<h2 id="channels-heading" class="sr-only">Canais de atendimento</h2>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+				{
+					channels.map((channel) => (
+						<div class="app-panel p-5 flex flex-col gap-3 min-w-0">
+							<div class="w-10 h-10 rounded-full bg-accent-soft text-accent flex items-center justify-center shrink-0">
+								<channel.icon size={20} aria-hidden="true" />
+							</div>
+							<div class="min-w-0 flex-grow">
+								<h3 class="font-semibold text-ink mb-1">
+									{channel.title}
+								</h3>
+								<p class="text-sm text-muted leading-relaxed">
+									{channel.description}
+								</p>
+							</div>
+							{channel.href ? (
+								<a
+									href={channel.href}
+									class="text-sm font-medium text-accent hover:underline mt-auto truncate"
+								>
+									{channel.action}
+								</a>
+							) : (
+								<span class="text-sm text-muted mt-auto">
+									{channel.action}
+								</span>
+							)}
+						</div>
+					))
+				}
+			</div>
+		</section>
+
+		<div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 min-w-0">
+			<section
+				class="lg:col-span-7 min-w-0"
+				aria-labelledby="faq-heading"
+			>
+				<div class="flex flex-col gap-2 mb-8">
+					<h2
+						id="faq-heading"
+						class="font-display font-semibold text-xl text-ink"
+					>
+						Perguntas frequentes
+					</h2>
+					<p class="text-sm text-muted">
+						Clique na pergunta para ver a resposta.
+					</p>
+				</div>
+
+				<nav
+					class="flex flex-wrap gap-2 mb-8"
+					aria-label="Atalhos do FAQ"
+				>
+					{
+						faqSections.map((section) => (
+							<a
+								href={`#faq-${section.id}`}
+								class="btn btn-secondary !py-1.5 !px-3 text-xs"
+							>
+								{section.title}
+							</a>
+						))
+					}
+				</nav>
+
+				<div class="space-y-8">
+					{
+						faqSections.map((section) => (
+							<div
+								id={`faq-${section.id}`}
+								class="scroll-mt-28 min-w-0"
+							>
+								<div class="flex items-center gap-2 mb-4">
+									<section.icon
+										size={18}
+										class="text-accent shrink-0"
+										aria-hidden="true"
+									/>
+									<h3 class="font-display font-semibold text-lg text-ink">
+										{section.title}
+									</h3>
+								</div>
+								<div class="space-y-2">
+									{section.items.map((item) => (
+										<details class="app-panel group overflow-hidden">
+											<summary class="flex items-center justify-between gap-4 p-4 font-medium text-ink cursor-pointer select-none hover:bg-paper-2 transition-colors list-none">
+												<span class="min-w-0 text-left">
+													{item.q}
+												</span>
+												<MessageCircle
+													size={16}
+													class="text-muted shrink-0 group-open:text-accent transition-colors"
+													aria-hidden="true"
+												/>
+											</summary>
+											<div class="px-4 pb-4 text-sm text-ink-2 leading-relaxed border-t border-rule">
+												{item.a}
+											</div>
+										</details>
+									))}
+								</div>
+							</div>
+						))
+					}
+				</div>
+			</section>
+
+			<aside class="lg:col-span-5 min-w-0">
+				<div class="lg:sticky lg:top-28 space-y-6">
+					<section
+						class="app-panel p-6"
+						aria-labelledby="contact-form-heading"
+						id="contato"
+					>
+						<div class="flex items-center gap-2 mb-2">
+							<Headphones
+								size={20}
+								class="text-accent"
+								aria-hidden="true"
+							/>
+							<h2
+								id="contact-form-heading"
+								class="font-display font-semibold text-lg text-ink"
+							>
+								Fale conosco
+							</h2>
+						</div>
+						<p class="text-sm text-muted mb-6">
+							Não encontrou o que precisa? Preencha o formulário e
+							envie pelo seu email.
+						</p>
+						<ContactForm client:idle />
+					</section>
+
+					<section
+						class="app-panel p-6"
+						aria-labelledby="policies-heading"
+					>
+						<div class="flex items-center gap-2 mb-4">
+							<MapPin
+								size={18}
+								class="text-accent"
+								aria-hidden="true"
+							/>
+							<h2
+								id="policies-heading"
+								class="font-semibold text-ink"
+							>
+								Informações úteis
+							</h2>
+						</div>
+						<ul class="space-y-3 text-sm text-ink-2">
+							<li class="flex gap-2">
+								<span
+									class="text-accent shrink-0"
+									aria-hidden="true">·</span
+								>
+								<span
+									>Entregas para todo o Brasil via
+									transportadoras parceiras.</span
+								>
+							</li>
+							<li class="flex gap-2">
+								<span
+									class="text-accent shrink-0"
+									aria-hidden="true">·</span
+								>
+								<span
+									>Nota fiscal enviada por email após a
+									confirmação do pedido.</span
+								>
+							</li>
+							<li class="flex gap-2">
+								<span
+									class="text-accent shrink-0"
+									aria-hidden="true">·</span
+								>
+								<span>
+									Dados tratados conforme nossa política de
+									privacidade. Dúvidas sobre LGPD:{" "}
+									<a
+										href={`mailto:${supportEmail}`}
+										class="text-accent hover:underline"
+									>
+										{supportEmail}
+									</a>
+								</span>
+							</li>
+						</ul>
+					</section>
+				</div>
+			</aside>
+		</div>
+	</main>
+
+	<Footer />
+</Layout>
