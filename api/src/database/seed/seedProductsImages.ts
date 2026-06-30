@@ -1,19 +1,23 @@
-import { join } from "node:path";
 import storage from "@/lib/storage";
 
 export type ImageDef = {
-	file: string;
+	url: string;
 	position: number;
 };
 
 export type SeedImage = { url: string; position: number };
 
-const SEED_IMAGES_DIR = join(import.meta.dir, "images");
+async function loadImageBuffer(url: string): Promise<Buffer> {
+	const response = await fetch(url);
+	if (!response.ok) {
+		throw new Error(`Falha ao baixar imagem: ${url} (${response.status})`);
+	}
+	return Buffer.from(await response.arrayBuffer());
+}
 
 async function uploadSeedImage(def: ImageDef, productTag: string, date: string): Promise<SeedImage> {
-	const sourcePath = join(SEED_IMAGES_DIR, def.file);
 	const fileKey = `products/seed/${productTag}-${def.position}-${date}.webp`;
-	const buffer = Buffer.from(await Bun.file(sourcePath).arrayBuffer());
+	const buffer = await loadImageBuffer(def.url);
 
 	await storage.uploadFile({
 		data: buffer,
@@ -31,7 +35,7 @@ export async function generateSeedProductImages(
 	const result: Record<string, SeedImage[]> = {};
 	const date = new Date().toISOString().slice(0, 19).replace("T", "-").replace(/:/g, "-");
 
-	console.log("[imagens] fazendo upload das imagens .webp para S3");
+	console.log("[imagens] fazendo upload das imagens para S3");
 
 	for (const product of products) {
 		console.log(`[imagens] enviando imagens de "${product.tag}"...`);

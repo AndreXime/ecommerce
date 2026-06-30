@@ -1,94 +1,38 @@
 import { hashPassword } from "@/modules/auth/shared/hash";
 import type { Prisma } from "../client/client";
 import { database } from "../database";
-import { generateSeedProductImages, type ImageDef } from "./seedProductsImages";
+import { generateSeedProductImages } from "./seedProductsImages";
+import { getCategoryLabel, getCategorySlugs, loadSeedProducts, type SeedProduct } from "./seedProductsData";
 
-async function seedCategories(tx: Prisma.TransactionClient) {
-	const categories = ["Eletrônicos", "Roupas", "Calçados", "Casa & Decoração", "Esportes"];
+async function seedCategories(tx: Prisma.TransactionClient, categorySlugs: string[]) {
+	const names = categorySlugs.map((slug) => getCategoryLabel(slug));
 	return tx.category.createManyAndReturn({
-		data: categories.map((name) => ({ name })),
+		data: names.map((name) => ({ name })),
 		skipDuplicates: true,
 	});
 }
 
-async function seedProducts(tx: Prisma.TransactionClient, categoryIds: string[]) {
-	const [eletronicos, roupas, calcados] = categoryIds;
-
-	const products = [
-		{
-			name: "Fone Bluetooth Pro",
-			tag: "fone-bluetooth-pro",
-			price: 299.9,
-			discountPercentage: 10,
-			isNew: true,
-			inStock: true,
-			stockQuantity: 15,
-			description: "Fone de ouvido bluetooth com cancelamento de ruído ativo e bateria de 30h.",
-			specs: { Autonomia: "30h", Conectividade: "Bluetooth 5.3", Peso: "250g" },
-			categoryId: eletronicos,
-			images: [
-				{ file: "image1.webp", position: 0 },
-				{ file: "image2.webp", position: 1 },
-			] satisfies ImageDef[],
-			options: [{ label: "Cor", uiType: "color" as const, values: ["bg-black", "bg-white", "bg-blue-600"] }],
-		},
-		{
-			name: "Smartwatch Ultra",
-			tag: "smartwatch-ultra",
-			price: 899.9,
-			isNew: true,
-			inStock: true,
-			stockQuantity: 8,
-			description: "Smartwatch com monitoramento de saúde avançado, GPS integrado e tela AMOLED.",
-			specs: { Tela: 'AMOLED 1.9"', GPS: "Sim", Resistência: "IP68", Bateria: "7 dias" },
-			categoryId: eletronicos,
-			images: [{ file: "image3.webp", position: 0 }] satisfies ImageDef[],
-			options: [{ label: "Cor", uiType: "color" as const, values: ["bg-gray-800", "bg-yellow-500"] }],
-		},
-		{
-			name: "Camiseta Premium",
-			tag: "camiseta-premium",
-			price: 89.9,
-			discountPercentage: 20,
-			inStock: true,
-			stockQuantity: 30,
-			description: "Camiseta 100% algodão premium, corte moderno e confortável.",
-			specs: { Material: "100% Algodão", Lavagem: "Máquina" },
-			categoryId: roupas,
-			images: [{ file: "image4.webp", position: 0 }] satisfies ImageDef[],
-			options: [
-				{ label: "Tamanho", uiType: "pill" as const, values: ["P", "M", "G", "GG"] },
-				{ label: "Cor", uiType: "color" as const, values: ["bg-white", "bg-black", "bg-blue-500"] },
-			],
-		},
-		{
-			name: "Tênis Runner 360",
-			tag: "tenis-runner-360",
-			price: 399.9,
-			isNew: true,
-			inStock: true,
-			stockQuantity: 12,
-			description: "Tênis de corrida com amortecimento avançado e solado antiderrapante.",
-			specs: { Solado: "Borracha antiderrapante", Cabedal: "Mesh respirável", Drop: "8mm" },
-			categoryId: calcados,
-			images: [{ file: "image5.webp", position: 0 }] satisfies ImageDef[],
-			options: [
-				{ label: "Numeração", uiType: "pill" as const, values: ["38", "39", "40", "41", "42", "43"] },
-				{ label: "Cor", uiType: "color" as const, values: ["bg-red-500", "bg-black", "bg-white"] },
-			],
-		},
-	];
-
+async function seedProducts(
+	tx: Prisma.TransactionClient,
+	categoryMap: Map<string, string>,
+	products: SeedProduct[],
+) {
 	const productImages = await generateSeedProductImages(products);
 
 	for (const p of products) {
-		const { images: _, options, specs, ...data } = p;
+		const categoryId = categoryMap.get(p.categorySlug);
+		if (!categoryId) {
+			throw new Error(`Categoria não encontrada para slug "${p.categorySlug}"`);
+		}
+
+		const { images: _, options, specs, categorySlug: __, ...data } = p;
 		await tx.product.create({
 			data: {
 				...data,
+				categoryId,
 				specs,
 				images: { create: productImages[p.tag] },
-				options: { create: options },
+				...(options.length > 0 ? { options: { create: options } } : {}),
 			},
 		});
 	}
@@ -138,13 +82,20 @@ async function seed() {
 				const users = await seedUsers(tx);
 
 				console.log("[seed] criando categorias...");
-				const categories = await seedCategories(tx);
+				const products = await loadSeedProducts();
+				const categorySlugs = getCategorySlugs(products);
+				const categories = await seedCategories(tx, categorySlugs);
+				const categoryMap = new Map(
+					categorySlugs.map((slug) => {
+						const name = getCategoryLabel(slug);
+						const category = categories.find((c) => c.name === name);
+						if (!category) throw new Error(`Categoria "${name}" não foi criada`);
+						return [slug, category.id] as const;
+					}),
+				);
 
 				console.log("[seed] criando produtos...");
-				await seedProducts(
-					tx,
-					categories.map((c) => c.id),
-				);
+				await seedProducts(tx, categoryMap, products);
 
 				const customer = users.find((u) => u.role === "CUSTOMER");
 				if (customer) {
