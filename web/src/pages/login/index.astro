@@ -2,6 +2,7 @@
 import Layout from "@/layout/layout.astro";
 import AuthComponent from "./_auth";
 import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
 import { serverGet } from "@/lib/serverApi";
 import type { User } from "@/database/users";
 
@@ -11,9 +12,7 @@ const cookieHeader = Astro.request.headers.get("cookie") ?? "";
 if (cookieHeader.trim()) {
     const { data, status } = await serverGet<User>("/users/me", cookieHeader);
     if (status !== 401 && data) {
-        return Astro.redirect(
-            data.personalData.role === "ADMIN" ? "/admin" : "/perfil",
-        );
+        return Astro.redirect(data.personalData.role === "ADMIN" ? "/admin" : "/perfil");
     }
 }
 ---
@@ -21,32 +20,9 @@ if (cookieHeader.trim()) {
 <Layout title="Login | Emporium da Tecnologia" description="Acesse sua conta">
     <Header hideSearch />
 
-    <main
-        class="flex-grow container mx-auto px-4 py-12 flex items-center justify-center bg-gray-50/50 min-h-[80vh]"
-    >
+    <main class="flex-grow page-shell py-12 flex items-center justify-center min-h-[70vh]">
         <AuthComponent client:load />
     </main>
 
-    <style is:inline>
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-    </style>
-
-    <footer
-        class="py-6 text-center text-sm text-gray-500 border-t border-gray-200 bg-white"
-    >
-        <p>&copy; 2024 Emporium da Tecnologia, Inc.</p>
-    </footer>
+    <Footer />
 </Layout>

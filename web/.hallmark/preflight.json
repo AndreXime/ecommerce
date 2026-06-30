@@ -1,0 +1,8 @@
+{
+  "scanned": "2026-06-29",
+  "framework": "Astro 6 + Preact + Tailwind v4",
+  "fonts": "system stack (no custom fonts)",
+  "palette": "Tailwind gray/blue defaults",
+  "motion": "motion-cut",
+  "spacing": "Tailwind default"
+}

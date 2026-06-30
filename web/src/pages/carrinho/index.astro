@@ -5,13 +5,13 @@ import Layout from "@/layout/layout.astro";
 import CartPage from "./_cart";
 ---
 
-<Layout title="Meu Carrinho | Emporium da Tecnologia" description="Revise os itens do seu carrinho, ajuste quantidades e finalize sua compra com segurança.">
+<Layout
+    title="Meu Carrinho | Emporium da Tecnologia"
+    description="Revise os itens do seu carrinho, ajuste quantidades e finalize sua compra com segurança."
+>
     <Header />
-    <main class="flex-grow container mx-auto px-4 py-8">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
-            Seu Carrinho
-        </h1>
-
+    <main class="page-shell flex-grow py-8 lg:py-10">
+        <h1 class="font-display font-semibold text-display-s text-ink mb-8">Seu carrinho</h1>
         <CartPage client:idle />
     </main>
     <Footer />

@@ -1,5 +1,6 @@
 import type { User } from "@/database/users";
 import { request } from "@/lib/request";
+import { formatPrice } from "@/lib/utils";
 import { useState, useEffect } from "preact/hooks";
 import {
 	Package,
@@ -49,18 +50,18 @@ export default function AccountDashboard({ user }: { user: User }) {
 	return (
 		<div className="flex flex-col md:flex-row gap-8">
 			<aside className="w-full md:w-1/4 flex-shrink-0">
-				<div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6 flex items-center gap-4">
-					<div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl font-bold shadow-md capitalize">
+				<div className="app-panel p-6 rounded-xl border border-rule shadow-sm mb-6 flex items-center gap-4">
+					<div className="w-14 h-14 rounded-full bg-accent text-white flex items-center justify-center text-xl font-bold shadow-md capitalize">
 						{user.personalData.name[0].toUpperCase()}
 						{user.personalData.name[1].toUpperCase()}
 					</div>
 					<div>
-						<h2 className="font-bold text-gray-900">{user.personalData.name}</h2>
-						<p className="text-xs text-gray-500">Membro desde {new Date(user.personalData.registredAt).getFullYear()}</p>
+						<h2 className="font-bold text-ink">{user.personalData.name}</h2>
+						<p className="text-xs text-muted">Membro desde {new Date(user.personalData.registredAt).getFullYear()}</p>
 					</div>
 				</div>
 
-			<div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden" role="tablist" aria-label="Seções da conta">
+			<div className="app-panel rounded-xl border border-rule shadow-sm overflow-hidden" role="tablist" aria-label="Seções da conta">
 				{[
 					{ id: "orders", label: "Meus Pedidos", icon: Package },
 					{ id: "profile", label: "Dados Pessoais", icon: UserIcon },
@@ -75,16 +76,18 @@ export default function AccountDashboard({ user }: { user: User }) {
 						aria-controls={`tabpanel-${item.id}`}
 						id={`tab-${item.id}`}
 						onClick={() => setActiveTab(item.id as Tab)}
-						className={`w-full text-left px-6 py-4 flex items-center transition border-l-4 ${activeTab === item.id ? "bg-blue-50 text-blue-600 border-blue-600" : "hover:bg-gray-50 text-gray-700 border-transparent"}`}
+						className={`w-full text-left px-5 py-3.5 flex items-center text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus ${
+							activeTab === item.id ? "tab-active" : "tab-inactive"
+						}`}
 					>
 						<item.icon class="w-5 h-5 mr-3" aria-hidden="true" /> {item.label}
 					</button>
 				))}
-					<div className="h-px bg-gray-100 my-1"></div>
+					<div className="h-px bg-paper-3 my-1"></div>
 					<button
 						type="button"
 						onClick={() => void handleLogout()}
-						className="w-full text-left px-6 py-4 flex items-center text-red-500 hover:bg-red-50 transition"
+						className="w-full text-left px-6 py-4 flex items-center text-danger hover:bg-danger-soft transition"
 					>
 						<LogOut class="w-5 h-5 mr-3" aria-hidden="true" /> Sair
 					</button>
@@ -94,31 +97,31 @@ export default function AccountDashboard({ user }: { user: User }) {
 		<div className="flex-grow w-full md:w-3/4" role="tabpanel" id={`tabpanel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
 			{activeTab === "orders" && (
 					<div className="space-y-6 animate-fade-in">
-						<h2 className="text-2xl font-bold text-gray-900 mb-4">Histórico de Pedidos</h2>
+						<h2 className="text-2xl font-bold text-ink mb-4">Histórico de Pedidos</h2>
 						{user.ordersHistory.length === 0 && (
-						<div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 flex flex-col items-center text-center">
+						<div className="app-panel rounded-xl border border-rule shadow-sm p-12 flex flex-col items-center text-center">
 							<Package class="w-12 h-12 text-gray-300 mb-4" />
-							<h3 className="font-bold text-gray-700 mb-1">Nenhum pedido encontrado</h3>
-							<p className="text-sm text-gray-400">Seus pedidos aparecerão aqui após a primeira compra.</p>
-							<a href="/" className="mt-6 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-6 py-2 rounded-lg transition">
+							<h3 className="font-bold text-ink-2 mb-1">Nenhum pedido encontrado</h3>
+							<p className="text-sm text-muted">Seus pedidos aparecerão aqui após a primeira compra.</p>
+							<a href="/" className="mt-6 bg-accent hover:opacity-90 text-white text-sm font-bold px-6 py-2 rounded-lg transition">
 								Explorar produtos
 							</a>
 						</div>
 					)}
 					{user.ordersHistory.map((order) => (
-							<div key={order.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-								<div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+							<div key={order.id} className="app-panel rounded-xl border border-rule shadow-sm overflow-hidden">
+								<div className="bg-paper-2 px-6 py-4 border-b border-rule flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 									<div className="flex gap-6 text-sm">
 										<div>
-											<span className="block text-gray-500 text-xs uppercase font-bold">Data</span>
-											<span className="font-medium text-gray-900">{order.date}</span>
+											<span className="block text-muted text-xs uppercase font-bold">Data</span>
+											<span className="font-medium text-ink">{order.date}</span>
 										</div>
 										<div>
-											<span className="block text-gray-500 text-xs uppercase font-bold">Total</span>
-											<span className="font-medium text-gray-900">${order.total.toFixed(2)}</span>
+											<span className="block text-muted text-xs uppercase font-bold">Total</span>
+											<span className="font-medium text-ink">{formatPrice(order.total)}</span>
 										</div>
 										<div>
-											<span className="block text-gray-500 text-xs uppercase font-bold">Status</span>
+											<span className="block text-muted text-xs uppercase font-bold">Status</span>
 													<span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
 												order.status === "delivered" ? "bg-green-100 text-green-800" :
 												order.status === "intransit" ? "bg-blue-100 text-blue-800" :
@@ -131,20 +134,20 @@ export default function AccountDashboard({ user }: { user: User }) {
 											</span>
 										</div>
 									</div>
-									<div className="text-sm text-gray-500">Pedido {order.id}</div>
+									<div className="text-sm text-muted">Pedido {order.id}</div>
 								</div>
 								<div className="p-6 space-y-4">
 									{order.items.map((item, idx) => (
 										<div
 											key={idx}
-											className={`flex items-center gap-4 ${idx > 0 ? "pt-4 border-t border-gray-100" : ""}`}
+											className={`flex items-center gap-4 ${idx > 0 ? "pt-4 border-t border-rule" : ""}`}
 										>
-											<img src={item.img ?? "/placeholder.png"} className="w-16 h-16 object-cover rounded-md bg-gray-100" alt={item.name} />
+											<img src={item.img ?? "/placeholder.png"} className="w-16 h-16 object-cover rounded-md bg-paper-3" alt={item.name} />
 											<div className="flex-grow">
-												<h4 className="font-bold text-gray-900 text-sm">{item.name}</h4>
-												<p className="text-xs text-gray-500">{item.variant}</p>
+												<h4 className="font-bold text-ink text-sm">{item.name}</h4>
+												<p className="text-xs text-muted">{item.variant}</p>
 											</div>
-											<a href="/" className="text-blue-600 hover:underline text-sm font-medium">
+											<a href="/" className="text-accent hover:underline text-sm font-medium">
 												Ver Detalhes
 											</a>
 										</div>
@@ -157,59 +160,59 @@ export default function AccountDashboard({ user }: { user: User }) {
 
 				{activeTab === "profile" && (
 					<div className="space-y-6 animate-fade-in">
-						<h2 className="text-2xl font-bold text-gray-900 mb-4">Dados Pessoais</h2>
-						<div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+						<h2 className="text-2xl font-bold text-ink mb-4">Dados Pessoais</h2>
+						<div className="app-panel p-6 rounded-xl border border-rule shadow-sm">
 							<form>
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 									<div>
-										<label htmlFor="profileName" className="block text-sm font-medium text-gray-700 mb-1">
+										<label htmlFor="profileName" className="block text-sm font-medium text-ink-2 mb-1">
 											Nome Completo
 										</label>
 										<input
 											id="profileName"
 											type="text"
 											defaultValue={user.personalData.name}
-											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+											className="w-full border border-rule-2 rounded-lg px-4 py-2 focus-visible:outline-focus focus:border-accent outline-none"
 										/>
 									</div>
 									<div>
-										<label htmlFor="profileEmail" className="block text-sm font-medium text-gray-700 mb-1">
+										<label htmlFor="profileEmail" className="block text-sm font-medium text-ink-2 mb-1">
 											Email
 										</label>
 										<input
 											id="profileEmail"
 											type="email"
 											defaultValue={user.personalData.email}
-											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50"
+											className="w-full border border-rule-2 rounded-lg px-4 py-2 focus-visible:outline-focus focus:border-accent outline-none bg-paper-2"
 											readOnly
 										/>
 									</div>
 									<div>
-										<label htmlFor="profileCpf" className="block text-sm font-medium text-gray-700 mb-1">
+										<label htmlFor="profileCpf" className="block text-sm font-medium text-ink-2 mb-1">
 											CPF
 										</label>
 										<input
 											id="profileCpf"
 											type="text"
 											defaultValue={user.personalData.registration ?? undefined}
-											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-gray-50"
+											className="w-full border border-rule-2 rounded-lg px-4 py-2 focus-visible:outline-focus focus:border-accent outline-none bg-paper-2"
 											readOnly
 										/>
 									</div>
 									<div>
-										<label htmlFor="profilePhone" className="block text-sm font-medium text-gray-700 mb-1">
+										<label htmlFor="profilePhone" className="block text-sm font-medium text-ink-2 mb-1">
 											Telefone
 										</label>
 										<input
 											id="profilePhone"
 											type="text"
 											defaultValue={user.personalData.phone ?? undefined}
-											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+											className="w-full border border-rule-2 rounded-lg px-4 py-2 focus-visible:outline-focus focus:border-accent outline-none"
 										/>
 									</div>
 								</div>
 								<div className="flex justify-end">
-									<button className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition">
+									<button className="bg-accent hover:opacity-90 text-white font-bold py-2 px-6 rounded-lg transition">
 										Salvar Alterações
 									</button>
 								</div>
@@ -221,23 +224,23 @@ export default function AccountDashboard({ user }: { user: User }) {
 				{activeTab === "addresses" && (
 					<div className="space-y-6 animate-fade-in">
 						<div className="flex justify-between items-center mb-4">
-							<h2 className="text-2xl font-bold text-gray-900">Meus Endereços</h2>
-							<button className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition flex items-center">
+							<h2 className="text-2xl font-bold text-ink">Meus Endereços</h2>
+							<button className="text-sm bg-accent hover:opacity-90 text-white px-4 py-2 rounded-lg transition flex items-center">
 								<Plus class="w-4 h-4 mr-2" /> Novo Endereço
 							</button>
 						</div>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							{user.addresses.length === 0 && (
-								<div className="col-span-full bg-white rounded-xl border border-dashed border-gray-300 p-12 flex flex-col items-center text-center">
+								<div className="col-span-full app-panel rounded-xl border border-dashed border-rule-2 p-12 flex flex-col items-center text-center">
 									<MapPin class="w-12 h-12 text-gray-300 mb-4" />
-									<h3 className="font-bold text-gray-700 mb-1">Nenhum endereço cadastrado</h3>
-									<p className="text-sm text-gray-400">Adicione um endereço para agilizar suas compras.</p>
+									<h3 className="font-bold text-ink-2 mb-1">Nenhum endereço cadastrado</h3>
+									<p className="text-sm text-muted">Adicione um endereço para agilizar suas compras.</p>
 								</div>
 							)}
 							{user.addresses.map((addr) => (
 								<div
 									key={addr.id}
-									className={`bg-white p-6 rounded-xl border shadow-sm relative ${addr.isDefault ? "border-blue-500" : "border-gray-200 hover:border-gray-300 transition"}`}
+									className={`app-panel p-6 rounded-xl border shadow-sm relative ${addr.isDefault ? "border-accent" : "border-rule hover:border-rule-2 transition"}`}
 								>
 									{addr.isDefault && (
 										<span className="absolute top-4 right-4 bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded">
@@ -246,25 +249,25 @@ export default function AccountDashboard({ user }: { user: User }) {
 									)}
 									<div className="flex items-start gap-3 mb-3">
 										{addr.type === "Casa" ? (
-											<Home class="text-gray-400 mt-1 w-5 h-5" />
+											<Home class="text-muted mt-1 w-5 h-5" />
 										) : (
-											<Building class="text-gray-400 mt-1 w-5 h-5" />
+											<Building class="text-muted mt-1 w-5 h-5" />
 										)}
 										<div>
-											<h4 className="font-bold text-gray-900">{addr.type}</h4>
-											<p className="text-sm text-gray-600 mt-1">
+											<h4 className="font-bold text-ink">{addr.type}</h4>
+											<p className="text-sm text-muted mt-1">
 												{addr.street}
 												<br />
 												{addr.city}
 											</p>
 										</div>
 									</div>
-									<div className="flex gap-4 mt-4 pt-4 border-t border-gray-100 text-sm">
+									<div className="flex gap-4 mt-4 pt-4 border-t border-rule text-sm">
 										{!addr.isDefault && (
-											<button className="text-gray-500 hover:text-gray-700 font-medium">Definir como Padrão</button>
+											<button className="text-muted hover:text-ink-2 font-medium">Definir como Padrão</button>
 										)}
-										<button className="text-blue-600 hover:underline font-medium">Editar</button>
-										<button className="text-red-500 hover:underline font-medium">Excluir</button>
+										<button className="text-accent hover:underline font-medium">Editar</button>
+										<button className="text-danger hover:underline font-medium">Excluir</button>
 									</div>
 								</div>
 							))}
@@ -274,13 +277,13 @@ export default function AccountDashboard({ user }: { user: User }) {
 
 				{activeTab === "payments" && (
 					<div className="space-y-6 animate-fade-in">
-						<h2 className="text-2xl font-bold text-gray-900 mb-4">Cartões Salvos</h2>
+						<h2 className="text-2xl font-bold text-ink mb-4">Cartões Salvos</h2>
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 							{user.paymentCards.length === 0 && (
-								<div className="bg-white rounded-xl border border-dashed border-gray-300 p-12 flex flex-col items-center text-center">
+								<div className="app-panel rounded-xl border border-dashed border-rule-2 p-12 flex flex-col items-center text-center">
 									<CreditCard class="w-12 h-12 text-gray-300 mb-4" />
-									<h3 className="font-bold text-gray-700 mb-1">Nenhum cartão salvo</h3>
-									<p className="text-sm text-gray-400">Adicione um cartão para facilitar o pagamento.</p>
+									<h3 className="font-bold text-ink-2 mb-1">Nenhum cartão salvo</h3>
+									<p className="text-sm text-muted">Adicione um cartão para facilitar o pagamento.</p>
 								</div>
 							)}
 							{user.paymentCards.map((card) => (
@@ -289,21 +292,21 @@ export default function AccountDashboard({ user }: { user: User }) {
 									onClick={() => setIsModalOpen(true)}
 									className="bg-gradient-to-br from-gray-900 to-gray-800 text-white p-6 rounded-xl shadow-lg relative overflow-hidden group cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1"
 								>
-									<div className="absolute right-0 top-0 h-24 w-24 bg-white opacity-5 rounded-full transform translate-x-8 -translate-y-8"></div>
+									<div className="absolute right-0 top-0 h-24 w-24 app-panel opacity-5 rounded-full transform translate-x-8 -translate-y-8"></div>
 									<div className="flex justify-between items-start mb-8">
 										<CreditCard class="w-8 h-8" />
-										<div className="text-gray-400 hover:text-white transition">
+										<div className="text-muted hover:text-white transition">
 											<Pencil class="w-4 h-4" />
 										</div>
 									</div>
 									<div className="font-mono text-xl tracking-widest mb-4">•••• •••• •••• {card.last4}</div>
 									<div className="flex justify-between items-end text-sm text-gray-300">
 										<div>
-											<div className="text-xs text-gray-500 uppercase">Titular</div>
+											<div className="text-xs text-muted uppercase">Titular</div>
 											<div>{card.holder}</div>
 										</div>
 										<div>
-											<div className="text-xs text-gray-500 uppercase">Validade</div>
+											<div className="text-xs text-muted uppercase">Validade</div>
 											<div>{card.expiry}</div>
 										</div>
 									</div>
@@ -312,7 +315,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 
 							<div
 								onClick={() => setIsModalOpen(true)}
-								className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center justify-center text-gray-400 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition cursor-pointer h-full min-h-[180px]"
+								className="app-panel border-2 border-dashed border-rule-2 rounded-xl p-6 flex flex-col items-center justify-center text-muted hover:border-accent hover:text-accent hover:bg-accent-soft transition cursor-pointer h-full min-h-[180px]"
 							>
 								<PlusCircle class="w-10 h-10 mb-2" />
 								<span className="font-medium">Adicionar Novo Cartão</span>
@@ -323,14 +326,14 @@ export default function AccountDashboard({ user }: { user: User }) {
 
 				{activeTab === "wishlist" && (
 					<div className="space-y-6 animate-fade-in">
-						<h2 className="text-2xl font-bold text-gray-900 mb-4">Lista de Desejos</h2>
+						<h2 className="text-2xl font-bold text-ink mb-4">Lista de Desejos</h2>
 						<div className="space-y-4">
 							{user.wishlistProducts.length === 0 && (
-								<div className="bg-white rounded-xl border border-dashed border-gray-300 p-12 flex flex-col items-center text-center">
+								<div className="app-panel rounded-xl border border-dashed border-rule-2 p-12 flex flex-col items-center text-center">
 									<Heart class="w-12 h-12 text-gray-300 mb-4" />
-									<h3 className="font-bold text-gray-700 mb-1">Sua lista de desejos está vazia</h3>
-									<p className="text-sm text-gray-400">Salve produtos que você gostaria de comprar futuramente.</p>
-									<a href="/" className="mt-6 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold px-6 py-2 rounded-lg transition">
+									<h3 className="font-bold text-ink-2 mb-1">Sua lista de desejos está vazia</h3>
+									<p className="text-sm text-muted">Salve produtos que você gostaria de comprar futuramente.</p>
+									<a href="/" className="mt-6 bg-accent hover:opacity-90 text-white text-sm font-bold px-6 py-2 rounded-lg transition">
 										Explorar produtos
 									</a>
 								</div>
@@ -338,7 +341,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 							{user.wishlistProducts.map((item) => (
 								<div
 									key={item.id}
-									className={`bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4 ${!item.inStock ? "opacity-75" : ""}`}
+									className={`app-panel p-4 rounded-xl border border-rule shadow-sm flex items-center gap-4 ${!item.inStock ? "opacity-75" : ""}`}
 								>
 									<div className="relative w-16 h-16 flex-shrink-0">
 										<img
@@ -347,31 +350,31 @@ export default function AccountDashboard({ user }: { user: User }) {
 											alt={item.name}
 										/>
 										{!item.inStock && (
-											<div className="absolute inset-0 bg-white/50 flex items-center justify-center rounded-md">
+											<div className="absolute inset-0 app-panel/50 flex items-center justify-center rounded-md">
 												<span className="text-[10px] font-bold bg-gray-800 text-white px-1 rounded">Esgotado</span>
 											</div>
 										)}
 									</div>
 									<div className="flex-grow">
-										<h4 className={`font-bold ${item.inStock ? "text-gray-900" : "text-gray-500"}`}>{item.name}</h4>
-										<p className={`text-sm mb-1 ${item.inStock ? "text-gray-500" : "text-gray-400"}`}>
+										<h4 className={`font-bold ${item.inStock ? "text-ink" : "text-muted"}`}>{item.name}</h4>
+										<p className={`text-sm mb-1 ${item.inStock ? "text-muted" : "text-muted"}`}>
 											{item.category}
 										</p>
-										<span className={`font-bold ${item.inStock ? "text-gray-900" : "text-gray-400"}`}>
-											${item.price.toFixed(2)}
+										<span className={`font-bold ${item.inStock ? "text-ink" : "text-muted"}`}>
+											{formatPrice(item.price)}
 										</span>
 									</div>
 									<div className="flex flex-col items-end gap-2">
 										{item.inStock ? (
-											<button className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg transition whitespace-nowrap">
+											<button className="bg-accent hover:opacity-90 text-white text-sm px-4 py-2 rounded-lg transition whitespace-nowrap">
 												Adicionar
 											</button>
 										) : (
-											<button className="bg-gray-200 text-gray-400 text-sm px-4 py-2 rounded-lg cursor-not-allowed whitespace-nowrap">
+											<button className="bg-gray-200 text-muted text-sm px-4 py-2 rounded-lg cursor-not-allowed whitespace-nowrap">
 												Indisponível
 											</button>
 										)}
-										<button className="text-red-500 hover:underline text-xs">Remover</button>
+										<button className="text-danger hover:underline text-xs">Remover</button>
 									</div>
 								</div>
 							))}
@@ -389,10 +392,10 @@ export default function AccountDashboard({ user }: { user: User }) {
 				aria-label="Adicionar cartão de pagamento"
 				className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 animate-fade-overlay"
 			>
-				<div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden m-4 animate-scale-in">
-						<div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-							<h3 className="text-lg font-bold text-gray-900">Adicionar Cartão</h3>
-					<button onClick={() => setIsModalOpen(false)} aria-label="Fechar modal" className="text-gray-400 hover:text-gray-600 transition">
+				<div className="app-panel w-full max-w-md rounded-2xl shadow-2xl overflow-hidden m-4 animate-scale-in">
+						<div className="bg-paper-2 px-6 py-4 border-b border-rule flex justify-between items-center">
+							<h3 className="text-lg font-bold text-ink">Adicionar Cartão</h3>
+					<button onClick={() => setIsModalOpen(false)} aria-label="Fechar modal" className="text-muted hover:text-muted transition">
 							<X class="w-5 h-5" aria-hidden="true" />
 						</button>
 						</div>
@@ -406,56 +409,56 @@ export default function AccountDashboard({ user }: { user: User }) {
 							>
 								<div className="space-y-4">
 									<div>
-										<label htmlFor="cardModalNumber" className="block text-sm font-medium text-gray-700 mb-1">
+										<label htmlFor="cardModalNumber" className="block text-sm font-medium text-ink-2 mb-1">
 											Número do Cartão
 										</label>
 										<div className="relative">
 											<input
 												id="cardModalNumber"
 												type="text"
-												className="w-full border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:ring-blue-500 focus:border-blue-500 outline-none"
+												className="w-full border border-rule-2 rounded-lg px-4 py-2 pl-10 focus-visible:outline-focus focus:border-accent outline-none"
 												placeholder="0000 0000 0000 0000"
 											/>
-											<div className="absolute left-3 top-2.5 text-gray-400">
+											<div className="absolute left-3 top-2.5 text-muted">
 												<CreditCard class="w-5 h-5" />
 											</div>
 										</div>
 									</div>
 									<div>
-										<label htmlFor="cardModalHolder" className="block text-sm font-medium text-gray-700 mb-1">
+										<label htmlFor="cardModalHolder" className="block text-sm font-medium text-ink-2 mb-1">
 											Nome no Cartão
 										</label>
 										<input
 											id="cardModalHolder"
 											type="text"
-											className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+											className="w-full border border-rule-2 rounded-lg px-4 py-2 focus-visible:outline-focus focus:border-accent outline-none"
 											placeholder="COMO NO CARTÃO"
 										/>
 									</div>
 									<div className="grid grid-cols-2 gap-4">
 										<div>
-											<label htmlFor="cardModalExpiry" className="block text-sm font-medium text-gray-700 mb-1">
+											<label htmlFor="cardModalExpiry" className="block text-sm font-medium text-ink-2 mb-1">
 												Validade
 											</label>
 											<input
 												id="cardModalExpiry"
 												type="text"
-												className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+												className="w-full border border-rule-2 rounded-lg px-4 py-2 focus-visible:outline-focus focus:border-accent outline-none"
 												placeholder="MM/AA"
 											/>
 										</div>
 										<div>
-											<label htmlFor="cardModalCvv" className="block text-sm font-medium text-gray-700 mb-1">
+											<label htmlFor="cardModalCvv" className="block text-sm font-medium text-ink-2 mb-1">
 												CVV
 											</label>
 											<div className="relative">
 												<input
 													id="cardModalCvv"
 													type="text"
-													className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+													className="w-full border border-rule-2 rounded-lg px-4 py-2 focus-visible:outline-focus focus:border-accent outline-none"
 													placeholder="123"
 												/>
-												<div className="absolute right-3 top-2.5 text-gray-400 cursor-help" title="3 dígitos no verso">
+												<div className="absolute right-3 top-2.5 text-muted cursor-help" title="3 dígitos no verso">
 													<CircleHelp class="w-5 h-5" />
 												</div>
 											</div>
@@ -466,13 +469,13 @@ export default function AccountDashboard({ user }: { user: User }) {
 									<button
 										type="button"
 										onClick={() => setIsModalOpen(false)}
-										className="flex-1 bg-white border border-gray-300 text-gray-700 font-semibold py-2 rounded-lg hover:bg-gray-50 transition"
+										className="flex-1 app-panel border border-rule-2 text-ink-2 font-semibold py-2 rounded-lg hover:bg-paper-2 transition"
 									>
 										Cancelar
 									</button>
 									<button
 										type="submit"
-										className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5"
+										className="flex-1 bg-accent hover:opacity-90 text-white font-bold py-2 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5"
 									>
 										Salvar Cartão
 									</button>

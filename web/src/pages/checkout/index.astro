@@ -1,7 +1,7 @@
 ---
 import Layout from "@/layout/layout.astro";
 import CheckoutComponent from "./_checkout";
-import { ShieldCheck, Zap } from "lucide-preact";
+import { ShieldCheck } from "lucide-preact";
 import { serverGet } from "@/lib/serverApi";
 import type { User } from "@/database/users";
 import type { CartItem } from "@/database/productsTypes";
@@ -22,7 +22,7 @@ const [userRes, cartRes] = await Promise.all([
 ]);
 
 if (userRes.status === 401 || !userRes.data) {
-	return Astro.redirect(`/auth/refresh?redirect=${encodeURIComponent("/checkout")}`);
+    return Astro.redirect(`/auth/refresh?redirect=${encodeURIComponent("/checkout")}`);
 }
 
 const user = { name: userRes.data.personalData.name, email: userRes.data.personalData.email };
@@ -43,72 +43,24 @@ const orderSummary = {
 };
 ---
 
-<Layout
-    title="Checkout Seguro | Emporium da Tecnologia"
-    description="Finalize sua compra com segurança"
->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div
-            class="container mx-auto px-4 py-4 flex gap-3 justify-between items-center"
-        >
-            <a href="/" class="group flex items-center justify-center">
-                <span
-                    class="flex gap-2 items-center text-xl font-bold tracking-tight text-blue-700 group-hover:text-blue-900 transition"
-                >
-                    <span class="text-blue-600">
-                        <Zap class="text-xl" />
-                    </span>
-                    <span class="whitespace-nowrap">
-                        Emporium<span class="hidden min-[400px]:inline">
-                            da Tecnologia</span
-                        >
-                    </span>
-                </span>
+<Layout title="Checkout Seguro | Emporium da Tecnologia" description="Finalize sua compra com segurança">
+    <header class="border-b border-rule bg-paper/90 backdrop-blur-sm sticky top-0 z-50">
+        <div class="page-shell py-4 flex justify-between items-center gap-4">
+            <a href="/" class="font-display font-semibold text-ink hover:text-accent transition-colors">
+                Emporium<span class="hidden sm:inline"> da Tecnologia</span>
             </a>
-            <div class="flex items-center text-sm text-gray-500">
-                <ShieldCheck class="mr-2 text-green-600" />
-                Checkout Seguro
+            <div class="flex items-center gap-2 text-sm text-muted">
+                <ShieldCheck class="text-success" size={18} aria-hidden="true" />
+                Checkout seguro
             </div>
         </div>
     </header>
 
-    <main class="flex-grow container mx-auto px-4 py-8 bg-gray-50/50">
+    <main class="page-shell flex-grow py-8 lg:py-10">
         <CheckoutComponent client:load initialOrder={orderSummary} user={user} />
     </main>
 
-    <footer
-        class="mt-auto py-8 text-center text-sm text-gray-500 border-t border-gray-200 bg-white"
-    >
-        <p>
-            &copy; 2024 Emporium da Tecnologia. Transação segura criptografada.
-        </p>
+    <footer class="border-t border-rule py-6 text-center text-xs text-muted">
+        <p>&copy; {new Date().getFullYear()} Emporium da Tecnologia. Transação criptografada.</p>
     </footer>
-
-    <style is:inline>
-        .step-content { display: none; animation: fadeIn 0.4s ease-in-out; }
-        .step-content.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .payment-tab.active {
-            border-color: #2563eb;
-            background-color: #eff6ff;
-            color: #1e40af;
-        }
-
-        .step-indicator.active .step-number {
-            background-color: #2563eb;
-            color: white;
-            border-color: #2563eb;
-        }
-        .step-indicator.completed .step-number {
-            background-color: #10b981;
-            color: white;
-            border-color: #10b981;
-        }
-        .step-indicator.completed .step-text { color: #10b981; }
-    </style>
 </Layout>

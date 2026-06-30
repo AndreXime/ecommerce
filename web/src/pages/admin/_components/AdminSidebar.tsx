@@ -21,22 +21,18 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ activeTab, onTabChange }: AdminSidebarProps) {
 	return (
-		<aside className="w-full md:w-1/4 flex-shrink-0">
-			<div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6 flex items-center gap-4">
-				<div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
-					<LayoutDashboard class="w-7 h-7" />
+		<aside className="w-full lg:w-56 shrink-0">
+			<div className="app-panel p-5 mb-4 flex items-center gap-3">
+				<div className="w-12 h-12 rounded-full bg-accent text-accent-ink flex items-center justify-center shrink-0">
+					<LayoutDashboard class="w-6 h-6" aria-hidden="true" />
 				</div>
 				<div>
-					<h2 className="font-bold text-gray-900">Painel Admin</h2>
-					<p className="text-xs text-gray-500">Gerenciamento geral</p>
+					<h2 className="font-display font-semibold text-ink">Painel admin</h2>
+					<p className="text-xs text-muted">Gerenciamento geral</p>
 				</div>
 			</div>
 
-			<div
-				className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-				role="tablist"
-				aria-label="Seções do painel"
-			>
+			<div className="app-panel overflow-hidden" role="tablist" aria-label="Seções do painel">
 				{TABS.map((tab) => (
 					<button
 						key={tab.id}
@@ -45,26 +41,20 @@ export function AdminSidebar({ activeTab, onTabChange }: AdminSidebarProps) {
 						aria-controls={`tabpanel-${tab.id}`}
 						id={`tab-${tab.id}`}
 						onClick={() => onTabChange(tab.id)}
-						className={`w-full text-left px-6 py-4 flex items-center transition border-l-4 ${
-							activeTab === tab.id
-								? "bg-blue-50 text-blue-600 border-blue-600 font-medium"
-								: "hover:bg-gray-50 text-gray-700 border-transparent"
+						className={`w-full text-left px-5 py-3.5 flex items-center text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus ${
+							activeTab === tab.id ? "tab-active" : "tab-inactive"
 						}`}
 					>
-						<tab.icon class="w-5 h-5 mr-3" aria-hidden="true" /> {tab.label}
+						<tab.icon class="w-4 h-4 mr-3 shrink-0" aria-hidden="true" /> {tab.label}
 					</button>
 				))}
 
-				<div className="h-px bg-gray-100 my-1" />
+				<div className="h-px bg-rule mx-0" role="separator" />
 
-				<a
-					href="/"
-					className="w-full text-left px-6 py-4 flex items-center text-red-500 hover:bg-red-50 transition"
-				>
-					<LogOut class="w-5 h-5 mr-3" aria-hidden="true" /> Voltar ao site
+				<a href="/" className="w-full text-left px-5 py-3.5 flex items-center text-sm font-medium text-danger hover:bg-danger-soft transition-colors">
+					<LogOut class="w-4 h-4 mr-3" aria-hidden="true" /> Voltar ao site
 				</a>
 			</div>
 		</aside>
 	);
 }
-

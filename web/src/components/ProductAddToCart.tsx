@@ -32,7 +32,9 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 		if (!res.ok) {
 			if (res.message.includes("autenti") || res.message.includes("401")) {
 				toast.error("Faça login para adicionar ao carrinho");
-				setTimeout(() => { window.location.href = "/login"; }, 1500);
+				setTimeout(() => {
+					window.location.href = "/login";
+				}, 1500);
 			} else {
 				toast.error(res.message || "Erro ao adicionar ao carrinho");
 			}
@@ -45,34 +47,32 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 	};
 
 	return (
-		<div class="space-y-6 pt-4 border-t border-gray-100">
+		<div class="space-y-6 pt-4 border-t border-rule">
 			{product.options?.map((option) => (
 				<div key={option.label}>
-					<span class="block text-sm font-semibold text-gray-900 mb-2">{option.label}</span>
-
-					<div class="flex flex-wrap gap-3">
+					<span class="block text-sm font-semibold text-ink mb-2">{option.label}</span>
+					<div class="flex flex-wrap gap-2">
 						{option.values.map((val) => {
 							const isSelected = selections[option.label] === val;
-
 							const activeClasses =
 								option.uiType === "color"
-									? "ring-2 ring-offset-2 ring-blue-600"
-									: "border-blue-600 bg-blue-50 text-blue-700 font-bold shadow-sm";
-
+									? "ring-2 ring-offset-2 ring-accent"
+									: "border-accent bg-accent-soft text-accent font-semibold";
 							const inactiveClasses =
 								option.uiType === "color"
-									? "hover:ring-2 hover:ring-offset-2 hover:ring-gray-400"
-									: "border-gray-200 bg-white text-gray-700 hover:border-blue-600 hover:text-blue-600";
+									? "hover:ring-2 hover:ring-offset-2 hover:ring-rule-2"
+									: "border-rule-2 bg-paper text-ink-2 hover:border-accent hover:text-accent";
 
 							return (
 								<button
+									type="button"
 									onClick={() => handleSelect(option.label, val)}
 									aria-label={option.uiType === "color" ? `${option.label}: ${val}` : undefined}
 									aria-pressed={isSelected}
-									class={`transition focus:outline-none ${
+									class={`transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${
 										option.uiType === "color"
-											? `w-8 h-8 rounded-full border border-gray-200 ${val}`
-											: `rounded-lg py-2 px-4 text-sm border`
+											? `w-8 h-8 rounded-full border border-rule ${val}`
+											: "rounded-[var(--radius-input)] py-2 px-4 text-sm border"
 									} ${isSelected ? activeClasses : inactiveClasses}`}
 								>
 									{option.uiType !== "color" && val}
@@ -83,43 +83,46 @@ export default function ProductAddToCart({ product }: { product: ProductDetails 
 				</div>
 			))}
 
-			<div class="pt-6 border-t border-gray-100">
-				<div class="flex gap-4">
-					<div class="w-24 flex items-center border border-gray-300 rounded-xl px-3" role="group" aria-label="Quantidade">
+			<div class="pt-4 border-t border-rule">
+				<div class="flex flex-col sm:flex-row gap-3">
+					<div
+						class="flex items-center border border-rule-2 rounded-[var(--radius-input)] h-12 w-full sm:w-28 shrink-0"
+						role="group"
+						aria-label="Quantidade"
+					>
 						<button
+							type="button"
 							onClick={() => setQuantity((q) => Math.max(1, q - 1))}
 							aria-label="Diminuir quantidade"
-							class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-l-xl transition"
+							class="px-3 h-full text-muted hover:bg-paper-2 hover:text-ink transition-colors rounded-l-[var(--radius-input)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
 						>
 							<Minus class="w-4 h-4" aria-hidden="true" />
 						</button>
-						<input
-							type="number"
-							value={quantity}
-							readOnly
-							aria-label="Quantidade selecionada"
-							class="w-full text-center border-none focus:ring-0 font-semibold text-gray-900 bg-transparent h-12 px-2"
-						/>
+						<span class="flex-1 text-center font-semibold text-ink" aria-live="polite">
+							{quantity}
+						</span>
 						<button
+							type="button"
 							onClick={() => setQuantity((q) => q + 1)}
 							aria-label="Aumentar quantidade"
-							class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-r-xl transition"
+							class="px-3 h-full text-muted hover:bg-paper-2 hover:text-ink transition-colors rounded-r-[var(--radius-input)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
 						>
 							<Plus class="w-4 h-4" aria-hidden="true" />
 						</button>
 					</div>
 
 					<button
+						type="button"
 						onClick={handleAddToCart}
 						disabled={loading}
-						class="flex-grow bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-bold rounded-xl shadow-lg flex items-center justify-center py-3 transition"
+						class="btn btn-primary flex-1 !py-3"
 					>
 						{loading ? (
-							<Loader2 class="w-5 h-5 animate-spin" />
+							<Loader2 class="w-5 h-5 animate-spin" aria-label="Carregando" />
 						) : (
 							<>
-								Adicionar ao Carrinho
-								<ShoppingCart class="ml-2 w-5 h-5" />
+								Adicionar ao carrinho
+								<ShoppingCart class="w-5 h-5" aria-hidden="true" />
 							</>
 						)}
 					</button>

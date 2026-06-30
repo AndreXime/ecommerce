@@ -19,36 +19,39 @@ const socialImageURL = new URL(ogImage || "/og-image.png", Astro.url);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
 
-    {/* Ícones */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    {/* SEO Principal */}
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="André Ricardo Ximenes" />
 
-    {/* Open Graph / Facebook / LinkedIn / WhatsApp */}
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={socialImageURL} />
-    <meta property="og:site_name" content="André Ximenes | Desenvolvedor Web" />
+    <meta property="og:site_name" content="Emporium da Tecnologia" />
     <meta property="og:locale" content="pt_BR" />
 
-    {/* Twitter / X */}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content={canonicalURL} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImageURL} />
   </head>
-  <body class="antialiased bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+  <body class="antialiased flex flex-col min-h-screen bg-paper text-ink">
     <slot />
     <Toaster />
   </body>

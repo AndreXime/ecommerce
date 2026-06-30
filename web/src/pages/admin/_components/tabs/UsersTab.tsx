@@ -7,17 +7,14 @@ import { request } from "@/lib/request";
 import type { AdminUser } from "../types";
 import { usersStore, loadUsers, setUsersPage, setUsersSearch } from "../stores/usersStore";
 
+import { inputClass, searchInputClass } from "@/lib/uiClasses";
+
 const ROLE_LABELS = { ADMIN: "Admin", CUSTOMER: "Cliente", SUPPORT: "Suporte" } as const;
 const ROLE_STYLES = {
-	ADMIN: "bg-purple-100 text-purple-700",
-	CUSTOMER: "bg-blue-100 text-blue-700",
-	SUPPORT: "bg-green-100 text-green-700",
+	ADMIN: "bg-accent-soft text-accent",
+	CUSTOMER: "bg-paper-3 text-ink-2",
+	SUPPORT: "bg-success-soft text-success",
 } as const;
-
-const searchInputClass =
-	"w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent";
-const inputClass =
-	"w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent";
 
 export function UsersTab() {
 	const usersState = useStore(usersStore);
@@ -67,20 +64,20 @@ export function UsersTab() {
 	return (
 		<div className="animate-fade-in">
 			<div className="flex items-center justify-between mb-6">
-				<h1 className="text-2xl font-bold text-gray-900">Usuários</h1>
+				<h1 className="text-2xl font-bold text-ink">Usuários</h1>
 				<button
 					type="button"
 					onClick={() => loadUsers({ force: true })}
-					className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition"
+					className="inline-flex items-center gap-2 text-sm text-accent hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-accent-soft transition"
 				>
 					<RefreshCw class="w-4 h-4" /> Atualizar
 				</button>
 			</div>
 
-			<div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-				<div className="p-4 border-b border-gray-100">
+			<div className="app-panel rounded-xl border border-rule shadow-sm overflow-hidden">
+				<div className="p-4 border-b border-rule">
 					<div className="relative">
-						<Search class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+						<Search class="absolute left-3 top-2.5 w-4 h-4 text-muted" />
 						<input
 							type="text"
 							placeholder="Buscar por nome ou email..."
@@ -95,24 +92,24 @@ export function UsersTab() {
 				</div>
 
 				{loading ? (
-					<div className="p-12 text-center text-gray-400">Carregando...</div>
+					<div className="p-12 text-center text-muted">Carregando...</div>
 				) : (
 					<div className="overflow-x-auto">
 						<table className="w-full text-sm">
-							<thead className="bg-gray-50 border-b border-gray-200">
+							<thead className="bg-paper-2 border-b border-rule">
 								<tr>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Nome</th>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Email</th>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Perfil</th>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Cadastro</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Nome</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Email</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Perfil</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Cadastro</th>
 									<th className="px-4 py-3 w-10"></th>
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-gray-100">
 								{list.map((user) => (
-									<tr key={user.id} className="hover:bg-gray-50 transition">
-										<td className="px-4 py-3 font-medium text-gray-900">{user.name}</td>
-										<td className="px-4 py-3 text-gray-600">{user.email}</td>
+									<tr key={user.id} className="hover:bg-paper-2 transition">
+										<td className="px-4 py-3 font-medium text-ink">{user.name}</td>
+										<td className="px-4 py-3 text-muted">{user.email}</td>
 										<td className="px-4 py-3">
 											<span
 												className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
@@ -122,7 +119,7 @@ export function UsersTab() {
 												{ROLE_LABELS[user.role]}
 											</span>
 										</td>
-										<td className="px-4 py-3 text-gray-500">
+										<td className="px-4 py-3 text-muted">
 											{new Date(user.createdAt).toLocaleDateString("pt-BR")}
 										</td>
 										<td className="px-4 py-3 text-right">
@@ -138,7 +135,7 @@ export function UsersTab() {
 								))}
 								{list.length === 0 && (
 									<tr>
-										<td colSpan={5} className="px-4 py-12 text-center text-gray-400">
+										<td colSpan={5} className="px-4 py-12 text-center text-muted">
 											Nenhum usuário encontrado
 										</td>
 									</tr>
@@ -163,16 +160,16 @@ export function UsersTab() {
 						if ((e.target as HTMLElement).id === "user-modal-overlay") setEditingUser(null);
 					}}
 				>
-					<div className="bg-white w-full max-w-md rounded-2xl shadow-2xl m-4 animate-scale-in">
-						<div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
-							<h3 className="text-lg font-bold text-gray-900">Editar Usuário</h3>
-							<button onClick={() => setEditingUser(null)} className="text-gray-400 hover:text-gray-600 transition">
+					<div className="app-panel w-full max-w-md rounded-2xl shadow-2xl m-4 animate-scale-in">
+						<div className="flex justify-between items-center px-6 py-4 border-b border-rule">
+							<h3 className="text-lg font-bold text-ink">Editar Usuário</h3>
+							<button onClick={() => setEditingUser(null)} className="text-muted hover:text-muted transition">
 								<X class="w-5 h-5" />
 							</button>
 						</div>
 						<div className="p-6 space-y-4">
 							<div>
-								<label htmlFor="edit-user-name" className="block text-sm font-medium text-gray-700 mb-1">
+								<label htmlFor="edit-user-name" className="block text-sm font-medium text-ink-2 mb-1">
 									Nome
 								</label>
 								<input
@@ -185,7 +182,7 @@ export function UsersTab() {
 								/>
 							</div>
 							<div>
-								<label htmlFor="edit-user-email" className="block text-sm font-medium text-gray-700 mb-1">
+								<label htmlFor="edit-user-email" className="block text-sm font-medium text-ink-2 mb-1">
 									Email
 								</label>
 								<input
@@ -193,11 +190,11 @@ export function UsersTab() {
 									type="email"
 									value={editingUser.email}
 									readOnly
-									className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-400 cursor-default"
+									className="w-full border border-rule rounded-lg px-3 py-2 text-sm bg-paper-2 text-muted cursor-default"
 								/>
 							</div>
 							<div>
-								<p className="text-sm font-medium text-gray-700 mb-1">Perfil</p>
+								<p className="text-sm font-medium text-ink-2 mb-1">Perfil</p>
 								<span
 									className={`inline-flex items-center px-2.5 py-1 rounded text-xs font-medium ${ROLE_STYLES[editingUser.role]}`}
 								>
@@ -208,7 +205,7 @@ export function UsersTab() {
 						<div className="flex gap-3 px-6 pb-6">
 							<button
 								onClick={() => setEditingUser(null)}
-								className="flex-1 border border-gray-200 text-gray-700 font-semibold py-2.5 rounded-lg hover:bg-gray-50 transition"
+								className="flex-1 border border-rule text-ink-2 font-semibold py-2.5 rounded-lg hover:bg-paper-2 transition"
 							>
 								Cancelar
 							</button>

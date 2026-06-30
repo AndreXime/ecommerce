@@ -10,10 +10,7 @@ import type { Category, Product, ProductDetails, ProductDetailsWithImageIds, Pro
 import { productsStore, loadProducts, setProductsPage, setProductsSearch } from "../stores/productsStore";
 import { categoriesStore, loadCategories } from "../stores/categoriesStore";
 
-const inputClass =
-	"w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent";
-const searchInputClass =
-	"w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent";
+import { inputClass, searchInputClass } from "@/lib/uiClasses";
 
 export function ProductsTab() {
 	const productsState = useStore(productsStore);
@@ -231,12 +228,12 @@ export function ProductsTab() {
 	return (
 		<div className="animate-fade-in">
 			<div className="flex items-center justify-between mb-6">
-				<h1 className="text-2xl font-bold text-gray-900">Produtos</h1>
+				<h1 className="text-2xl font-bold text-ink">Produtos</h1>
 				<div className="flex items-center gap-3">
 					<button
 						type="button"
 						onClick={() => loadProducts({ force: true })}
-						className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition"
+						className="inline-flex items-center gap-2 text-sm text-accent hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-accent-soft transition"
 					>
 						<RefreshCw class="w-4 h-4" /> Atualizar
 					</button>
@@ -249,10 +246,10 @@ export function ProductsTab() {
 				</div>
 			</div>
 
-			<div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-				<div className="p-4 border-b border-gray-100">
+			<div className="app-panel rounded-xl border border-rule shadow-sm overflow-hidden">
+				<div className="p-4 border-b border-rule">
 					<div className="relative">
-						<Search class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+						<Search class="absolute left-3 top-2.5 w-4 h-4 text-muted" />
 						<input
 							type="text"
 							placeholder="Buscar produto..."
@@ -267,40 +264,40 @@ export function ProductsTab() {
 				</div>
 
 				{loading ? (
-					<div className="p-12 text-center text-gray-400">Carregando...</div>
+					<div className="p-12 text-center text-muted">Carregando...</div>
 				) : (
 					<div className="overflow-x-auto">
 						<table className="w-full text-sm">
-							<thead className="bg-gray-50 border-b border-gray-200">
+							<thead className="bg-paper-2 border-b border-rule">
 								<tr>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Produto</th>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Categoria</th>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Preço</th>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Estoque</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Produto</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Categoria</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Preço</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Estoque</th>
 									<th className="px-4 py-3 w-20"></th>
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-gray-100">
 								{list.map((product) => (
-									<tr key={product.id} className="hover:bg-gray-50 transition">
+									<tr key={product.id} className="hover:bg-paper-2 transition">
 										<td className="px-4 py-3">
 											<div className="flex items-center gap-3">
 												<img
 													src={product.images?.[0] ?? "/placeholder.png"}
 													alt={product.name}
-													className="w-10 h-10 object-cover rounded-lg bg-gray-100 flex-shrink-0"
+													className="w-10 h-10 object-cover rounded-lg bg-paper-3 flex-shrink-0"
 												/>
 												<div>
-													<div className="font-medium text-gray-900">{product.name}</div>
-													<div className="text-gray-400 text-xs">{product.tag}</div>
+													<div className="font-medium text-ink">{product.name}</div>
+													<div className="text-muted text-xs">{product.tag}</div>
 												</div>
 											</div>
 										</td>
-										<td className="px-4 py-3 text-gray-600">{product.category}</td>
-										<td className="px-4 py-3 font-medium text-gray-900">
+										<td className="px-4 py-3 text-muted">{product.category}</td>
+										<td className="px-4 py-3 font-medium text-ink">
 											{formatPrice(product.price)}
 											{product.discountPercentage != null && (
-												<span className="ml-2 text-red-500 text-xs">-{product.discountPercentage}%</span>
+												<span className="ml-2 text-danger text-xs">-{product.discountPercentage}%</span>
 											)}
 										</td>
 										<td className="px-4 py-3">
@@ -323,7 +320,7 @@ export function ProductsTab() {
 												</button>
 												<button
 													onClick={() => setDeletingProduct(product)}
-													className="text-red-500 hover:text-red-700 p-1.5 rounded hover:bg-red-50 transition"
+													className="text-danger hover:text-red-700 p-1.5 rounded hover:bg-danger-soft transition"
 													title="Excluir"
 												>
 													<Trash2 class="w-4 h-4" />
@@ -334,7 +331,7 @@ export function ProductsTab() {
 								))}
 								{list.length === 0 && (
 									<tr>
-										<td colSpan={5} className="px-4 py-12 text-center text-gray-400">
+										<td colSpan={5} className="px-4 py-12 text-center text-muted">
 											Nenhum produto encontrado
 										</td>
 									</tr>
@@ -359,12 +356,12 @@ export function ProductsTab() {
 						if ((e.target as HTMLElement).id === "product-modal-overlay") setProductModal(null);
 					}}
 				>
-					<div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl m-4 max-h-[90vh] flex flex-col animate-scale-in">
-						<div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 flex-shrink-0">
-							<h3 className="text-lg font-bold text-gray-900">
+					<div className="app-panel w-full max-w-2xl rounded-2xl shadow-2xl m-4 max-h-[90vh] flex flex-col animate-scale-in">
+						<div className="flex justify-between items-center px-6 py-4 border-b border-rule flex-shrink-0">
+							<h3 className="text-lg font-bold text-ink">
 								{productModal.mode === "create" ? "Novo Produto" : "Editar Produto"}
 							</h3>
-							<button onClick={() => setProductModal(null)} className="text-gray-400 hover:text-gray-600 transition">
+							<button onClick={() => setProductModal(null)} className="text-muted hover:text-muted transition">
 								<X class="w-5 h-5" />
 							</button>
 						</div>
@@ -372,7 +369,7 @@ export function ProductsTab() {
 						<form onSubmit={submitProductForm} className="overflow-y-auto flex-1 p-6 space-y-5">
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<div>
-									<label htmlFor="product-name" className="block text-sm font-medium text-gray-700 mb-1">
+									<label htmlFor="product-name" className="block text-sm font-medium text-ink-2 mb-1">
 										Nome *
 									</label>
 									<input
@@ -386,7 +383,7 @@ export function ProductsTab() {
 									/>
 								</div>
 								<div>
-									<label htmlFor="product-tag" className="block text-sm font-medium text-gray-700 mb-1">
+									<label htmlFor="product-tag" className="block text-sm font-medium text-ink-2 mb-1">
 										Tag (slug) *
 									</label>
 									<input
@@ -400,7 +397,7 @@ export function ProductsTab() {
 									/>
 								</div>
 								<div>
-									<label htmlFor="product-price" className="block text-sm font-medium text-gray-700 mb-1">
+									<label htmlFor="product-price" className="block text-sm font-medium text-ink-2 mb-1">
 										Preço (R$) *
 									</label>
 									<input
@@ -415,7 +412,7 @@ export function ProductsTab() {
 									/>
 								</div>
 								<div>
-									<label htmlFor="product-discount" className="block text-sm font-medium text-gray-700 mb-1">
+									<label htmlFor="product-discount" className="block text-sm font-medium text-ink-2 mb-1">
 										Desconto (%)
 									</label>
 									<input
@@ -431,7 +428,7 @@ export function ProductsTab() {
 									/>
 								</div>
 								<div>
-									<label htmlFor="product-category" className="block text-sm font-medium text-gray-700 mb-1">
+									<label htmlFor="product-category" className="block text-sm font-medium text-ink-2 mb-1">
 										Categoria *
 									</label>
 									<select
@@ -439,7 +436,7 @@ export function ProductsTab() {
 										value={pCategoryId}
 										required
 										onChange={(e) => setPCategoryId((e.target as HTMLSelectElement).value)}
-										className={`${inputClass} bg-white`}
+										className={`${inputClass} app-panel`}
 									>
 										<option value="">Selecione...</option>
 										{categories.map((c: Category) => (
@@ -450,7 +447,7 @@ export function ProductsTab() {
 									</select>
 								</div>
 								<div className="flex items-center gap-6 pt-5">
-									<label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+									<label className="flex items-center gap-2 text-sm text-ink-2 cursor-pointer">
 										<input
 											type="checkbox"
 											checked={pInStock}
@@ -459,7 +456,7 @@ export function ProductsTab() {
 										/>
 										Em estoque
 									</label>
-									<label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+									<label className="flex items-center gap-2 text-sm text-ink-2 cursor-pointer">
 										<input
 											type="checkbox"
 											checked={pIsNew}
@@ -472,7 +469,7 @@ export function ProductsTab() {
 							</div>
 
 							<div>
-								<label htmlFor="product-description" className="block text-sm font-medium text-gray-700 mb-1">
+								<label htmlFor="product-description" className="block text-sm font-medium text-ink-2 mb-1">
 									Descrição *
 								</label>
 								<textarea
@@ -488,7 +485,7 @@ export function ProductsTab() {
 
 							{productModal.mode === "edit" && (
 								<div>
-									<span className="block text-sm font-medium text-gray-700 mb-1">Galeria de imagens</span>
+									<span className="block text-sm font-medium text-ink-2 mb-1">Galeria de imagens</span>
 									<div className="mt-2 grid grid-cols-3 sm:grid-cols-4 gap-3">
 										{pImageUrls.map((url) => {
 											const uploaded = pUploadedImages.find((img) => img.url === url);
@@ -497,7 +494,7 @@ export function ProductsTab() {
 													<img
 														src={url}
 														alt={pName || "Imagem do produto"}
-														className="w-full aspect-square object-cover rounded-lg border border-gray-200"
+														className="w-full aspect-square object-cover rounded-lg border border-rule"
 													/>
 													{uploaded && (
 														<button
@@ -540,7 +537,7 @@ export function ProductsTab() {
 													type="button"
 													onClick={() => imageFileInputRef.current?.click()}
 													disabled={uploadingImage}
-													className="w-full aspect-square rounded-lg border-2 border-dashed border-gray-300 text-gray-400 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50/50 transition flex items-center justify-center disabled:opacity-50 disabled:pointer-events-none"
+													className="w-full aspect-square rounded-lg border-2 border-dashed border-rule-2 text-muted hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50/50 transition flex items-center justify-center disabled:opacity-50 disabled:pointer-events-none"
 													title="Adicionar imagem"
 												>
 													{uploadingImage ? (
@@ -558,7 +555,7 @@ export function ProductsTab() {
 							{productModal.mode === "create" && (
 								<div>
 									<div className="flex items-center justify-between mb-2">
-										<span className="block text-sm font-medium text-gray-700">Imagens (URLs) *</span>
+										<span className="block text-sm font-medium text-ink-2">Imagens (URLs) *</span>
 										<button
 											type="button"
 											onClick={() => setPImageUrls([...pImageUrls, ""])}
@@ -598,7 +595,7 @@ export function ProductsTab() {
 
 							<div>
 								<div className="flex items-center justify-between mb-2">
-									<span className="block text-sm font-medium text-gray-700">Especificações</span>
+									<span className="block text-sm font-medium text-ink-2">Especificações</span>
 									<button
 										type="button"
 										onClick={() => setPSpecs([...pSpecs, { key: "", value: "" }])}
@@ -641,7 +638,7 @@ export function ProductsTab() {
 											</button>
 										</div>
 									))}
-									{pSpecs.length === 0 && <p className="text-xs text-gray-400">Nenhuma especificação adicionada</p>}
+									{pSpecs.length === 0 && <p className="text-xs text-muted">Nenhuma especificação adicionada</p>}
 								</div>
 							</div>
 
@@ -649,7 +646,7 @@ export function ProductsTab() {
 								<button
 									type="button"
 									onClick={() => setProductModal(null)}
-									className="flex-1 border border-gray-200 text-gray-700 font-semibold py-2.5 rounded-lg hover:bg-gray-50 transition"
+									className="flex-1 border border-rule text-ink-2 font-semibold py-2.5 rounded-lg hover:bg-paper-2 transition"
 								>
 									Cancelar
 								</button>
@@ -674,19 +671,19 @@ export function ProductsTab() {
 						if ((e.target as HTMLElement).id === "delete-modal-overlay") setDeletingProduct(null);
 					}}
 				>
-					<div className="bg-white w-full max-w-sm rounded-2xl shadow-2xl m-4 animate-scale-in">
+					<div className="app-panel w-full max-w-sm rounded-2xl shadow-2xl m-4 animate-scale-in">
 						<div className="p-6 text-center">
 							<div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
 								<AlertTriangle class="w-6 h-6 text-red-600" />
 							</div>
-							<h3 className="text-lg font-bold text-gray-900 mb-2">Excluir produto?</h3>
-							<p className="text-sm text-gray-500 mb-6">
+							<h3 className="text-lg font-bold text-ink mb-2">Excluir produto?</h3>
+							<p className="text-sm text-muted mb-6">
 								<strong>{deletingProduct.name}</strong> será removido permanentemente. Esta ação não pode ser desfeita.
 							</p>
 							<div className="flex gap-3">
 								<button
 									onClick={() => setDeletingProduct(null)}
-									className="flex-1 border border-gray-200 text-gray-700 font-semibold py-2.5 rounded-lg hover:bg-gray-50 transition"
+									className="flex-1 border border-rule text-ink-2 font-semibold py-2.5 rounded-lg hover:bg-paper-2 transition"
 								>
 									Cancelar
 								</button>

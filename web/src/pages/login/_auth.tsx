@@ -2,6 +2,7 @@ import { toast } from "@/lib/toast";
 import { useState } from "preact/hooks";
 import { Eye, EyeOff } from "lucide-preact";
 import { request } from "@/lib/request";
+
 interface AuthResponse {
 	message: string;
 	role: "ADMIN" | "CUSTOMER" | "SUPPORT";
@@ -24,9 +25,7 @@ export default function Auth() {
 
 		if (!response.ok) {
 			if (response.errors) {
-				response.errors.forEach((error) => {
-					toast.error(error.message);
-				});
+				response.errors.forEach((error) => toast.error(error.message));
 			} else {
 				toast.error(response.message);
 			}
@@ -57,9 +56,7 @@ export default function Auth() {
 
 		if (!response.ok) {
 			if (response.errors) {
-				response.errors.forEach((error) => {
-					toast.error(error.message);
-				});
+				response.errors.forEach((error) => toast.error(error.message));
 			} else {
 				toast.error(response.message);
 			}
@@ -71,119 +68,77 @@ export default function Auth() {
 		setLoading(false);
 	};
 
+	const tabClass = (tab: "login" | "register") =>
+		`flex-1 py-3.5 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${
+			activeTab === tab ? "text-accent border-b-2 border-accent" : "text-muted hover:text-ink"
+		}`;
+
 	return (
-		<div className="bg-white w-full max-w-md rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-			<div className="flex border-b border-gray-100">
-				<button
-					onClick={() => setActiveTab("login")}
-					className={`w-1/2 py-4 text-sm font-semibold transition-colors duration-300 focus:outline-none ${activeTab === "login" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-blue-600"}`}
-				>
+		<div class="app-panel w-full max-w-md overflow-hidden">
+			<div class="flex border-b border-rule" role="tablist">
+				<button type="button" role="tab" aria-selected={activeTab === "login"} onClick={() => setActiveTab("login")} class={tabClass("login")}>
 					Entrar
 				</button>
-				<button
-					onClick={() => setActiveTab("register")}
-					className={`w-1/2 py-4 text-sm font-semibold transition-colors duration-300 focus:outline-none ${activeTab === "register" ? "text-blue-600 border-b-2 border-blue-600" : "text-gray-500 hover:text-blue-600"}`}
-				>
+				<button type="button" role="tab" aria-selected={activeTab === "register"} onClick={() => setActiveTab("register")} class={tabClass("register")}>
 					Cadastrar
 				</button>
 			</div>
 
-			<div className="p-8 min-h-[500px]">
+			<div class="p-6 sm:p-8 min-h-[28rem]">
 				{activeTab === "login" && (
-					<div className="animate-fade-in">
-						<h2 className="text-2xl font-bold text-gray-900 mb-2">Bem-vindo de volta!</h2>
-						<p className="text-sm text-gray-500 mb-6">Acesse sua conta para ver seus pedidos e favoritos.</p>
+					<div>
+						<h2 class="font-display font-semibold text-xl text-ink mb-1">Bem-vindo de volta</h2>
+						<p class="text-sm text-muted mb-6">Acesse sua conta para ver pedidos e favoritos.</p>
 
-						<div className="grid gap-3 mb-6">
-							<button
-								type="button"
-								className="flex items-center justify-center py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-sm font-medium text-gray-700"
-							>
-								<img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 mr-2" alt="Google" />
-								Google
-							</button>
-						</div>
-
-						<div className="relative mb-6">
-							<div className="absolute inset-0 flex items-center">
-								<div className="w-full border-t border-gray-200"></div>
+						<form onSubmit={handleLogin} class="space-y-4">
+							<div>
+								<label htmlFor="login-email" class="block text-sm font-medium text-ink-2 mb-1.5">
+									Email
+								</label>
+								<input type="email" name="email" id="login-email" class="input" placeholder="seu@email.com" required />
 							</div>
-							<div className="relative flex justify-center text-sm">
-								<span className="px-2 bg-white text-gray-500">Ou continue com email</span>
-							</div>
-						</div>
-
-						<form onSubmit={handleLogin}>
-							<div className="space-y-4">
-								<div>
-									<label htmlFor="login-email" className="block text-sm font-medium text-gray-700 mb-1">
-										Email
+							<div>
+								<div class="flex justify-between items-center mb-1.5">
+									<label htmlFor="login-pass" class="block text-sm font-medium text-ink-2">
+										Senha
 									</label>
+									<a href="/" class="text-xs text-accent hover:underline">
+										Esqueceu a senha?
+									</a>
+								</div>
+								<div class="relative">
 									<input
-										type="email"
-										name="email"
-										id="login-email"
-										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-										placeholder="seu@email.com"
+										type={showPassword ? "text" : "password"}
+										id="login-pass"
+										name="password"
+										class="input !pr-11"
+										placeholder="••••••••"
 										required
 									/>
-								</div>
-								<div>
-									<div className="flex justify-between items-center mb-1">
-										<label htmlFor="login-pass" className="block text-sm font-medium text-gray-700">
-											Senha
-										</label>
-										<a href="/" className="text-xs text-blue-600 hover:underline">
-											Esqueceu a senha?
-										</a>
-									</div>
-									<div className="relative">
-										<input
-											type={showPassword ? "text" : "password"}
-											id="login-pass"
-											name="password"
-											className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-											placeholder="••••••••"
-											required
-										/>
-										<button
-											type="button"
-											onClick={() => setShowPassword(!showPassword)}
-											className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
-										>
-											{showPassword ? <EyeOff class="w-5 h-5" /> : <Eye class="w-5 h-5" />}
-										</button>
-									</div>
+									<button
+										type="button"
+										onClick={() => setShowPassword(!showPassword)}
+										class="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus rounded"
+										aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+									>
+										{showPassword ? <EyeOff class="w-5 h-5" /> : <Eye class="w-5 h-5" />}
+									</button>
 								</div>
 							</div>
 
-							<div className="flex items-center mt-4 mb-6">
-								<input
-									name="remember"
-									type="checkbox"
-									id="remember"
-									className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-								/>
-								<label htmlFor="remember" className="ml-2 block text-sm text-gray-600">
-									Lembrar de mim
-								</label>
-							</div>
+							<label class="flex items-center gap-2 text-sm text-ink-2 cursor-pointer">
+								<input name="remember" type="checkbox" id="remember" class="rounded border-rule-2 text-accent focus:ring-accent" />
+								Lembrar de mim
+							</label>
 
-							<button
-								type="submit"
-								disabled={loading}
-								className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5"
-							>
+							<button type="submit" disabled={loading} class="btn btn-primary w-full !py-3 mt-2">
 								{loading ? "Carregando..." : "Entrar"}
 							</button>
 						</form>
 
-						<p className="text-center text-sm text-gray-500 mt-6">
+						<p class="text-center text-sm text-muted mt-6">
 							Não tem uma conta?
-							<button
-								onClick={() => setActiveTab("register")}
-								className="text-blue-600 font-semibold hover:underline ml-1"
-							>
+							<button type="button" onClick={() => setActiveTab("register")} class="text-accent font-semibold hover:underline ml-1">
 								Cadastre-se
 							</button>
 						</p>
@@ -191,103 +146,60 @@ export default function Auth() {
 				)}
 
 				{activeTab === "register" && (
-					<div className="animate-fade-in">
-						<h2 className="text-2xl font-bold text-gray-900 mb-2">Criar conta</h2>
-						<p className="text-sm text-gray-500 mb-6">Preencha seus dados para começar a comprar.</p>
+					<div>
+						<h2 class="font-display font-semibold text-xl text-ink mb-1">Criar conta</h2>
+						<p class="text-sm text-muted mb-6">Preencha seus dados para começar a comprar.</p>
 
-						<form onSubmit={handleRegister}>
-							<div className="space-y-4">
-								<div>
-									<label htmlFor="reg-name" className="block text-sm font-medium text-gray-700 mb-1">
-										Nome Completo
-									</label>
-									<input
-										type="text"
-										name="name"
-										id="reg-name"
-										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-										placeholder="Ex: Maria Silva"
-										required
-									/>
-								</div>
-								<div>
-									<label htmlFor="reg-email" className="block text-sm font-medium text-gray-700 mb-1">
-										Email
-									</label>
-									<input
-										type="email"
-										name="email"
-										id="reg-email"
-										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-										placeholder="seu@email.com"
-										required
-									/>
-								</div>
-								<div>
-									<label htmlFor="reg-pass" className="block text-sm font-medium text-gray-700 mb-1">
-										Senha
-									</label>
-									<input
-										type="password"
-										name="password"
-										id="reg-pass"
-										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-										placeholder="Mínimo 8 caracteres"
-										required
-										minLength={8}
-									/>
-								</div>
-								<div>
-									<label htmlFor="reg-confirm" className="block text-sm font-medium text-gray-700 mb-1">
-										Confirmar Senha
-									</label>
-									<input
-										type="password"
-										name="confirmPassword"
-										id="reg-confirm"
-										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 outline-none transition"
-										placeholder="Confirme sua senha"
-										required
-									/>
-								</div>
+						<form onSubmit={handleRegister} class="space-y-4">
+							<div>
+								<label htmlFor="reg-name" class="block text-sm font-medium text-ink-2 mb-1.5">
+									Nome completo
+								</label>
+								<input type="text" name="name" id="reg-name" class="input" placeholder="Ex: Maria Silva" required />
+							</div>
+							<div>
+								<label htmlFor="reg-email" class="block text-sm font-medium text-ink-2 mb-1.5">
+									Email
+								</label>
+								<input type="email" name="email" id="reg-email" class="input" placeholder="seu@email.com" required />
+							</div>
+							<div>
+								<label htmlFor="reg-pass" class="block text-sm font-medium text-ink-2 mb-1.5">
+									Senha
+								</label>
+								<input type="password" name="password" id="reg-pass" class="input" placeholder="Mínimo 8 caracteres" required minLength={8} />
+							</div>
+							<div>
+								<label htmlFor="reg-confirm" class="block text-sm font-medium text-ink-2 mb-1.5">
+									Confirmar senha
+								</label>
+								<input type="password" name="confirmPassword" id="reg-confirm" class="input" placeholder="Confirme sua senha" required />
 							</div>
 
-							<div className="flex items-start mt-4 mb-6">
-								<input
-									type="checkbox"
-									id="terms"
-									required
-									className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
-								/>
-								<label htmlFor="terms" className="ml-2 block text-sm text-gray-600">
-									Eu li e concordo com os
-									<a href="/" className="text-blue-600 hover:underline">
+							<label class="flex items-start gap-2 text-sm text-ink-2 cursor-pointer">
+								<input type="checkbox" id="terms" required class="mt-1 rounded border-rule-2 text-accent focus:ring-accent" />
+								<span>
+									Eu li e concordo com os{" "}
+									<a href="/" class="text-accent hover:underline">
 										Termos de Uso
-									</a>
-									e
-									<a href="/" className="text-blue-600 hover:underline">
+									</a>{" "}
+									e{" "}
+									<a href="/" class="text-accent hover:underline">
 										Política de Privacidade
 									</a>
 									.
-								</label>
-							</div>
+								</span>
+							</label>
 
-							<button
-								type="submit"
-								disabled={loading}
-								className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5"
-							>
-								{loading ? "Carregando..." : "Entrar"}
+							<button type="submit" disabled={loading} class="btn btn-primary w-full !py-3 mt-2">
+								{loading ? "Carregando..." : "Criar conta"}
 							</button>
 						</form>
 
-						<p className="text-center text-sm text-gray-500 mt-6">
+						<p class="text-center text-sm text-muted mt-6">
 							Já tem uma conta?
-							<button
-								onClick={() => setActiveTab("login")}
-								className="text-blue-600 font-semibold hover:underline ml-1"
-							>
-								Fazer Login
+							<button type="button" onClick={() => setActiveTab("login")} class="text-accent font-semibold hover:underline ml-1">
+								Fazer login
 							</button>
 						</p>
 					</div>

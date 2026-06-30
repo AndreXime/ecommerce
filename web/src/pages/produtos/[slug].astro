@@ -22,41 +22,33 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? 
 <Layout title={product.name} description={product.description}>
     <Header />
 
-    <main class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16">
-            <div class="lg:col-span-7">
-                <div
-                    class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sticky top-40"
-                >
-                    <div
-                        class="aspect-[4/3] w-full overflow-hidden rounded-xl bg-gray-100 mb-4 group relative"
-                    >
+    <main class="page-shell py-8 lg:py-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-16 min-w-0">
+            <div class="lg:col-span-7 min-w-0">
+                <div class="app-panel p-4 lg:sticky lg:top-28">
+                    <div class="aspect-[4/3] w-full overflow-hidden rounded-[calc(var(--radius-card)-4px)] bg-paper-3 mb-4">
                         <img
                             id="mainImage"
                             src={product.images[0]?.url}
                             alt={product.name}
-                            class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-700"
+                            class="w-full h-full object-cover object-center"
                         />
-                        <div
-                            class="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide"
-                        >
-                            Novo
-                        </div>
                     </div>
 
-                    <div class="grid grid-cols-4 gap-4" id="thumbnails" role="list" aria-label="Galeria de imagens do produto">
+                    <div class="grid grid-cols-4 gap-3" id="thumbnails" role="list" aria-label="Galeria de imagens do produto">
                         {
                             product.images.map((image, index) => (
                                 <button
                                     role="listitem"
-                                    class={`thumbnail-btn aspect-square rounded-lg border p-1 bg-white overflow-hidden transition ${index === 0 ? "border-2 border-blue-600" : "border-gray-200 hover:border-blue-400"}`}
+                                    type="button"
+                                    class={`thumbnail-btn aspect-square rounded-[var(--radius-input)] border overflow-hidden transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${index === 0 ? "border-accent ring-2 ring-accent/20" : "border-rule hover:border-rule-2"}`}
                                     aria-label={`Ver imagem ${index + 1} de ${product.images.length}`}
                                     aria-pressed={index === 0}
                                 >
                                     <img
                                         src={image.url}
                                         alt={`${product.name} — imagem ${index + 1}`}
-                                        class="w-full h-full object-cover rounded pointer-events-none"
+                                        class="w-full h-full object-cover pointer-events-none"
                                     />
                                 </button>
                             ))
@@ -65,215 +57,123 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? 
                 </div>
             </div>
 
-            <div class="lg:col-span-5 flex flex-col space-y-6">
+            <div class="lg:col-span-5 flex flex-col gap-6 min-w-0">
                 <div>
-                    <h1
-                        class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-2"
-                    >
-                        {product.name}
-                    </h1>
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center text-yellow-400 text-sm">
+                    <h1 class="font-display font-semibold text-display-s text-ink leading-tight mb-3">{product.name}</h1>
+                    <div class="flex flex-wrap items-center gap-3 text-sm">
+                        <div class="flex items-center text-star">
                             <StarRating rating={product.rating} />
                         </div>
-                        <a
-                            href="#reviews"
-                            class="text-sm text-blue-600 hover:underline font-medium"
-                        >
+                        <a href="#reviews" class="text-accent font-medium hover:underline">
                             {product.reviewsCount} avaliações
                         </a>
-                        <span class="text-gray-300">|</span>
-                        <span
-                            class="text-sm text-green-600 font-medium flex gap-1"
-                        >
-                            <BadgeCheck />
-                            Em Estoque
+                        <span class="text-rule-2">|</span>
+                        <span class="text-success font-medium flex items-center gap-1">
+                            <BadgeCheck size={16} aria-hidden="true" /> Em estoque
                         </span>
                     </div>
                 </div>
 
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                    <p class="text-sm text-gray-500 line-through mb-1">
-                        {formatPrice(oldPrice)}
-                    </p>
-                    <div class="flex items-end gap-2">
-                        <span class="text-4xl font-bold text-gray-900"
-                            >{formatPrice(product.price)}</span
-                        >
-                        <span class="text-sm text-blue-600 font-bold mb-1"
-                            >Economize ${product.discountPercentage}</span
-                        >
+                <div class="app-panel p-5">
+                    {product.discountPercentage ? (
+                        <p class="text-sm text-muted line-through mb-1">{formatPrice(oldPrice)}</p>
+                    ) : null}
+                    <div class="flex flex-wrap items-end gap-2">
+                        <span class="font-display font-semibold text-3xl text-ink">{formatPrice(product.price)}</span>
+                        {product.discountPercentage ? (
+                            <span class="badge badge-accent mb-1">-{product.discountPercentage}%</span>
+                        ) : null}
                     </div>
-                    <p class="text-xs text-gray-500 mt-2">
-                        Em até 12x de ${(product.price / 12).toFixed(2)} sem juros
+                    <p class="text-xs text-muted mt-2">
+                        Em até 12x de {formatPrice(product.price / 12)} sem juros
                     </p>
                 </div>
 
-                <p class="text-gray-600 leading-relaxed">
-                    {product.description}
-                </p>
+                <p class="text-ink-2 leading-relaxed">{product.description}</p>
 
                 <ProductAddToCart product={product} client:idle />
 
-                <div class="pt-6 space-y-4">
-                    <details
-                        class="group bg-white border border-gray-200 rounded-lg overflow-hidden transition hover:border-gray-300"
-                    >
-                        <summary
-                            class="flex justify-between items-center p-4 font-semibold text-gray-900 cursor-pointer select-none bg-gray-50 group-open:bg-white group-open:text-blue-600 transition"
-                        >
-                            Especificações Técnicas
-                            <span
-                                class="transform group-open:rotate-180 transition duration-300 text-gray-400 group-open:text-blue-600"
-                            >
-                                <ChevronDown />
-                            </span>
+                <div class="space-y-3">
+                    <details class="app-panel group overflow-hidden">
+                        <summary class="flex justify-between items-center p-4 font-semibold text-ink cursor-pointer select-none hover:bg-paper-2 transition-colors">
+                            Especificações técnicas
+                            <ChevronDown class="text-muted group-open:rotate-180 transition-transform" size={18} aria-hidden="true" />
                         </summary>
-                        <div
-                            class="p-4 text-sm text-gray-600 border-t border-gray-100 space-y-2"
-                        >
+                        <div class="px-4 pb-4 text-sm text-ink-2 border-t border-rule space-y-2">
                             {
-                                Object.entries(product.specs).map(
-                                    ([key, value]) => {
-                                        if (
-                                            key === "colors" ||
-                                            key === "storage"
-                                        )
-                                            return null;
-
-                                        // Formatação da Chave (ex: "flightTime" -> "Flight Time")
-                                        const label = key
-                                            .replace(/([A-Z])/g, " $1")
-                                            .replace(/^./, (str) =>
-                                                str.toUpperCase(),
-                                            );
-
-                                        // Tratamento se o valor for array (ex: conexões)
-                                        const displayValue = Array.isArray(
-                                            value,
-                                        )
-                                            ? value.join(", ")
-                                            : value;
-
-                                        return (
-                                            <div class="flex justify-between border-b border-gray-50 pb-2 last:border-0">
-                                                <span class="font-medium text-gray-700">
-                                                    {label}
-                                                </span>
-                                                <span class="text-gray-900">
-                                                    {displayValue}
-                                                </span>
-                                            </div>
-                                        );
-                                    },
-                                )
+                                Object.entries(product.specs).map(([key, value]) => {
+                                    if (key === "colors" || key === "storage") return null;
+                                    const label = key
+                                        .replace(/([A-Z])/g, " $1")
+                                        .replace(/^./, (str) => str.toUpperCase());
+                                    const displayValue = Array.isArray(value) ? value.join(", ") : value;
+                                    return (
+                                        <div class="flex justify-between gap-4 py-2 border-b border-rule last:border-0">
+                                            <span class="font-medium text-ink">{label}</span>
+                                            <span>{displayValue}</span>
+                                        </div>
+                                    );
+                                })
                             }
                         </div>
                     </details>
 
-                    <details
-                        class="group bg-white border border-gray-200 rounded-lg overflow-hidden transition hover:border-gray-300"
-                    >
-                        <summary
-                            class="flex justify-between items-center p-4 font-semibold text-gray-900 cursor-pointer select-none bg-gray-50 group-open:bg-white group-open:text-blue-600 transition"
-                        >
-                            Envio e Devoluções
-                            <span
-                                class="transform group-open:rotate-180 transition duration-300 text-gray-400 group-open:text-blue-600"
-                            >
-                                <ChevronDown />
-                            </span>
+                    <details class="app-panel group overflow-hidden">
+                        <summary class="flex justify-between items-center p-4 font-semibold text-ink cursor-pointer select-none hover:bg-paper-2 transition-colors">
+                            Envio e devoluções
+                            <ChevronDown class="text-muted group-open:rotate-180 transition-transform" size={18} aria-hidden="true" />
                         </summary>
-                        <div
-                            class="p-4 text-sm text-gray-600 border-t border-gray-100"
-                        >
-                            <p class="mb-2">
-                                Envio expresso disponível para todo o Brasil. O
-                                prazo médio é de 3-5 dias úteis.
-                            </p>
-                            <p>
-                                Aceitamos devoluções dentro de 30 dias após o
-                                recebimento, desde que o produto esteja na
-                                embalagem original.
-                            </p>
+                        <div class="px-4 pb-4 text-sm text-ink-2 border-t border-rule space-y-2">
+                            <p>Envio expresso disponível para todo o Brasil. Prazo médio de 3 a 5 dias úteis.</p>
+                            <p>Devoluções em até 30 dias, com produto na embalagem original.</p>
                         </div>
                     </details>
                 </div>
             </div>
         </div>
 
-        <section id="reviews" class="border-t border-gray-200 pt-12 pb-12">
-            <h2 class="text-2xl font-bold text-gray-900 mb-8">
-                Avaliações de Clientes
-            </h2>
-            <div class="flex flex-col md:flex-row gap-10">
-                <div class="w-full md:w-1/4 flex-shrink-0">
-                    <div
-                        class="bg-gray-50 rounded-2xl p-6 text-center border border-gray-100"
-                    >
-                        <div class="text-5xl font-bold text-gray-900 mb-2">
-                            {product.rating}
-                        </div>
-                        <div
-                            class="flex justify-center text-yellow-400 mb-2 text-lg"
-                        >
+        <section id="reviews" class="border-t border-rule pt-12">
+            <h2 class="font-display font-semibold text-xl text-ink mb-8">Avaliações de clientes</h2>
+            <div class="flex flex-col lg:flex-row gap-10 min-w-0">
+                <div class="w-full lg:w-56 shrink-0">
+                    <div class="app-panel p-6 text-center">
+                        <div class="font-display font-semibold text-4xl text-ink mb-2">{product.rating}</div>
+                        <div class="flex justify-center text-star mb-2">
                             <StarRating rating={product.rating} />
                         </div>
-                        <p class="text-gray-500 text-sm mb-6">
-                            Baseado em {product.reviewsCount} avaliações
-                        </p>
-                        <button
-                            class="w-full border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2 px-4 rounded-lg transition"
-                        >
-                            Escrever Avaliação
-                        </button>
+                        <p class="text-sm text-muted mb-6">Baseado em {product.reviewsCount} avaliações</p>
+                        <button type="button" class="btn btn-secondary w-full !py-2 text-sm">Escrever avaliação</button>
                     </div>
                 </div>
 
-                <div class="flex-grow space-y-6">
+                <div class="flex-grow space-y-6 min-w-0">
                     {
                         product.fullReviews?.map((review) => (
-                            <div class="border-b border-gray-100 pb-6">
-                                <div class="flex justify-between items-start mb-2">
-                                    <div class="flex items-center gap-3">
+                            <article class="pb-6 border-b border-rule last:border-0">
+                                <div class="flex justify-between items-start gap-4 mb-2">
+                                    <div class="flex items-center gap-3 min-w-0">
                                         {review.avatar ? (
-                                            <img
-                                                src={review.avatar}
-                                                class="w-10 h-10 rounded-full object-cover"
-                                                alt={review.author}
-                                            />
+                                            <img src={review.avatar} class="w-10 h-10 rounded-full object-cover shrink-0" alt={review.author} />
                                         ) : (
-                                            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+                                            <div class="w-10 h-10 rounded-full bg-accent-soft text-accent flex items-center justify-center font-semibold shrink-0">
                                                 {review.initials}
                                             </div>
                                         )}
-                                        <div>
-                                            <h4 class="font-bold text-gray-900 text-sm">
-                                                {review.author}
-                                            </h4>
-                                            <div class="flex text-yellow-400 text-xs">
-                                                <StarRating
-                                                    rating={review.rating}
-                                                />
+                                        <div class="min-w-0">
+                                            <h3 class="font-semibold text-sm text-ink truncate">{review.author}</h3>
+                                            <div class="flex text-star">
+                                                <StarRating rating={review.rating} />
                                             </div>
                                         </div>
                                     </div>
-                                    <span class="text-xs text-gray-500">
-                                        {review.date}
-                                    </span>
+                                    <time class="text-xs text-muted shrink-0">{review.date}</time>
                                 </div>
-                                <h5 class="font-semibold text-gray-800 text-sm mb-1">
-                                    {review.title}
-                                </h5>
-                                <p class="text-gray-600 text-sm leading-relaxed">
-                                    {review.content}
-                                </p>
-                            </div>
+                                <h4 class="font-medium text-sm text-ink mb-1">{review.title}</h4>
+                                <p class="text-sm text-ink-2 leading-relaxed">{review.content}</p>
+                            </article>
                         ))
                     }
-                    <button
-                        class="text-blue-600 font-medium text-sm hover:underline"
-                    >
+                    <button type="button" class="text-sm font-medium text-accent hover:underline">
                         Ver todas as {product.reviewsCount} avaliações
                     </button>
                 </div>
@@ -286,31 +186,25 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? 
 
 <script>
     const mainImage = document.getElementById("mainImage") as HTMLImageElement;
-    const buttons = document.querySelectorAll(
-        ".thumbnail-btn",
-    ) as NodeListOf<HTMLButtonElement>;
+    const buttons = document.querySelectorAll(".thumbnail-btn") as NodeListOf<HTMLButtonElement>;
 
     const changeImage = (button: HTMLButtonElement) => {
         const thumbImg = button.querySelector("img");
-
         if (!thumbImg || !mainImage) return;
 
         mainImage.src = thumbImg.src;
         mainImage.alt = thumbImg.alt;
 
         buttons.forEach((btn) => {
-            btn.classList.remove("border-2", "border-blue-600");
-            btn.classList.add("border", "border-gray-200", "hover:border-blue-400");
+            btn.classList.remove("border-accent", "ring-2", "ring-accent/20");
+            btn.classList.add("border-rule", "hover:border-rule-2");
             btn.setAttribute("aria-pressed", "false");
         });
 
-        button.classList.remove("border", "border-gray-200", "hover:border-blue-400");
-        button.classList.add("border-2", "border-blue-600");
+        button.classList.remove("border-rule", "hover:border-rule-2");
+        button.classList.add("border-accent", "ring-2", "ring-accent/20");
         button.setAttribute("aria-pressed", "true");
     };
 
-    // Adicionando Event Listeners
-    buttons.forEach((btn) => {
-        btn.addEventListener("click", () => changeImage(btn));
-    });
+    buttons.forEach((btn) => btn.addEventListener("click", () => changeImage(btn)));
 </script>

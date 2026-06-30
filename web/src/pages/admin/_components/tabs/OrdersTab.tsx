@@ -44,40 +44,40 @@ export function OrdersTab() {
 	return (
 		<div className="animate-fade-in">
 			<div className="flex items-center justify-between mb-6">
-				<h1 className="text-2xl font-bold text-gray-900">Pedidos</h1>
+				<h1 className="text-2xl font-bold text-ink">Pedidos</h1>
 				<button
 					type="button"
 					onClick={() => loadOrders({ force: true })}
-					className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition"
+					className="inline-flex items-center gap-2 text-sm text-accent hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-accent-soft transition"
 				>
 					<RefreshCw class="w-4 h-4" /> Atualizar
 				</button>
 			</div>
 
-			<div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+			<div className="app-panel rounded-xl border border-rule shadow-sm overflow-hidden">
 				{loading ? (
-					<div className="p-12 text-center text-gray-400">Carregando...</div>
+					<div className="p-12 text-center text-muted">Carregando...</div>
 				) : (
 					<div className="overflow-x-auto">
 						<table className="w-full text-sm">
-							<thead className="bg-gray-50 border-b border-gray-200">
+							<thead className="bg-paper-2 border-b border-rule">
 								<tr>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">ID</th>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Data</th>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Total</th>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Itens</th>
-									<th className="text-left px-4 py-3 font-semibold text-gray-600">Status</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">ID</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Data</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Total</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Itens</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Status</th>
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-gray-100">
 								{list.map((order) => (
-									<tr key={order.id} className="hover:bg-gray-50 transition">
-										<td className="px-4 py-3 font-mono text-xs text-gray-400">{order.id.slice(0, 8)}…</td>
-										<td className="px-4 py-3 text-gray-600">
+									<tr key={order.id} className="hover:bg-paper-2 transition">
+										<td className="px-4 py-3 font-mono text-xs text-muted">{order.id.slice(0, 8)}…</td>
+										<td className="px-4 py-3 text-muted">
 											{new Date(order.date).toLocaleDateString("pt-BR")}
 										</td>
-										<td className="px-4 py-3 font-medium text-gray-900">{formatPrice(order.total)}</td>
-										<td className="px-4 py-3 text-gray-600">
+										<td className="px-4 py-3 font-medium text-ink">{formatPrice(order.total)}</td>
+										<td className="px-4 py-3 text-muted">
 											{order.items.length} {order.items.length === 1 ? "item" : "itens"}
 										</td>
 										<td className="px-4 py-3">
@@ -102,7 +102,7 @@ export function OrdersTab() {
 								))}
 								{list.length === 0 && (
 									<tr>
-										<td colSpan={5} className="px-4 py-12 text-center text-gray-400">
+										<td colSpan={5} className="px-4 py-12 text-center text-muted">
 											Nenhum pedido encontrado
 										</td>
 									</tr>

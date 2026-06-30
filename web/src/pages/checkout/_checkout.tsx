@@ -1,3 +1,4 @@
+import { formatPrice } from "@/lib/utils";
 import { useState } from "preact/hooks";
 import { Check, MapPin, ArrowRight, ArrowLeft, CreditCard, QrCode, Barcode, Timer, Clock, Info } from "lucide-preact";
 
@@ -42,355 +43,278 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 		setCurrentStep((prev) => prev - 1);
 	};
 
-	const getIndicatorClass = (stepNumber: number) => {
-		if (stepNumber < currentStep) return "completed";
-		if (stepNumber === currentStep) return "active";
-		return "";
+	const stepDotClass = (step: number) => {
+		if (step < currentStep) return "bg-success border-success text-accent-ink";
+		if (step === currentStep) return "bg-accent border-accent text-accent-ink";
+		return "bg-paper border-rule-2 text-muted";
 	};
 
+	const stepLabelClass = (step: number) => {
+		if (step < currentStep) return "text-success";
+		if (step === currentStep) return "text-accent";
+		return "text-muted";
+	};
+
+	const paymentTabClass = (method: PaymentMethod) =>
+		`border rounded-[var(--radius-input)] p-3 text-center transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${
+			paymentMethod === method
+				? "border-accent bg-accent-soft text-accent"
+				: "border-rule hover:border-rule-2 text-ink-2"
+		}`;
+
 	return (
-		<div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
-			<div className="flex-grow">
-				<div className="max-w-4xl mx-auto mb-10">
-					<div className="flex items-center justify-between relative">
-						<div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 -z-10"></div>
-						{[1, 2, 3].map((step) => {
-							const status = getIndicatorClass(step);
-							let bgClass = "bg-white border-gray-300 text-gray-500";
-							let textClass = "text-gray-400";
-
-							if (status === "completed") {
-								bgClass = "bg-green-500 border-green-500 text-white";
-								textClass = "text-green-600";
-							} else if (status === "active") {
-								bgClass = "bg-blue-600 border-blue-600 text-white";
-								textClass = "text-blue-600";
-							}
-
-							return (
-								<div key={step} className={`flex flex-col items-center bg-gray-50 px-4`}>
-									<div
-										className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-bold transition-colors duration-300 ${bgClass}`}
-									>
-										{status === "completed" ? <Check class="w-5 h-5" /> : <span>{step}</span>}
-									</div>
-									<span className={`text-xs font-semibold mt-2 uppercase tracking-wide ${textClass}`}>
-										{step === 1 ? "Envio" : step === 2 ? "Pagamento" : "Confirmação"}
-									</span>
-								</div>
-							);
-						})}
-					</div>
-				</div>
+		<div class="flex flex-col lg:flex-row gap-8 max-w-5xl mx-auto min-w-0">
+			<div class="flex-grow min-w-0">
+				<nav class="mb-10" aria-label="Etapas do checkout">
+					<ol class="flex items-center justify-between relative">
+						<div class="absolute left-0 top-5 w-full h-px bg-rule -z-10" aria-hidden="true" />
+						{[1, 2, 3].map((step) => (
+							<li key={step} class="flex flex-col items-center gap-2 bg-paper px-2">
+								<span
+									class={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-semibold text-sm transition-colors ${stepDotClass(step)}`}
+								>
+									{step < currentStep ? <Check class="w-5 h-5" aria-hidden="true" /> : step}
+								</span>
+								<span class={`text-xs font-medium uppercase tracking-wide ${stepLabelClass(step)}`}>
+									{step === 1 ? "Envio" : step === 2 ? "Pagamento" : "Confirmação"}
+								</span>
+							</li>
+						))}
+					</ol>
+				</nav>
 
 				{currentStep === 1 && (
-					<div className="step-content active animate-fade-in">
-						<h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-							<MapPin class="text-blue-600 mr-3 w-6 h-6" /> Informações de Envio
+					<section>
+						<h2 class="font-display font-semibold text-lg text-ink mb-6 flex items-center gap-2">
+							<MapPin class="text-accent" size={20} aria-hidden="true" /> Informações de envio
 						</h2>
 
-						<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-6">
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div class="app-panel p-6 space-y-6">
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 								<div>
-									<label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-										Nome Completo
+									<label htmlFor="fullName" class="block text-sm font-medium text-ink-2 mb-1.5">
+										Nome completo
 									</label>
-									<input
-										id="fullName"
-										type="text"
-										defaultValue={user.name}
-										className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-									/>
+									<input id="fullName" type="text" defaultValue={user.name} class="input" />
 								</div>
 								<div>
-									<label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+									<label htmlFor="email" class="block text-sm font-medium text-ink-2 mb-1.5">
 										Email
 									</label>
-									<input
-										id="email"
-										type="email"
-										className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-										placeholder="joao@email.com"
-									/>
+									<input id="email" type="email" defaultValue={user.email} class="input" placeholder="joao@email.com" />
 								</div>
 								<div>
-									<label htmlFor="cpf" className="block text-sm font-medium text-gray-700 mb-1">
+									<label htmlFor="cpf" class="block text-sm font-medium text-ink-2 mb-1.5">
 										CPF
 									</label>
-									<input
-										id="cpf"
-										type="text"
-										className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-										placeholder="000.000.000-00"
-									/>
+									<input id="cpf" type="text" class="input" placeholder="000.000.000-00" />
 								</div>
 								<div>
-									<label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+									<label htmlFor="phone" class="block text-sm font-medium text-ink-2 mb-1.5">
 										Telefone
 									</label>
-									<input
-										id="phone"
-										type="text"
-										className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-										placeholder="(00) 00000-0000"
-									/>
+									<input id="phone" type="text" class="input" placeholder="(00) 00000-0000" />
 								</div>
 							</div>
 
-							<div className="h-px bg-gray-100"></div>
+							<hr class="section-rule" />
 
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-								<div className="md:col-span-1">
-									<label htmlFor="cep" className="block text-sm font-medium text-gray-700 mb-1">
+							<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+								<div>
+									<label htmlFor="cep" class="block text-sm font-medium text-ink-2 mb-1.5">
 										CEP
 									</label>
-									<input
-										id="cep"
-										type="text"
-										className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-										placeholder="00000-000"
-									/>
+									<input id="cep" type="text" class="input" placeholder="00000-000" />
 								</div>
-								<div className="md:col-span-2">
-									<label htmlFor="street" className="block text-sm font-medium text-gray-700 mb-1">
+								<div class="md:col-span-2">
+									<label htmlFor="street" class="block text-sm font-medium text-ink-2 mb-1.5">
 										Rua / Avenida
 									</label>
-									<input
-										id="street"
-										type="text"
-										className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-									/>
+									<input id="street" type="text" class="input" />
 								</div>
 							</div>
 
-							<div>
-								<span className="block text-sm font-medium text-gray-700 mb-3">Opções de Entrega</span>
-								<div className="space-y-3">
-									<label className="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition border-blue-500 bg-blue-50">
-										<div className="flex items-center">
-											<input
-												type="radio"
-												name="shipping"
-												defaultChecked
-												className="h-4 w-4 text-blue-600 focus:ring-blue-500"
-											/>
-											<div className="ml-3">
-												<span className="block text-sm font-medium text-gray-900">Entrega Padrão</span>
-												<span className="block text-xs text-gray-500">5 a 7 dias úteis</span>
-											</div>
+							<fieldset>
+								<legend class="block text-sm font-medium text-ink-2 mb-3">Opções de entrega</legend>
+								<label class="flex items-center justify-between border border-accent bg-accent-soft p-4 rounded-[var(--radius-card)] cursor-pointer">
+									<div class="flex items-center gap-3">
+										<input type="radio" name="shipping" defaultChecked class="text-accent focus:ring-accent" />
+										<div>
+											<span class="block text-sm font-medium text-ink">Entrega padrão</span>
+											<span class="block text-xs text-muted">5 a 7 dias úteis</span>
 										</div>
-										<span className="text-sm font-bold text-gray-900">Grátis</span>
-									</label>
-								</div>
-							</div>
+									</div>
+									<span class="text-sm font-semibold text-success">Grátis</span>
+								</label>
+							</fieldset>
 
-							<div className="pt-4 flex justify-end">
-								<button
-									onClick={nextStep}
-									className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center"
-								>
-									Ir para Pagamento <ArrowRight class="ml-2 w-5 h-5" />
+							<div class="flex justify-end pt-2">
+								<button type="button" onClick={nextStep} class="btn btn-primary !px-6">
+									Ir para pagamento <ArrowRight class="w-4 h-4" aria-hidden="true" />
 								</button>
 							</div>
 						</div>
-					</div>
+					</section>
 				)}
 
 				{currentStep === 2 && (
-					<div className="step-content active animate-fade-in">
-						<div className="flex items-center mb-6">
-							<button onClick={prevStep} className="text-gray-400 hover:text-gray-600 mr-4 transition">
-								<ArrowLeft class="w-6 h-6" />
+					<section>
+						<div class="flex items-center gap-3 mb-6">
+							<button
+								type="button"
+								onClick={prevStep}
+								class="p-2 text-muted hover:text-ink rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+								aria-label="Voltar"
+							>
+								<ArrowLeft class="w-5 h-5" />
 							</button>
-							<h2 className="text-xl font-bold text-gray-900 flex items-center">
-								<CreditCard class="text-blue-600 mr-3 w-6 h-6" /> Detalhes do Pagamento
+							<h2 class="font-display font-semibold text-lg text-ink flex items-center gap-2">
+								<CreditCard class="text-accent" size={20} aria-hidden="true" /> Detalhes do pagamento
 							</h2>
 						</div>
 
-						<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-							<div className="grid grid-cols-3 gap-3 mb-6">
-								<button
-									onClick={() => setPaymentMethod("card")}
-									className={`border rounded-lg p-3 text-center transition hover:border-blue-300 ${paymentMethod === "card" ? "border-blue-600 bg-blue-50 text-blue-700" : "border-gray-200"}`}
-								>
-									<CreditCard class="mx-auto mb-1 w-6 h-6 block" />
-									<span className="text-sm font-medium">Cartão</span>
+						<div class="app-panel p-6">
+							<div class="grid grid-cols-3 gap-2 mb-6" role="tablist">
+								<button type="button" role="tab" aria-selected={paymentMethod === "card"} onClick={() => setPaymentMethod("card")} class={paymentTabClass("card")}>
+									<CreditCard class="mx-auto mb-1 w-5 h-5" aria-hidden="true" />
+									<span class="text-xs font-medium">Cartão</span>
 								</button>
-								<button
-									onClick={() => setPaymentMethod("pix")}
-									className={`border rounded-lg p-3 text-center transition hover:border-blue-300 ${paymentMethod === "pix" ? "border-blue-600 bg-blue-50 text-blue-700" : "border-gray-200"}`}
-								>
-									<QrCode class="mx-auto mb-1 w-6 h-6 block" />
-									<span className="text-sm font-medium">Pix</span>
+								<button type="button" role="tab" aria-selected={paymentMethod === "pix"} onClick={() => setPaymentMethod("pix")} class={paymentTabClass("pix")}>
+									<QrCode class="mx-auto mb-1 w-5 h-5" aria-hidden="true" />
+									<span class="text-xs font-medium">Pix</span>
 								</button>
-								<button
-									onClick={() => setPaymentMethod("boleto")}
-									className={`border rounded-lg p-3 text-center transition hover:border-blue-300 ${paymentMethod === "boleto" ? "border-blue-600 bg-blue-50 text-blue-700" : "border-gray-200"}`}
-								>
-									<Barcode class="mx-auto mb-1 w-6 h-6 block" />
-									<span className="text-sm font-medium">Boleto</span>
+								<button type="button" role="tab" aria-selected={paymentMethod === "boleto"} onClick={() => setPaymentMethod("boleto")} class={paymentTabClass("boleto")}>
+									<Barcode class="mx-auto mb-1 w-5 h-5" aria-hidden="true" />
+									<span class="text-xs font-medium">Boleto</span>
 								</button>
 							</div>
 
 							{paymentMethod === "card" && (
-								<div className="space-y-4 animate-fade-in">
+								<div class="space-y-4">
 									<div>
-										<label htmlFor="cardNumber" className="block text-sm font-medium text-gray-700 mb-1">
-											Número do Cartão
+										<label htmlFor="cardNumber" class="block text-sm font-medium text-ink-2 mb-1.5">
+											Número do cartão
 										</label>
-										<div className="relative">
-											<input
-												id="cardNumber"
-												type="text"
-												className="w-full border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:ring-blue-500 focus:border-blue-500 outline-none"
-												placeholder="0000 0000 0000 0000"
-											/>
-											<div className="absolute left-3 top-2.5 text-gray-400">
-												<CreditCard class="w-5 h-5" />
-											</div>
+										<div class="relative">
+											<input id="cardNumber" type="text" class="input !pl-10" placeholder="0000 0000 0000 0000" />
+											<CreditCard class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" aria-hidden="true" />
 										</div>
 									</div>
-									<div className="grid grid-cols-2 gap-4">
+									<div class="grid grid-cols-2 gap-4">
 										<div>
-											<label htmlFor="cardExpiry" className="block text-sm font-medium text-gray-700 mb-1">
+											<label htmlFor="cardExpiry" class="block text-sm font-medium text-ink-2 mb-1.5">
 												Validade
 											</label>
-											<input
-												id="cardExpiry"
-												type="text"
-												className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-												placeholder="MM/AA"
-											/>
+											<input id="cardExpiry" type="text" class="input" placeholder="MM/AA" />
 										</div>
 										<div>
-											<label htmlFor="cardCvv" className="block text-sm font-medium text-gray-700 mb-1">
+											<label htmlFor="cardCvv" class="block text-sm font-medium text-ink-2 mb-1.5">
 												CVV
 											</label>
-											<input
-												id="cardCvv"
-												type="text"
-												className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-												placeholder="123"
-											/>
+											<input id="cardCvv" type="text" class="input" placeholder="123" />
 										</div>
 									</div>
 								</div>
 							)}
 
 							{paymentMethod === "pix" && (
-								<div className="text-center py-6 animate-fade-in">
-									<div className="bg-blue-50 border border-blue-100 rounded-xl p-6 mb-4 inline-block">
-										<QrCode class="w-16 h-16 text-gray-800" />
+								<div class="text-center py-6">
+									<div class="inline-flex p-6 rounded-[var(--radius-card)] bg-accent-soft border border-rule mb-4">
+										<QrCode class="w-14 h-14 text-ink" aria-hidden="true" />
 									</div>
-									<p className="text-sm text-gray-600 mb-2">O código Pix será gerado após a finalização do pedido.</p>
-									<p className="text-xs text-blue-600 font-semibold flex items-center justify-center">
-										<Timer class="mr-1 w-4 h-4" /> Aprovação imediata
+									<p class="text-sm text-ink-2 mb-2">O código Pix será gerado após a finalização do pedido.</p>
+									<p class="text-xs text-accent font-medium flex items-center justify-center gap-1">
+										<Timer size={14} aria-hidden="true" /> Aprovação imediata
 									</p>
 								</div>
 							)}
 
 							{paymentMethod === "boleto" && (
-								<div className="text-center py-6 animate-fade-in">
-									<Barcode class="w-14 h-14 text-gray-400 mb-4 mx-auto" />
-									<p className="text-sm text-gray-600 mb-2">O boleto será gerado na próxima tela.</p>
-									<p className="text-xs text-orange-500 font-semibold flex items-center justify-center">
-										<Clock class="mr-1 w-4 h-4" /> Aprovação em 1 a 3 dias úteis
+								<div class="text-center py-6">
+									<Barcode class="w-12 h-12 text-muted mb-4 mx-auto" aria-hidden="true" />
+									<p class="text-sm text-ink-2 mb-2">O boleto será gerado na próxima tela.</p>
+									<p class="text-xs text-warning font-medium flex items-center justify-center gap-1">
+										<Clock size={14} aria-hidden="true" /> Aprovação em 1 a 3 dias úteis
 									</p>
 								</div>
 							)}
 
-							<div className="h-px bg-gray-100 my-6"></div>
+							<hr class="section-rule my-6" />
 
-							<div className="flex justify-end">
-								<button
-									onClick={nextStep}
-									className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5 flex items-center w-full md:w-auto justify-center"
-								>
-									Finalizar Pedido <Check class="ml-2 w-5 h-5" />
-								</button>
-							</div>
+							<button type="button" onClick={nextStep} class="btn btn-success w-full md:w-auto md:ml-auto md:flex !px-6">
+								Finalizar pedido <Check class="w-4 h-4" aria-hidden="true" />
+							</button>
 						</div>
-					</div>
+					</section>
 				)}
 
 				{currentStep === 3 && (
-					<div className="text-center py-8 animate-fade-in">
-						<div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-							<Check class="text-green-600 w-10 h-10" />
+					<section class="text-center py-6">
+						<div class="w-16 h-16 bg-success-soft rounded-full flex items-center justify-center mx-auto mb-6">
+							<Check class="text-success w-8 h-8" aria-hidden="true" />
 						</div>
-						<h2 className="text-3xl font-bold text-gray-900 mb-2">Pedido Recebido!</h2>
-						<p className="text-gray-500 text-lg mb-8">Obrigado pela sua compra, André.</p>
+						<h2 class="font-display font-semibold text-display-s text-ink mb-2">Pedido recebido</h2>
+						<p class="text-muted mb-8">Obrigado pela sua compra, {user.name.split(" ")[0]}.</p>
 
-						<div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 max-w-lg mx-auto mb-8 text-left">
-							<div className="flex">
-								<div className="flex-shrink-0">
-									<Info class="text-yellow-600 w-6 h-6" />
-								</div>
-								<div className="ml-4">
-									<h3 className="text-sm font-bold text-yellow-800">
-										Status: {paymentMethod === "card" ? "Processando Pagamento" : "Aguardando Pagamento"}
+						<div class="app-panel p-5 max-w-lg mx-auto mb-8 text-left border-warning/30 bg-warning-soft">
+							<div class="flex gap-3">
+								<Info class="text-warning shrink-0 w-5 h-5" aria-hidden="true" />
+								<div>
+									<h3 class="text-sm font-semibold text-ink">
+										Status: {paymentMethod === "card" ? "Processando pagamento" : "Aguardando pagamento"}
 									</h3>
-									<p className="text-sm text-yellow-700 mt-1">
+									<p class="text-sm text-ink-2 mt-1">
 										{paymentMethod === "pix"
-											? "Use o QR Code gerado para pagar. O pedido será liberado imediatamente após."
-											: "Estamos processando suas informações. Você receberá um e-mail de confirmação."}
+											? "Use o QR Code gerado para pagar. O pedido será liberado após confirmação."
+											: "Você receberá um e-mail de confirmação em breve."}
 									</p>
 								</div>
 							</div>
 						</div>
 
-						<a
-							href="/index"
-							className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition"
-						>
-							Voltar para a Loja
+						<a href="/" class="btn btn-primary !px-8">
+							Voltar para a loja
 						</a>
-					</div>
+					</section>
 				)}
 			</div>
 
-			<div className={`w-full lg:w-1/3 flex-shrink-0 ${currentStep === 3 ? "hidden lg:block" : ""}`}>
-				<div className="bg-white p-6 rounded-xl border border-gray-200 shadow-lg sticky top-24">
-					<h3 className="text-lg font-bold text-gray-900 mb-4">Resumo do Pedido</h3>
+			<aside class={`w-full lg:w-72 shrink-0 min-w-0 ${currentStep === 3 ? "hidden lg:block" : ""}`}>
+				<div class="app-panel p-5 lg:sticky lg:top-24">
+					<h3 class="font-display font-semibold text-ink mb-4">Resumo do pedido</h3>
 
-					<div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2">
+					<ul class="space-y-3 mb-5 max-h-56 overflow-y-auto pr-1">
 						{initialOrder.items.map((item) => (
-							<div key={item.id} className="flex gap-3">
-								<div className="h-16 w-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0">
-									<img src={item.img} alt={item.name} className="h-full w-full object-cover" />
+							<li key={item.id} class="flex gap-3 min-w-0">
+								<div class="h-14 w-14 bg-paper-3 rounded-[var(--radius-input)] overflow-hidden shrink-0 border border-rule">
+									<img src={item.img} alt={item.name} class="h-full w-full object-cover" />
 								</div>
-								<div className="flex-grow">
-									<h4 className="text-sm font-medium text-gray-900">{item.name}</h4>
-									<p className="text-xs text-gray-500">Qtd: 1</p>
+								<div class="flex-grow min-w-0">
+									<p class="text-sm font-medium text-ink truncate">{item.name}</p>
+									<p class="text-xs text-muted">Qtd: {item.quantity}</p>
 								</div>
-								<span className="text-sm font-semibold text-gray-900">
-									${item.price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-								</span>
-							</div>
+								<span class="text-sm font-semibold text-ink shrink-0">{formatPrice(item.price * item.quantity)}</span>
+							</li>
 						))}
-					</div>
+					</ul>
 
-					<div className="space-y-2 border-t border-gray-100 pt-4 mb-4">
-						<div className="flex justify-between text-sm text-gray-600">
+					<hr class="section-rule mb-4" />
+					<div class="space-y-2 text-sm mb-4">
+						<div class="flex justify-between text-muted">
 							<span>Subtotal</span>
-							<span>${initialOrder.subtotal.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+							<span>{formatPrice(initialOrder.subtotal)}</span>
 						</div>
-						<div className="flex justify-between text-sm text-gray-600">
+						<div class="flex justify-between text-muted">
 							<span>Frete</span>
-							<span className="text-green-600">Grátis</span>
+							<span class="text-success font-medium">Grátis</span>
 						</div>
 					</div>
-
-					<div className="border-t border-gray-100 pt-4">
-						<div className="flex justify-between items-center">
-							<span className="text-base font-bold text-gray-900">Total</span>
-							<span className="text-2xl font-bold text-blue-900">
-								${initialOrder.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-							</span>
-						</div>
+					<div class="flex justify-between items-center font-display font-semibold text-lg text-ink">
+						<span>Total</span>
+						<span>{formatPrice(initialOrder.total)}</span>
 					</div>
 				</div>
-			</div>
+			</aside>
 		</div>
 	);
 }

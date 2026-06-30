@@ -1,10 +1,8 @@
 import type { CartItem } from "@/database/productsTypes";
 import { request } from "@/lib/request";
+import { formatPrice } from "@/lib/utils";
 import { Loader2, Minus, Plus, ShoppingBasket, Trash2 } from "lucide-preact";
 import { useState, useEffect } from "preact/hooks";
-
-const formatPrice = (value: number) =>
-	new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 
 interface ApiCart {
 	id: string;
@@ -37,127 +35,130 @@ export default function CartPage() {
 		if (res.ok) setCartItems(res.data.items);
 	};
 
-	if (loading)
+	if (loading) {
 		return (
-			<div class="pt-20 w-full flex justify-center items-center">
-				<Loader2 class="w-8 h-8 animate-spin" />
+			<div class="py-20 w-full flex justify-center items-center text-muted">
+				<Loader2 class="w-8 h-8 animate-spin" aria-label="Carregando carrinho" />
 			</div>
 		);
+	}
 
-	if (unauthenticated)
+	if (unauthenticated) {
 		return (
-			<div class="flex flex-col items-center justify-center py-20 text-center">
-				<div class="bg-gray-100 text-gray-400 w-20 h-20 rounded-full flex items-center justify-center mb-4">
-					<ShoppingBasket class="w-10 h-10" />
+			<div class="app-panel p-12 flex flex-col items-center text-center max-w-md mx-auto">
+				<div class="w-16 h-16 rounded-full bg-paper-3 text-muted flex items-center justify-center mb-4">
+					<ShoppingBasket class="w-8 h-8" aria-hidden="true" />
 				</div>
-				<h2 class="text-xl font-bold text-gray-900">Faça login para ver seu carrinho</h2>
-				<a href="/login" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition">
-					Entrar
-				</a>
+				<h2 class="font-display font-semibold text-lg text-ink">Faça login para ver seu carrinho</h2>
+				<a href="/login" class="btn btn-primary mt-6">Entrar</a>
 			</div>
 		);
+	}
 
 	const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 	const cartTotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
 	if (cartItems.length === 0) {
 		return (
-			<div class="flex flex-col items-center justify-center py-20 text-center">
-				<div class="bg-gray-100 text-gray-400 w-20 h-20 rounded-full flex items-center justify-center mb-4">
-					<ShoppingBasket class="w-10 h-10" />
+			<div class="app-panel p-12 flex flex-col items-center text-center max-w-md mx-auto">
+				<div class="w-16 h-16 rounded-full bg-paper-3 text-muted flex items-center justify-center mb-4">
+					<ShoppingBasket class="w-8 h-8" aria-hidden="true" />
 				</div>
-				<h2 class="text-xl font-bold text-gray-900">Seu carrinho está vazio</h2>
-				<a href="/produtos" class="mt-6 text-blue-600 hover:underline">
-					Voltar às compras
-				</a>
+				<h2 class="font-display font-semibold text-lg text-ink">Seu carrinho está vazio</h2>
+				<a href="/produtos" class="btn btn-secondary mt-6">Voltar às compras</a>
 			</div>
 		);
 	}
 
 	return (
-		<div class="flex flex-col lg:flex-row gap-8">
-			<div class="flex-grow space-y-4">
+		<div class="flex flex-col lg:flex-row gap-8 min-w-0">
+			<div class="flex-grow space-y-4 min-w-0">
 				{cartItems.map((item) => (
-					<div
+					<article
 						key={item.cartItemId}
-						class="bg-white p-4 rounded-xl border border-gray-200 flex flex-col md:flex-row gap-4 items-center"
+						class="app-panel p-4 flex flex-col md:flex-row gap-4 items-stretch md:items-center min-w-0"
 					>
-						<div class="flex items-center w-full md:w-auto flex-grow">
+						<div class="flex items-center gap-4 flex-grow min-w-0">
 							<img
 								src={item.images?.[0] || "/placeholder.png"}
 								alt={item.name}
-								class="w-20 h-20 object-cover rounded-md border border-gray-100"
+								class="w-20 h-20 object-cover rounded-[var(--radius-input)] border border-rule shrink-0"
 							/>
-							<div class="ml-4">
-								<h3 class="font-bold text-gray-800">{item.name}</h3>
-								<p class="text-sm text-gray-500">
+							<div class="min-w-0">
+								<h3 class="font-semibold text-ink truncate">{item.name}</h3>
+								<p class="text-sm text-muted truncate">
 									{item.selectedVariant ? Object.values(item.selectedVariant).join(", ") : ""}
 								</p>
-								<span class="md:hidden font-bold text-blue-600 mt-1 block">{formatPrice(item.price)}</span>
+								<span class="md:hidden font-display font-semibold text-accent mt-1 block">{formatPrice(item.price)}</span>
 							</div>
 						</div>
 
-						<div class="flex items-center justify-between w-full md:w-auto gap-6">
-							<div class="hidden md:block text-right min-w-[100px]">
-								<p class="text-sm text-gray-500">Unid.</p>
-								<p class="font-medium text-gray-900">{formatPrice(item.price)}</p>
+						<div class="flex items-center justify-between md:justify-end w-full md:w-auto gap-4 shrink-0">
+							<div class="hidden md:block text-right min-w-[5rem]">
+								<p class="text-xs text-muted">Unidade</p>
+								<p class="font-medium text-ink">{formatPrice(item.price)}</p>
 							</div>
 
-							<div class="flex items-center border border-gray-300 rounded-lg h-10" role="group" aria-label={`Quantidade de ${item.name}`}>
+							<div
+								class="flex items-center border border-rule-2 rounded-[var(--radius-input)] h-10"
+								role="group"
+								aria-label={`Quantidade de ${item.name}`}
+							>
 								<button
+									type="button"
 									onClick={() => handleUpdateQuantity(item.cartItemId, item.quantity - 1)}
 									aria-label={`Diminuir quantidade de ${item.name}`}
-									class="px-3 hover:bg-gray-100 h-full text-gray-600 rounded-l-lg"
+									class="px-3 h-full text-muted hover:bg-paper-2 hover:text-ink transition-colors disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus rounded-l-[var(--radius-input)]"
 									disabled={item.quantity <= 1}
 								>
 									<Minus size={16} aria-hidden="true" />
 								</button>
-								<span class="w-10 text-center font-semibold text-gray-900" aria-live="polite" aria-atomic="true">{item.quantity}</span>
+								<span class="w-10 text-center font-semibold text-ink" aria-live="polite">
+									{item.quantity}
+								</span>
 								<button
+									type="button"
 									onClick={() => handleUpdateQuantity(item.cartItemId, item.quantity + 1)}
 									aria-label={`Aumentar quantidade de ${item.name}`}
-									class="px-3 hover:bg-gray-100 h-full text-gray-600 rounded-r-lg"
+									class="px-3 h-full text-muted hover:bg-paper-2 hover:text-ink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus rounded-r-[var(--radius-input)]"
 								>
 									<Plus size={16} aria-hidden="true" />
 								</button>
 							</div>
 
-							<div class="text-right flex flex-col items-end min-w-[100px]">
-								<p class="font-bold text-lg text-gray-900">{formatPrice(item.price * item.quantity)}</p>
+							<div class="text-right flex flex-col items-end min-w-[5rem]">
+								<p class="font-display font-semibold text-ink">{formatPrice(item.price * item.quantity)}</p>
 								<button
+									type="button"
 									onClick={() => handleRemoveItem(item.cartItemId)}
 									aria-label={`Remover ${item.name} do carrinho`}
-									class="text-xs text-red-500 hover:text-red-700 mt-1 flex items-center"
+									class="text-xs text-danger hover:underline mt-1 flex items-center gap-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus rounded"
 								>
-									<Trash2 class="mr-1 w-3 h-3" aria-hidden="true" /> Remover
+									<Trash2 class="w-3 h-3" aria-hidden="true" /> Remover
 								</button>
 							</div>
 						</div>
-					</div>
+					</article>
 				))}
 			</div>
 
-			<div class="w-full lg:w-80 flex-shrink-0">
-				<div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm sticky top-4">
-					<h3 class="font-bold text-lg mb-4">Resumo</h3>
-					<div class="flex justify-between mb-2">
-						<span class="text-gray-600">Itens ({totalItems})</span>
-						<span class="font-bold">{formatPrice(cartTotal)}</span>
+			<aside class="w-full lg:w-72 shrink-0">
+				<div class="app-panel p-6 lg:sticky lg:top-28">
+					<h2 class="font-display font-semibold text-lg text-ink mb-4">Resumo</h2>
+					<div class="flex justify-between text-sm mb-2">
+						<span class="text-muted">Itens ({totalItems})</span>
+						<span class="font-medium text-ink">{formatPrice(cartTotal)}</span>
 					</div>
-					<div class="border-t border-gray-100 my-4 pt-4">
-						<div class="flex justify-between text-xl font-bold text-gray-900 mb-6">
-							<span>Total</span>
-							<span>{formatPrice(cartTotal)}</span>
-						</div>
-						<a
-							href="/checkout"
-							class="w-full bg-green-600 text-white font-bold py-3 rounded-xl hover:bg-green-700 transition block text-center"
-						>
-							Finalizar Compra
-						</a>
+					<hr class="section-rule my-4" />
+					<div class="flex justify-between text-lg font-display font-semibold text-ink mb-6">
+						<span>Total</span>
+						<span>{formatPrice(cartTotal)}</span>
 					</div>
+					<a href="/checkout" class="btn btn-success w-full !py-3">
+						Finalizar compra
+					</a>
 				</div>
-			</div>
+			</aside>
 		</div>
 	);
 }
