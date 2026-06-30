@@ -2,7 +2,7 @@ import { toast } from "@/lib/toast";
 import { useState } from "preact/hooks";
 import { Loader2, Send } from "lucide-preact";
 
-const SUPPORT_EMAIL = "contato@emporium.com";
+const SUPPORT_EMAIL = "contato@lojasximenes.com";
 
 const topics = [
 	{ value: "pedido", label: "Pedido ou entrega" },

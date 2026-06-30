@@ -1,4 +1,4 @@
-# Design — Emporium da Tecnologia
+# Design — Lojas Ximenes
 
 Sistema visual unificado para a loja. Todas as páginas leem este arquivo antes de emitir código.
 
@@ -60,7 +60,7 @@ Escala de 4 pt com tokens nomeados em `src/styles/tokens.css`.
 
 ## What pages MUST share
 
-- Wordmark Emporium
+- Wordmark Lojas Ximenes
 - Accent coral/ember e placement ≤ 5% por viewport
 - Instrument Sans + IBM Plex Mono
 - CTA voice (pill, padding rhythm)
