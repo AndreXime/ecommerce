@@ -5,7 +5,7 @@ import Layout from "@/layout/layout.astro";
 import ProductAddToCart from "@/components/ProductAddToCart";
 import StarRating from "@/components/StarRating";
 import { serverGet } from "@/lib/serverApi";
-import { calculateOldPrice, formatPrice } from "@/lib/utils";
+import { calculateOldPrice, formatPrice, formatReviewDate } from "@/lib/utils";
 import { BadgeCheck, ChevronDown } from "lucide-preact";
 import type { ProductDetails } from "@/database/productsTypes";
 
@@ -148,34 +148,44 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? 
 
                 <div class="flex-grow space-y-6 min-w-0">
                     {
-                        product.fullReviews?.map((review) => (
-                            <article class="pb-6 border-b border-rule last:border-0">
-                                <div class="flex justify-between items-start gap-4 mb-2">
-                                    <div class="flex items-center gap-3 min-w-0">
-                                        {review.avatar ? (
-                                            <img src={review.avatar} class="w-10 h-10 rounded-full object-cover shrink-0" alt={review.author} />
-                                        ) : (
-                                            <div class="w-10 h-10 rounded-full bg-accent-soft text-accent flex items-center justify-center font-semibold shrink-0">
-                                                {review.initials}
-                                            </div>
-                                        )}
-                                        <div class="min-w-0">
-                                            <h3 class="font-semibold text-sm text-ink truncate">{review.author}</h3>
-                                            <div class="flex text-star">
+                        product.fullReviews && product.fullReviews.length > 0 ? (
+                            product.fullReviews.map((review) => (
+                                <article class="pb-6 border-b border-rule last:border-0">
+                                    <div class="flex justify-between items-start gap-4 mb-2">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            {review.avatar ? (
+                                                <img src={review.avatar} class="w-10 h-10 rounded-full object-cover shrink-0" alt={review.author} />
+                                            ) : (
+                                                <div class="w-10 h-10 rounded-full bg-accent-soft text-accent flex items-center justify-center font-semibold shrink-0">
+                                                    {review.initials}
+                                                </div>
+                                            )}
+                                            <div class="min-w-0">
+                                                <h3 class="font-semibold text-sm text-ink truncate">{review.author}</h3>
                                                 <StarRating rating={review.rating} />
                                             </div>
                                         </div>
+                                        <time class="text-xs text-muted shrink-0" datetime={review.date}>
+                                            {formatReviewDate(review.date)}
+                                        </time>
                                     </div>
-                                    <time class="text-xs text-muted shrink-0">{review.date}</time>
-                                </div>
-                                <h4 class="font-medium text-sm text-ink mb-1">{review.title}</h4>
-                                <p class="text-sm text-ink-2 leading-relaxed">{review.content}</p>
-                            </article>
-                        ))
+                                    <h4 class="font-medium text-sm text-ink mb-1">{review.title}</h4>
+                                    <p class="text-sm text-ink-2 leading-relaxed">{review.content}</p>
+                                </article>
+                            ))
+                        ) : (
+                            <p class="text-sm text-muted py-4">
+                                Este produto ainda não tem avaliações publicadas.
+                            </p>
+                        )
                     }
-                    <button type="button" class="text-sm font-medium text-accent hover:underline">
-                        Ver todas as {product.reviewsCount} avaliações
-                    </button>
+                    {
+                        product.reviewsCount > 0 && product.fullReviews && product.fullReviews.length > 0 && (
+                            <button type="button" class="text-sm font-medium text-accent hover:underline">
+                                Ver todas as {product.reviewsCount} avaliações
+                            </button>
+                        )
+                    }
                 </div>
             </div>
         </section>

@@ -93,10 +93,28 @@ O seed cria os seguintes dados de exemplo:
 | Usuário | Senha | Cargo |
 |---|---|---|
 | `admin@example.com` | `123456` | ADMIN |
-| `user@example.com` | `123456` | CUSTOMER |
-| `user2@example.com` | `123456` | CUSTOMER |
+| 30 customers de `src/database/seed/users.json` | `123456` | CUSTOMER |
 
-Além de 5 categorias, 4 produtos com imagens e opções selecionáveis, e um endereço + cartão para o primeiro customer.
+Exemplos de login customer: `emily.johnson@x.dummyjson.com`, `michael.williams@x.dummyjson.com` (todos com senha `123456`).
+
+**Catálogo:** 50 produtos e 6 categorias a partir de `products.json` (DummyJSON). Imagens baixadas do CDN e enviadas ao S3/MinIO durante o seed.
+
+**Avaliações:** 150 reviews com texto do `products.json`. O seed ignora `reviewerName`/`reviewerEmail` do JSON e atribui autores entre os usuários de `users.json`, sempre com `userId` no banco. O `rating` do produto é calculado a partir dessas reviews.
+
+**Perfil de exemplo:** endereço e cartão para o primeiro customer do seed.
+
+O seed só executa em banco vazio. Para rodar de novo, resete o banco antes de `bunx prisma db seed`.
+
+Arquivos em `src/database/seed/`:
+
+| Arquivo | Conteúdo |
+|---|---|
+| `products.json` | 50 produtos DummyJSON (offline) |
+| `users.json` | 30 usuários DummyJSON |
+| `seed.ts` | Orquestração do seed |
+| `seedProductsData.ts` | Mapeamento de produtos e atribuição de reviews |
+| `seedUsersData.ts` | Leitura de `users.json` |
+| `seedProductsImages.ts` | Upload de imagens para S3 |
 
 ### 5. Iniciar em desenvolvimento
 
@@ -187,7 +205,7 @@ src/
 ├── database/
 │   ├── client/       # Cliente Prisma gerado
 │   ├── database.ts   # Singleton com retry e pool
-│   └── seed/         # Seed de desenvolvimento
+│   └── seed/         # Seed: products.json, users.json, upload S3
 ├── lib/              # Clientes externos (S3, Redis, BullMQ, env)
 ├── middlewares/      # Auth, CORS, rate limiter, logger, erros
 └── modules/

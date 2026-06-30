@@ -3,6 +3,7 @@ import { Star } from "lucide-preact";
 export default function StarRating({ rating }: { rating: number }) {
 	return (
 		<div
+			className="text-star"
 			role="img"
 			aria-label={`${rating} de 5 estrelas`}
 			style={{ display: "flex", gap: "4px" }}

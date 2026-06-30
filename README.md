@@ -84,10 +84,23 @@ bun dev
 
 ### 3. Usuários de teste (seed da API)
 
+O seed só roda em banco vazio. Ele cria **50 produtos** (dados do DummyJSON em `api/src/database/seed/products.json`), **6 categorias**, **150 avaliações** e faz upload das imagens para o S3/MinIO.
+
 | E-mail | Senha | Papel |
 |--------|-------|-------|
 | `admin@example.com` | `123456` | ADMIN |
-| `user@example.com` | `123456` | CUSTOMER |
-| `user2@example.com` | `123456` | CUSTOMER |
+| Qualquer e-mail de `api/src/database/seed/users.json` | `123456` | CUSTOMER |
+
+Exemplos de customers do seed:
+
+| E-mail | Nome |
+|--------|------|
+| `emily.johnson@x.dummyjson.com` | Emily Johnson |
+| `michael.williams@x.dummyjson.com` | Michael Williams |
+| `sophia.brown@x.dummyjson.com` | Sophia Brown |
+
+O seed inclui **30 customers** no total (definidos em `users.json`). O primeiro customer recebe endereço e cartão de exemplo. As avaliações usam o texto do `products.json`, mas o autor é atribuído no seed a partir dos usuários criados.
+
+Para repopular do zero, esvazie o banco e rode `bunx prisma db seed` na pasta `api/`.
 
 ---
