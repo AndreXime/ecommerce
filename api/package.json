@@ -1,5 +1,6 @@
 {
 	"name": "api-template",
+	"license": "MIT",
 	"type": "module",
 	"scripts": {
 		"dev": "bun run --hot src/index.ts",
