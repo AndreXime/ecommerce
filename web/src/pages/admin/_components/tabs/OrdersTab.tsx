@@ -1,5 +1,5 @@
 import { useEffect } from "preact/hooks";
-import { useStore } from "@nanostores/preact";
+import { useStore } from "@/lib/useStore";
 import { RefreshCw } from "lucide-preact";
 import { Pagination } from "../Pagination";
 import { formatPrice } from "@/lib/utils";
@@ -27,15 +27,14 @@ export function OrdersTab() {
 	const { list, meta, page, loading } = state;
 
 	useEffect(() => {
-		const timer = setTimeout(() => loadOrders(), 0);
-		return () => clearTimeout(timer);
+		void loadOrders();
 	}, [page]);
 
 	async function updateOrderStatus(orderId: string, status: Order["status"]) {
 		const res = await request.patch(`/orders/${orderId}/status`, { status });
 		if (res.ok) {
 			toast.success("Status atualizado");
-			loadOrders({ force: true });
+			loadOrders();
 		} else {
 			toast.error(res.message);
 		}
@@ -47,7 +46,7 @@ export function OrdersTab() {
 				<h1 className="text-2xl font-bold text-ink">Pedidos</h1>
 				<button
 					type="button"
-					onClick={() => loadOrders({ force: true })}
+					onClick={() => loadOrders()}
 					className="inline-flex items-center gap-2 text-sm text-accent hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-accent-soft transition"
 				>
 					<RefreshCw class="w-4 h-4" /> Atualizar

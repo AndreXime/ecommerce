@@ -9,7 +9,6 @@ type ProductsState = {
 	page: number;
 	search: string;
 	loading: boolean;
-	loadedOnce: boolean;
 };
 
 export const productsStore = map<ProductsState>({
@@ -17,8 +16,7 @@ export const productsStore = map<ProductsState>({
 	meta: null,
 	page: 1,
 	search: "",
-	loading: false,
-	loadedOnce: false,
+	loading: true,
 });
 
 export function setProductsPage(page: number) {
@@ -29,27 +27,44 @@ export function setProductsSearch(search: string) {
 	productsStore.setKey("search", search);
 }
 
-export async function loadProducts(options?: { force?: boolean }) {
-	const state = productsStore.get();
-	if (!options?.force && state.loadedOnce) return;
+let inFlight: Promise<void> | null = null;
+let inFlightKey = "";
 
-	productsStore.setKey("loading", true);
+export async function loadProducts() {
+	const { page, search } = productsStore.get();
+	const key = `${page}\0${search}`;
 
-	const res = await request.get<{ data: Product[]; meta: Meta }>("/products", {
-		params: { page: state.page, limit: 10, search: state.search || undefined },
-	});
+	if (inFlight && inFlightKey === key) return inFlight;
 
-	if (res.ok) {
-		productsStore.set({
-			...state,
-			list: res.data.data,
-			meta: res.data.meta,
-			loading: false,
-			loadedOnce: true,
-		});
-	} else {
-		productsStore.setKey("loading", false);
-		toast.error(res.message);
-	}
+	inFlightKey = key;
+	inFlight = (async () => {
+		productsStore.setKey("loading", true);
+
+		try {
+			const res = await request.get<{ data: Product[]; meta: Meta }>("/products", {
+				params: { page, limit: 10, search: search || undefined },
+			});
+
+			if (inFlightKey !== key) return;
+
+			if (res.ok) {
+				productsStore.set({
+					...productsStore.get(),
+					list: res.data.data,
+					meta: res.data.meta,
+					loading: false,
+				});
+			} else {
+				productsStore.setKey("loading", false);
+				toast.error(res.message);
+			}
+		} catch {
+			if (inFlightKey === key) productsStore.setKey("loading", false);
+			toast.error("Erro ao carregar produtos");
+		} finally {
+			if (inFlightKey === key) inFlight = null;
+		}
+	})();
+
+	return inFlight;
 }
-

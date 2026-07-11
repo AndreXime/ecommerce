@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { useStore } from "@nanostores/preact";
+import { useStore } from "@/lib/useStore";
 import { RefreshCw } from "lucide-preact";
 import { toast } from "@/lib/toast";
 import { request } from "@/lib/request";

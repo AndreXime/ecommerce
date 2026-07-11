@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { useStore } from "@nanostores/preact";
+import { useStore } from "@/lib/useStore";
 import { Pencil, Plus, RefreshCw, Search, Trash2, X, AlertTriangle } from "lucide-preact";
 import { Pagination } from "../Pagination";
 import { formatPrice } from "@/lib/utils";
@@ -40,8 +40,13 @@ export function ProductsTab() {
 	const imageFileInputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
-		const t = setTimeout(() => loadProducts(), 300);
-		return () => clearTimeout(t);
+		if (search.length > 0) {
+			const t = setTimeout(() => {
+				void loadProducts();
+			}, 300);
+			return () => clearTimeout(t);
+		}
+		void loadProducts();
 	}, [page, search]);
 
 	useEffect(() => {
@@ -154,7 +159,7 @@ export function ProductsTab() {
 			if (res.ok) {
 				toast.success("Produto criado com sucesso");
 				setProductModal(null);
-				loadProducts({ force: true });
+				loadProducts();
 			} else {
 				toast.error(res.message);
 			}
@@ -175,7 +180,7 @@ export function ProductsTab() {
 			if (res.ok) {
 				toast.success("Produto atualizado");
 				setProductModal(null);
-				loadProducts({ force: true });
+				loadProducts();
 			} else {
 				toast.error(res.message);
 			}
@@ -190,7 +195,7 @@ export function ProductsTab() {
 		if (res.ok) {
 			toast.success("Produto removido");
 			setDeletingProduct(null);
-			loadProducts({ force: true });
+			loadProducts();
 		} else {
 			toast.error(res.message);
 		}
@@ -225,7 +230,7 @@ export function ProductsTab() {
 		]);
 		setPImageUrls((prev) => [...prev, uploadResult.data.image.url]);
 		toast.success("Imagem enviada com sucesso");
-		loadProducts({ force: true });
+		loadProducts();
 		setUploadingImage(false);
 		input.value = "";
 	}
@@ -237,7 +242,7 @@ export function ProductsTab() {
 				<div className="flex items-center gap-3">
 					<button
 						type="button"
-						onClick={() => loadProducts({ force: true })}
+						onClick={() => loadProducts()}
 						className="inline-flex items-center gap-2 text-sm text-accent hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-accent-soft transition"
 					>
 						<RefreshCw class="w-4 h-4" /> Atualizar
@@ -534,7 +539,7 @@ export function ProductsTab() {
 																	toast.success("Imagem removida");
 																	setPUploadedImages((prev) => prev.filter((img) => img.id !== uploaded.id));
 																	setPImageUrls((prev) => prev.filter((u) => u !== url));
-																	loadProducts({ force: true });
+																	loadProducts();
 																} else {
 																	toast.error(res.message);
 																}

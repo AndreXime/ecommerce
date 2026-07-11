@@ -1,5 +1,5 @@
 import { useEffect, useState } from "preact/hooks";
-import { useStore } from "@nanostores/preact";
+import { useStore } from "@/lib/useStore";
 import { Pencil, RefreshCw, Search, X } from "lucide-preact";
 import { Pagination } from "../Pagination";
 import { toast } from "@/lib/toast";
@@ -25,8 +25,13 @@ export function UsersTab() {
 	const [editUserSaving, setEditUserSaving] = useState(false);
 
 	useEffect(() => {
-		const timer = setTimeout(() => loadUsers(), 300);
-		return () => clearTimeout(timer);
+		if (search.length > 0) {
+			const timer = setTimeout(() => {
+				void loadUsers();
+			}, 300);
+			return () => clearTimeout(timer);
+		}
+		void loadUsers();
 	}, [page, search]);
 
 	useEffect(() => {
@@ -54,7 +59,7 @@ export function UsersTab() {
 		if (res.ok) {
 			toast.success("Usuário atualizado");
 			setEditingUser(null);
-			loadUsers({ force: true });
+			loadUsers();
 		} else {
 			toast.error(res.message);
 		}
@@ -67,7 +72,7 @@ export function UsersTab() {
 				<h1 className="text-2xl font-bold text-ink">Usuários</h1>
 				<button
 					type="button"
-					onClick={() => loadUsers({ force: true })}
+					onClick={() => loadUsers()}
 					className="inline-flex items-center gap-2 text-sm text-accent hover:text-blue-700 px-3 py-1.5 rounded-lg hover:bg-accent-soft transition"
 				>
 					<RefreshCw class="w-4 h-4" /> Atualizar

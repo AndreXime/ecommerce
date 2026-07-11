@@ -9,7 +9,6 @@ type UsersState = {
 	page: number;
 	search: string;
 	loading: boolean;
-	loadedOnce: boolean;
 };
 
 export const usersStore = map<UsersState>({
@@ -17,8 +16,7 @@ export const usersStore = map<UsersState>({
 	meta: null,
 	page: 1,
 	search: "",
-	loading: false,
-	loadedOnce: false,
+	loading: true,
 });
 
 export function setUsersPage(page: number) {
@@ -29,27 +27,44 @@ export function setUsersSearch(search: string) {
 	usersStore.setKey("search", search);
 }
 
-export async function loadUsers(options?: { force?: boolean }) {
-	const state = usersStore.get();
-	if (!options?.force && state.loadedOnce) return;
+let inFlight: Promise<void> | null = null;
+let inFlightKey = "";
 
-	usersStore.setKey("loading", true);
+export async function loadUsers() {
+	const { page, search } = usersStore.get();
+	const key = `${page}\0${search}`;
 
-	const res = await request.get<{ data: AdminUser[]; meta: Meta }>("/users", {
-		params: { page: state.page, limit: 10, search: state.search || undefined },
-	});
+	if (inFlight && inFlightKey === key) return inFlight;
 
-	if (res.ok) {
-		usersStore.set({
-			...state,
-			list: res.data.data,
-			meta: res.data.meta,
-			loading: false,
-			loadedOnce: true,
-		});
-	} else {
-		usersStore.setKey("loading", false);
-		toast.error(res.message);
-	}
+	inFlightKey = key;
+	inFlight = (async () => {
+		usersStore.setKey("loading", true);
+
+		try {
+			const res = await request.get<{ data: AdminUser[]; meta: Meta }>("/users", {
+				params: { page, limit: 10, search: search || undefined },
+			});
+
+			if (inFlightKey !== key) return;
+
+			if (res.ok) {
+				usersStore.set({
+					...usersStore.get(),
+					list: res.data.data,
+					meta: res.data.meta,
+					loading: false,
+				});
+			} else {
+				usersStore.setKey("loading", false);
+				toast.error(res.message);
+			}
+		} catch {
+			if (inFlightKey === key) usersStore.setKey("loading", false);
+			toast.error("Erro ao carregar usuários");
+		} finally {
+			if (inFlightKey === key) inFlight = null;
+		}
+	})();
+
+	return inFlight;
 }
-
