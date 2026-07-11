@@ -42,6 +42,10 @@ const initialShipping = {
 };
 
 const cartItems = cartRes.data?.items ?? [];
+if (cartItems.length === 0) {
+    return Astro.redirect("/carrinho");
+}
+
 const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 const orderSummary = {
     items: cartItems.map((item) => ({

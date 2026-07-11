@@ -111,10 +111,20 @@ export default function AccountDashboard({ user }: { user: User }) {
 					{user.ordersHistory.map((order) => (
 							<div key={order.id} className="app-panel rounded-xl border border-rule shadow-sm overflow-hidden">
 								<div className="bg-paper-2 px-6 py-4 border-b border-rule flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-									<div className="flex gap-6 text-sm">
+									<div className="flex flex-wrap gap-6 text-sm">
 										<div>
 											<span className="block text-muted text-xs uppercase font-bold">Data</span>
-											<span className="font-medium text-ink">{order.date}</span>
+											<span className="font-medium text-ink">{new Date(order.date).toLocaleDateString("pt-BR")}</span>
+										</div>
+										<div>
+											<span className="block text-muted text-xs uppercase font-bold">Subtotal</span>
+											<span className="font-medium text-ink">{formatPrice(order.subtotal)}</span>
+										</div>
+										<div>
+											<span className="block text-muted text-xs uppercase font-bold">Frete</span>
+											<span className="font-medium text-ink">
+												{order.shippingCost > 0 ? formatPrice(order.shippingCost) : "Grátis"}
+											</span>
 										</div>
 										<div>
 											<span className="block text-muted text-xs uppercase font-bold">Total</span>
@@ -136,20 +146,34 @@ export default function AccountDashboard({ user }: { user: User }) {
 									</div>
 									<div className="text-sm text-muted">Pedido {order.id}</div>
 								</div>
+								{order.shipment && (
+									<div className="px-6 py-3 border-b border-rule bg-paper text-sm text-ink-2">
+										<span className="font-medium text-ink">
+											{order.shipment.carrierName} - {order.shipment.methodName}
+										</span>
+										{" · "}
+										CEP {order.shipment.destinationCep}
+										{" · "}
+										cerca de {order.shipment.estimatedDays}{" "}
+										{order.shipment.estimatedDays === 1 ? "dia útil" : "dias úteis"}
+									</div>
+								)}
 								<div className="p-6 space-y-4">
 									{order.items.map((item, idx) => (
 										<div
-											key={idx}
+											key={item.id}
 											className={`flex items-center gap-4 ${idx > 0 ? "pt-4 border-t border-rule" : ""}`}
 										>
 											<img src={item.img ?? "/placeholder.png"} className="w-16 h-16 object-cover rounded-md bg-paper-3" alt={item.name} />
 											<div className="flex-grow">
 												<h4 className="font-bold text-ink text-sm">{item.name}</h4>
-												<p className="text-xs text-muted">{item.variant}</p>
+												<p className="text-xs text-muted">
+													{item.variant ? `${item.variant} · ` : ""}Qtd: {item.quantity}
+												</p>
 											</div>
-											<a href="/" className="text-accent hover:underline text-sm font-medium">
-												Ver Detalhes
-											</a>
+											<span className="text-sm font-medium text-ink">
+												{formatPrice((item.subtotal ?? item.price * item.quantity))}
+											</span>
 										</div>
 									))}
 								</div>

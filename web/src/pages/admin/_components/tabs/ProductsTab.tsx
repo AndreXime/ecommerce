@@ -27,8 +27,9 @@ export function ProductsTab() {
 	const [pTag, setPTag] = useState("");
 	const [pPrice, setPPrice] = useState("");
 	const [pDiscount, setPDiscount] = useState("");
+	const [pStockQuantity, setPStockQuantity] = useState("0");
+	const [pWeight, setPWeight] = useState("0.5");
 	const [pIsNew, setPIsNew] = useState(false);
-	const [pInStock, setPInStock] = useState(true);
 	const [pDescription, setPDescription] = useState("");
 	const [pCategoryId, setPCategoryId] = useState("");
 	const [pImageUrls, setPImageUrls] = useState<string[]>([""]);
@@ -67,8 +68,9 @@ export function ProductsTab() {
 		setPTag("");
 		setPPrice("");
 		setPDiscount("");
+		setPStockQuantity("0");
+		setPWeight("0.5");
 		setPIsNew(false);
-		setPInStock(true);
 		setPDescription("");
 		setPCategoryId(categories[0]?.id ?? "");
 		setPImageUrls([""]);
@@ -91,8 +93,9 @@ export function ProductsTab() {
 		setPTag(p.tag);
 		setPPrice(String(p.price));
 		setPDiscount(p.discountPercentage != null ? String(p.discountPercentage) : "");
+		setPStockQuantity(String(p.stockQuantity ?? 0));
+		setPWeight(String(p.weight ?? 0.5));
 		setPIsNew(p.isNew);
-		setPInStock(p.inStock);
 		setPDescription(p.description);
 		const cat = categories.find((c: Category) => c.name === p.category);
 		setPCategoryId(cat?.id ?? "");
@@ -141,7 +144,8 @@ export function ProductsTab() {
 				price: Number(pPrice),
 				discountPercentage: pDiscount ? Number(pDiscount) : undefined,
 				isNew: pIsNew,
-				inStock: pInStock,
+				stockQuantity: Number(pStockQuantity) || 0,
+				weight: Number(pWeight) || 0.5,
 				description: pDescription,
 				categoryId: pCategoryId,
 				specs,
@@ -161,7 +165,8 @@ export function ProductsTab() {
 				price: Number(pPrice),
 				discountPercentage: pDiscount ? Number(pDiscount) : null,
 				isNew: pIsNew,
-				inStock: pInStock,
+				stockQuantity: Number(pStockQuantity) || 0,
+				weight: Number(pWeight) || 0.5,
 				description: pDescription,
 				specs,
 			};
@@ -428,6 +433,36 @@ export function ProductsTab() {
 									/>
 								</div>
 								<div>
+									<label htmlFor="product-stock" className="block text-sm font-medium text-ink-2 mb-1">
+										Estoque *
+									</label>
+									<input
+										id="product-stock"
+										type="number"
+										step="1"
+										min="0"
+										value={pStockQuantity}
+										required
+										onInput={(e) => setPStockQuantity((e.target as HTMLInputElement).value)}
+										className={inputClass}
+									/>
+								</div>
+								<div>
+									<label htmlFor="product-weight" className="block text-sm font-medium text-ink-2 mb-1">
+										Peso (kg) *
+									</label>
+									<input
+										id="product-weight"
+										type="number"
+										step="0.001"
+										min="0.001"
+										value={pWeight}
+										required
+										onInput={(e) => setPWeight((e.target as HTMLInputElement).value)}
+										className={inputClass}
+									/>
+								</div>
+								<div>
 									<label htmlFor="product-category" className="block text-sm font-medium text-ink-2 mb-1">
 										Categoria *
 									</label>
@@ -447,15 +482,6 @@ export function ProductsTab() {
 									</select>
 								</div>
 								<div className="flex items-center gap-6 pt-5">
-									<label className="flex items-center gap-2 text-sm text-ink-2 cursor-pointer">
-										<input
-											type="checkbox"
-											checked={pInStock}
-											onChange={(e) => setPInStock((e.target as HTMLInputElement).checked)}
-											className="rounded accent-purple-600"
-										/>
-										Em estoque
-									</label>
 									<label className="flex items-center gap-2 text-sm text-ink-2 cursor-pointer">
 										<input
 											type="checkbox"

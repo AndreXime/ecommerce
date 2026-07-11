@@ -13,7 +13,7 @@ export async function listOrders(userId: string, isAdmin: boolean, query: Query)
 	const where = isAdmin ? {} : { userId };
 
 	const [orders, total] = await Promise.all([
-		database.order.findMany({ skip, take, orderBy, where, include: { items: true } }),
+		database.order.findMany({ skip, take, orderBy, where, include: { items: true, shipment: true } }),
 		database.order.count({ where }),
 	]);
 

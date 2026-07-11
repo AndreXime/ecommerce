@@ -9,7 +9,7 @@ export async function getUserProfile(userId: string) {
 			addresses: true,
 			paymentCards: true,
 			orders: {
-				include: { items: true },
+				include: { items: true, shipment: true },
 				orderBy: { createdAt: "desc" },
 				take: 50,
 			},

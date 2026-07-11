@@ -4,6 +4,7 @@ import { createCategoriesRoutes } from "./categories";
 import { createHealthRoutes } from "./health";
 import { createOrdersRoutes } from "./orders";
 import { createProductsRoutes } from "./products";
+import { createShippingRoutes } from "./shipping";
 import { createRoutesUser } from "./user";
 import { createWishlistRoutes } from "./wishlist";
 
@@ -16,6 +17,7 @@ const registerRoutes = (server: ServerType) => {
 	server.route("/cart", createCartRoutes());
 	server.route("/wishlist", createWishlistRoutes());
 	server.route("/orders", createOrdersRoutes());
+	server.route("/shipping", createShippingRoutes());
 };
 
 export { registerRoutes };

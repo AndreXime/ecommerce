@@ -6,14 +6,17 @@ enum OrderStatus {
 }
 
 model Order {
-  id     String      @id @default(uuid(7)) @db.Uuid
-  total  Decimal     @db.Decimal(10, 2)
-  status OrderStatus @default(pending)
+  id           String      @id @default(uuid(7)) @db.Uuid
+  subtotal     Decimal     @db.Decimal(10, 2)
+  shippingCost Decimal     @default(0) @map("shipping_cost") @db.Decimal(10, 2)
+  total        Decimal     @db.Decimal(10, 2)
+  status       OrderStatus @default(pending)
 
   userId String @db.Uuid
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  items OrderItem[]
+  items    OrderItem[]
+  shipment Shipment?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

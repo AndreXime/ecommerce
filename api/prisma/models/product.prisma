@@ -18,6 +18,7 @@ model Product {
   inStock            Boolean  @default(false)
   stockQuantity      Int      @default(0) @map("stock_quantity")
   quantitySold       Int      @default(0)
+  weight             Decimal  @default(0.5) @db.Decimal(8, 3)
   description        String
   specs              Json     @default("{}")
 

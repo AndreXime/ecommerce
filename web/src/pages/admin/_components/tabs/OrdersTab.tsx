@@ -64,7 +64,10 @@ export function OrdersTab() {
 								<tr>
 									<th className="text-left px-4 py-3 font-semibold text-muted">ID</th>
 									<th className="text-left px-4 py-3 font-semibold text-muted">Data</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Subtotal</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Frete</th>
 									<th className="text-left px-4 py-3 font-semibold text-muted">Total</th>
+									<th className="text-left px-4 py-3 font-semibold text-muted">Entrega</th>
 									<th className="text-left px-4 py-3 font-semibold text-muted">Itens</th>
 									<th className="text-left px-4 py-3 font-semibold text-muted">Status</th>
 								</tr>
@@ -76,7 +79,23 @@ export function OrdersTab() {
 										<td className="px-4 py-3 text-muted">
 											{new Date(order.date).toLocaleDateString("pt-BR")}
 										</td>
+										<td className="px-4 py-3 text-muted">{formatPrice(order.subtotal)}</td>
+										<td className="px-4 py-3 text-muted">
+											{order.shippingCost > 0 ? formatPrice(order.shippingCost) : "Grátis"}
+										</td>
 										<td className="px-4 py-3 font-medium text-ink">{formatPrice(order.total)}</td>
+										<td className="px-4 py-3 text-muted text-xs">
+											{order.shipment ? (
+												<div>
+													<div className="font-medium text-ink-2">
+														{order.shipment.carrierName} - {order.shipment.methodName}
+													</div>
+													<div>CEP {order.shipment.destinationCep}</div>
+												</div>
+											) : (
+												"—"
+											)}
+										</td>
 										<td className="px-4 py-3 text-muted">
 											{order.items.length} {order.items.length === 1 ? "item" : "itens"}
 										</td>
@@ -102,7 +121,7 @@ export function OrdersTab() {
 								))}
 								{list.length === 0 && (
 									<tr>
-										<td colSpan={5} className="px-4 py-12 text-center text-muted">
+										<td colSpan={8} className="px-4 py-12 text-center text-muted">
 											Nenhum pedido encontrado
 										</td>
 									</tr>

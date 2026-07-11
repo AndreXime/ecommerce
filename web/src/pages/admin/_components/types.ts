@@ -33,6 +33,9 @@ export type Product = {
 export type ProductDetails = Product & {
 	description: string;
 	specs: Record<string, string>;
+	stockQuantity?: number;
+	quantitySold?: number;
+	weight?: number;
 };
 
 export type ProductDetailsWithImageIds = Omit<ProductDetails, "images"> & {
@@ -41,11 +44,26 @@ export type ProductDetailsWithImageIds = Omit<ProductDetails, "images"> & {
 
 export type Category = { id: string; name: string };
 
+export type OrderShipment = {
+	id: string;
+	carrierName: string;
+	methodName: string;
+	methodCode: string;
+	cost: number;
+	estimatedDays: number;
+	destinationCep: string;
+	distanceKm: number | null;
+	status: "pending" | "in_transit" | "delivered";
+};
+
 export type Order = {
 	id: string;
 	date: string;
+	subtotal: number;
+	shippingCost: number;
 	total: number;
 	status: "pending" | "delivered" | "intransit" | "cancelled";
 	items: { id: string; name: string; quantity: number; price: number }[];
+	shipment: OrderShipment | null;
 };
 

@@ -100,6 +100,7 @@ describe("Add product review", () => {
 				data: {
 					userId: pendingUserId,
 					status: "pending",
+					subtotal: 120,
 					total: 120,
 					items: {
 						create: [
@@ -118,6 +119,7 @@ describe("Add product review", () => {
 				data: {
 					userId: deliveredUserId,
 					status: "delivered",
+					subtotal: 120,
 					total: 120,
 					items: {
 						create: [

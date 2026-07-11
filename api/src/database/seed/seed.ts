@@ -137,6 +137,9 @@ async function seed() {
 				console.log("[seed] criando produtos...");
 				await seedProducts(tx, categoryMap, products, emailToUser);
 
+				console.log("[seed] criando transportadoras e métodos de frete...");
+				await seedCarriers(tx);
+
 				const customer = users.find((u) => u.role === "CUSTOMER");
 				if (customer) {
 					console.log(`[seed] criando endereço e cartão para "${customer.name}"...`);
@@ -169,6 +172,65 @@ async function seed() {
 		console.error("Erro ao executar seed:\n", error);
 		process.exit(1);
 	}
+}
+
+async function seedCarriers(tx: Prisma.TransactionClient) {
+	// Hub no Carrier; preço/prazo no Method.
+	// Calibração (~2300 km, SP → Sobral): PAC ~14d, SEDEX ~8d, Expresso ~5d.
+	const spHub = { hubLat: -23.55, hubLng: -46.633 };
+
+	const correios = await tx.carrier.create({
+		data: {
+			name: "Correios Mock",
+			slug: "correios-mock",
+			...spHub,
+			methods: {
+				create: [
+					{
+						name: "PAC",
+						code: "pac",
+						basePrice: 14,
+						pricePerKm: 0.022,
+						pricePerKg: 1.5,
+						daysBase: 4,
+						kmPerDay: 230,
+					},
+					{
+						name: "SEDEX",
+						code: "sedex",
+						basePrice: 18,
+						pricePerKm: 0.032,
+						pricePerKg: 2,
+						daysBase: 2,
+						kmPerDay: 330,
+					},
+				],
+			},
+		},
+	});
+
+	await tx.carrier.create({
+		data: {
+			name: "Express Local",
+			slug: "express-local",
+			...spHub,
+			methods: {
+				create: [
+					{
+						name: "Expresso",
+						code: "express",
+						basePrice: 28,
+						pricePerKm: 0.055,
+						pricePerKg: 3,
+						daysBase: 2,
+						kmPerDay: 580,
+					},
+				],
+			},
+		},
+	});
+
+	return correios;
 }
 
 await seed();

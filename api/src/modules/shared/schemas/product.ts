@@ -46,6 +46,7 @@ export const ProductSummarySchema = z.object({
 export const ProductDetailsSchema = ProductSummarySchema.extend({
 	stockQuantity: z.number().int(),
 	quantitySold: z.number().int(),
+	weight: z.number(),
 	description: z.string(),
 	specs: z.record(z.string(), z.string()),
 	images: z.array(ProductImageSchema),

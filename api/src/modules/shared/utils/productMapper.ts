@@ -37,6 +37,7 @@ export function toProductDetails(p: ProductWithRelations) {
 		...toProductSummary(p),
 		stockQuantity: p.stockQuantity,
 		quantitySold: p.quantitySold,
+		weight: Number(p.weight),
 		description: p.description,
 		specs: p.specs as Record<string, string>,
 		images: p.images

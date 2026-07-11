@@ -1,6 +1,6 @@
 import { formatPrice } from "@/lib/utils";
 import { request } from "@/lib/request";
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { Check, MapPin, ArrowRight, ArrowLeft, CreditCard, QrCode, Barcode, Timer, Clock, Info, Loader2 } from "lucide-preact";
 
 interface CartItem {
@@ -33,6 +33,16 @@ interface InitialShipping {
 	city: string;
 }
 
+interface ShippingOption {
+	methodId: string;
+	carrierName: string;
+	methodName: string;
+	methodCode: string;
+	cost: number;
+	estimatedDays: number;
+	distanceKm: number;
+}
+
 interface CreatedOrder {
 	id: string;
 	total: number;
@@ -47,16 +57,78 @@ interface CheckoutProps {
 
 type PaymentMethod = "card" | "pix" | "boleto";
 
+function normalizeCepInput(value: string) {
+	const digits = value.replace(/\D/g, "").slice(0, 8);
+	if (digits.length <= 5) return digits;
+	return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+}
+
 export default function Checkout({ initialOrder, user, initialShipping }: CheckoutProps) {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
 	const [submitting, setSubmitting] = useState(false);
 	const [submitError, setSubmitError] = useState<string | null>(null);
 	const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+	const [cep, setCep] = useState(initialShipping.cep);
+	const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+	const [selectedMethodId, setSelectedMethodId] = useState<string | null>(null);
+	const [quoteLoading, setQuoteLoading] = useState(false);
+	const [quoteError, setQuoteError] = useState<string | null>(null);
 
-	const nextStep = () => {
+	const selectedOption = shippingOptions.find((option) => option.methodId === selectedMethodId) ?? null;
+	const shippingCost = selectedOption?.cost ?? 0;
+	const orderTotal = initialOrder.subtotal + shippingCost;
+
+	useEffect(() => {
+		const digits = cep.replace(/\D/g, "");
+		if (digits.length !== 8) {
+			setShippingOptions([]);
+			setSelectedMethodId(null);
+			setQuoteError(null);
+			setQuoteLoading(false);
+			return;
+		}
+
+		let cancelled = false;
+
+		const timer = window.setTimeout(async () => {
+			setQuoteLoading(true);
+			setQuoteError(null);
+
+			const res = await request.post<{ options: ShippingOption[] }>("/shipping/quote", {
+				cep: normalizeCepInput(cep),
+			});
+
+			if (cancelled) return;
+
+			if (!res.ok) {
+				setShippingOptions([]);
+				setSelectedMethodId(null);
+				setQuoteError(res.message || "Não foi possível cotar o frete.");
+				setQuoteLoading(false);
+				return;
+			}
+
+			setShippingOptions(res.data.options);
+			setSelectedMethodId((current) => {
+				if (current && res.data.options.some((option) => option.methodId === current)) {
+					return current;
+				}
+				return res.data.options[0]?.methodId ?? null;
+			});
+			setQuoteLoading(false);
+		}, 400);
+
+		return () => {
+			cancelled = true;
+			window.clearTimeout(timer);
+		};
+	}, [cep]);
+
+	const goToPayment = () => {
+		if (!selectedMethodId || quoteLoading || quoteError) return;
 		window.scrollTo({ top: 0, behavior: "smooth" });
-		setCurrentStep((prev) => prev + 1);
+		setCurrentStep(2);
 	};
 
 	const prevStep = () => {
@@ -65,12 +137,15 @@ export default function Checkout({ initialOrder, user, initialShipping }: Checko
 	};
 
 	const createOrder = async () => {
-		if (submitting) return;
+		if (submitting || !selectedMethodId) return;
 
 		setSubmitting(true);
 		setSubmitError(null);
 
-		const res = await request.post<CreatedOrder>("/orders", {});
+		const res = await request.post<CreatedOrder>("/orders", {
+			shippingMethodId: selectedMethodId,
+			destinationCep: normalizeCepInput(cep),
+		});
 
 		if (!res.ok) {
 			setSubmitError(res.message || "Não foi possível criar o pedido.");
@@ -101,6 +176,13 @@ export default function Checkout({ initialOrder, user, initialShipping }: Checko
 			paymentMethod === method
 				? "border-accent bg-accent-soft text-accent"
 				: "border-rule hover:border-rule-2 text-ink-2"
+		}`;
+
+	const shippingOptionClass = (methodId: string) =>
+		`flex items-center justify-between border p-4 rounded-[var(--radius-card)] cursor-pointer ${
+			selectedMethodId === methodId
+				? "border-accent bg-accent-soft"
+				: "border-rule hover:border-rule-2"
 		}`;
 
 	return (
@@ -186,7 +268,8 @@ export default function Checkout({ initialOrder, user, initialShipping }: Checko
 									<input
 										id="cep"
 										type="text"
-										defaultValue={initialShipping.cep}
+										value={cep}
+										onInput={(event) => setCep(normalizeCepInput((event.target as HTMLInputElement).value))}
 										class="input"
 										placeholder="00000-000"
 									/>
@@ -207,20 +290,52 @@ export default function Checkout({ initialOrder, user, initialShipping }: Checko
 
 							<fieldset>
 								<legend class="block text-sm font-medium text-ink-2 mb-3">Opções de entrega</legend>
-								<label class="flex items-center justify-between border border-accent bg-accent-soft p-4 rounded-[var(--radius-card)] cursor-pointer">
-									<div class="flex items-center gap-3">
-										<input type="radio" name="shipping" defaultChecked class="text-accent focus:ring-accent" />
-										<div>
-											<span class="block text-sm font-medium text-ink">Entrega padrão</span>
-											<span class="block text-xs text-muted">5 a 7 dias úteis</span>
-										</div>
-									</div>
-									<span class="text-sm font-semibold text-success">Grátis</span>
-								</label>
+								{quoteLoading && (
+									<p class="text-sm text-muted flex items-center gap-2">
+										<Loader2 class="w-4 h-4 animate-spin" aria-hidden="true" /> Calculando frete...
+									</p>
+								)}
+								{quoteError && (
+									<p class="text-sm text-danger" role="alert">
+										{quoteError}
+									</p>
+								)}
+								{!quoteLoading && !quoteError && shippingOptions.length === 0 && (
+									<p class="text-sm text-muted">Informe um CEP válido para ver as opções de frete.</p>
+								)}
+								<div class="space-y-3">
+									{shippingOptions.map((option) => (
+										<label key={option.methodId} class={shippingOptionClass(option.methodId)}>
+											<div class="flex items-center gap-3 min-w-0">
+												<input
+													type="radio"
+													name="shipping"
+													checked={selectedMethodId === option.methodId}
+													onChange={() => setSelectedMethodId(option.methodId)}
+													class="text-accent focus:ring-accent"
+												/>
+												<div class="min-w-0">
+													<span class="block text-sm font-medium text-ink">
+														{option.carrierName} - {option.methodName}
+													</span>
+													<span class="block text-xs text-muted">
+														Cerca de {option.estimatedDays} {option.estimatedDays === 1 ? "dia útil" : "dias úteis"}
+													</span>
+												</div>
+											</div>
+											<span class="text-sm font-semibold text-ink shrink-0">{formatPrice(option.cost)}</span>
+										</label>
+									))}
+								</div>
 							</fieldset>
 
 							<div class="flex justify-end pt-2">
-								<button type="button" onClick={nextStep} class="btn btn-primary !px-6">
+								<button
+									type="button"
+									onClick={goToPayment}
+									disabled={!selectedMethodId || quoteLoading || Boolean(quoteError)}
+									class="btn btn-primary !px-6 disabled:opacity-60"
+								>
 									Ir para pagamento <ArrowRight class="w-4 h-4" aria-hidden="true" />
 								</button>
 							</div>
@@ -322,7 +437,7 @@ export default function Checkout({ initialOrder, user, initialShipping }: Checko
 							<button
 								type="button"
 								onClick={createOrder}
-								disabled={submitting}
+								disabled={submitting || !selectedMethodId}
 								class="btn btn-success w-full lg:w-auto lg:ml-auto lg:flex !px-6 disabled:opacity-60"
 							>
 								{submitting ? (
@@ -407,12 +522,14 @@ export default function Checkout({ initialOrder, user, initialShipping }: Checko
 						</div>
 						<div class="flex justify-between text-muted">
 							<span>Frete</span>
-							<span class="text-success font-medium">Grátis</span>
+							<span class={selectedOption ? "text-ink font-medium" : "text-muted"}>
+								{selectedOption ? formatPrice(shippingCost) : "A calcular"}
+							</span>
 						</div>
 					</div>
 					<div class="flex justify-between items-center font-display font-semibold text-lg text-ink">
 						<span>Total</span>
-						<span>{formatPrice(initialOrder.total)}</span>
+						<span>{formatPrice(orderTotal)}</span>
 					</div>
 				</div>
 			</aside>

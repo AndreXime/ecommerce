@@ -1,0 +1,68 @@
+enum ShipmentStatus {
+  pending
+  in_transit
+  delivered
+}
+
+model Carrier {
+  id     String  @id @default(uuid(7)) @db.Uuid
+  name   String
+  slug   String  @unique
+  active Boolean @default(true)
+  hubLat Decimal @map("hub_lat") @db.Decimal(10, 7)
+  hubLng Decimal @map("hub_lng") @db.Decimal(10, 7)
+
+  methods ShippingMethod[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("carriers")
+}
+
+model ShippingMethod {
+  id          String  @id @default(uuid(7)) @db.Uuid
+  name        String
+  code        String
+  basePrice   Decimal @map("base_price") @db.Decimal(10, 2)
+  pricePerKm  Decimal @map("price_per_km") @db.Decimal(8, 4)
+  pricePerKg  Decimal @map("price_per_kg") @db.Decimal(8, 4)
+  daysBase    Int     @map("days_base")
+  kmPerDay    Int     @map("km_per_day")
+  active      Boolean @default(true)
+
+  carrierId String  @db.Uuid
+  carrier   Carrier @relation(fields: [carrierId], references: [id], onDelete: Cascade)
+
+  shipments Shipment[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([carrierId, code])
+  @@map("shipping_methods")
+}
+
+model Shipment {
+  id             String         @id @default(uuid(7)) @db.Uuid
+  carrierName    String         @map("carrier_name")
+  methodName     String         @map("method_name")
+  methodCode     String         @map("method_code")
+  cost           Decimal        @db.Decimal(10, 2)
+  estimatedDays  Int            @map("estimated_days")
+  destinationCep String         @map("destination_cep") @db.VarChar(9)
+  distanceKm     Decimal?       @map("distance_km") @db.Decimal(8, 1)
+  trackingCode   String?        @map("tracking_code")
+  status         ShipmentStatus @default(pending)
+
+  orderId String @unique @db.Uuid
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  shippingMethodId String?         @db.Uuid
+  shippingMethod   ShippingMethod? @relation(fields: [shippingMethodId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("shipments")
+}

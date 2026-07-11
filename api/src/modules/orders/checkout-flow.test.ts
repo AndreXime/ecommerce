@@ -29,9 +29,17 @@ interface OrderItemResponse {
 interface OrderResponse {
 	readonly id: string;
 	readonly date: string;
+	readonly subtotal: number;
+	readonly shippingCost: number;
 	readonly total: number;
 	readonly status: "pending" | "intransit" | "delivered" | "cancelled";
 	readonly items: ReadonlyArray<OrderItemResponse>;
+	readonly shipment: {
+		readonly id: string;
+		readonly cost: number;
+		readonly estimatedDays: number;
+		readonly destinationCep: string;
+	} | null;
 }
 
 describe("Checkout flow", () => {
@@ -39,6 +47,7 @@ describe("Checkout flow", () => {
 	const categoryName = `Checkout Category ${suffix}`;
 	const customerEmail = `checkout_customer_${suffix}@example.com`;
 	const adminEmail = `checkout_admin_${suffix}@example.com`;
+	const destinationCep = "01310-100";
 
 	let customerToken = "";
 	let adminToken = "";
@@ -48,11 +57,13 @@ describe("Checkout flow", () => {
 	let statusProductId = "";
 	let customerId = "";
 	let adminId = "";
+	let shippingMethodId = "";
+	let carrierId = "";
 
 	beforeAll(async () => {
 		const hashedPassword = await hashPassword("123456");
 
-		const [category, customer, admin] = await Promise.all([
+		const [category, customer, admin, carrier] = await Promise.all([
 			database.category.create({
 				data: { name: categoryName },
 			}),
@@ -71,11 +82,33 @@ describe("Checkout flow", () => {
 					role: "ADMIN",
 				},
 			}),
+			database.carrier.create({
+				data: {
+					name: `Correios Test ${suffix}`,
+					slug: `correios-test-${suffix}`,
+					hubLat: -23.55,
+					hubLng: -46.633,
+					methods: {
+						create: {
+							name: "PAC",
+							code: "pac",
+							basePrice: 14,
+							pricePerKm: 0.022,
+							pricePerKg: 1.5,
+							daysBase: 4,
+							kmPerDay: 230,
+						},
+					},
+				},
+				include: { methods: true },
+			}),
 		]);
 
 		categoryId = category.id;
 		customerId = customer.id;
 		adminId = admin.id;
+		carrierId = carrier.id;
+		shippingMethodId = carrier.methods[0]?.id ?? "";
 		customerToken = await createToken(customer);
 		adminToken = await createToken(admin);
 
@@ -142,6 +175,12 @@ describe("Checkout flow", () => {
 			});
 		}
 
+		if (carrierId) {
+			await database.carrier.deleteMany({
+				where: { id: carrierId },
+			});
+		}
+
 		if (productIds.length > 0) {
 			await database.product.deleteMany({
 				where: {
@@ -187,6 +226,8 @@ describe("Checkout flow", () => {
 			method: "POST",
 			headers: makeJsonHeaders(customerToken),
 			body: JSON.stringify({
+				shippingMethodId,
+				destinationCep,
 				items: [
 					{
 						productId: limitedProductId,
@@ -214,6 +255,8 @@ describe("Checkout flow", () => {
 			method: "POST",
 			headers: makeJsonHeaders(customerToken),
 			body: JSON.stringify({
+				shippingMethodId,
+				destinationCep,
 				items: [
 					{
 						productId: configurableProductId,
@@ -231,7 +274,10 @@ describe("Checkout flow", () => {
 		const createdOrder = (await createRes.json()) as OrderResponse;
 
 		expect(createdOrder.status).toBe("pending");
-		expect(createdOrder.total).toBe(160);
+		expect(createdOrder.subtotal).toBe(160);
+		expect(createdOrder.shippingCost).toBeGreaterThan(0);
+		expect(createdOrder.total).toBe(createdOrder.subtotal + createdOrder.shippingCost);
+		expect(createdOrder.shipment?.destinationCep).toBe(destinationCep);
 		expect(createdOrder.items).toHaveLength(1);
 		expect(createdOrder.items[0]?.price).toBe(80);
 		expect(createdOrder.items[0]?.unitPrice).toBe(80);
@@ -272,6 +318,8 @@ describe("Checkout flow", () => {
 			method: "POST",
 			headers: makeJsonHeaders(customerToken),
 			body: JSON.stringify({
+				shippingMethodId,
+				destinationCep,
 				items: [
 					{
 						productId: statusProductId,
@@ -315,6 +363,8 @@ describe("Checkout flow", () => {
 				method: "POST",
 				headers: makeJsonHeaders(customerToken),
 				body: JSON.stringify({
+					shippingMethodId,
+					destinationCep,
 					items: [
 						{
 							productId: cancelProduct.id,

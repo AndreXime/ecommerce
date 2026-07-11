@@ -9,7 +9,7 @@ export const OrderCreateRoute = createRoute({
 	tags: ["Orders"],
 	summary: "Criar pedido",
 	description:
-		"Cria pedido a partir do carrinho ativo ou de itens explícitos com validação de variante, snapshot de preço e reserva transacional de estoque.",
+		"Cria pedido a partir do carrinho ativo ou de itens explícitos, com frete recalculado no servidor, snapshot de preço e reserva transacional de estoque.",
 	security: [{ Bearer: [] }],
 	middleware: [auth([])],
 	request: {

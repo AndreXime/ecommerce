@@ -6,7 +6,7 @@ import type { ProductUpdateBodySchema } from "./update.schema";
 type Body = z.infer<typeof ProductUpdateBodySchema>;
 
 export async function updateProduct(id: string, body: Body) {
-	const { specs, categoryId, stockQuantity, ...rest } = body;
+	const { specs, categoryId, stockQuantity, weight, ...rest } = body;
 
 	const product = await database.product.update({
 		where: { id },
@@ -15,6 +15,7 @@ export async function updateProduct(id: string, body: Body) {
 			...(categoryId ? { categoryId } : {}),
 			...(specs ? { specs: specs as Record<string, string> } : {}),
 			...(stockQuantity !== undefined ? { stockQuantity, inStock: stockQuantity > 0 } : {}),
+			...(weight !== undefined ? { weight } : {}),
 		},
 		include: { category: true, images: true, options: true, reviews: true },
 	});

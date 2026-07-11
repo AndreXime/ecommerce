@@ -7,6 +7,7 @@ export const ProductCreateBodySchema = z.object({
 	discountPercentage: z.number().min(0).max(100).optional(),
 	isNew: z.boolean().optional(),
 	stockQuantity: z.number().int().min(0).default(0),
+	weight: z.number().positive().max(1000).default(0.5),
 	description: z.string().min(10),
 	specs: z.record(z.string(), z.string()).optional(),
 	categoryId: z.string().uuid(),

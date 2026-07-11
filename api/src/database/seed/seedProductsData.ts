@@ -86,6 +86,7 @@ export type SeedProduct = {
 	isNew: boolean;
 	inStock: boolean;
 	stockQuantity: number;
+	weight: number;
 	description: string;
 	specs: Record<string, string>;
 	categorySlug: string;
@@ -144,6 +145,14 @@ function computeProductRating(reviews: SeedReviewContent[]): number {
 	return Math.round((sum / reviews.length) * 100) / 100;
 }
 
+function resolveWeightKg(product: DummyJsonProduct): number {
+	if (product.weight === undefined || !Number.isFinite(product.weight) || product.weight <= 0) {
+		return 0.5;
+	}
+	// DummyJSON usa peso em gramas
+	return Math.round((product.weight / 1000) * 1000) / 1000;
+}
+
 function mapDummyJsonProduct(product: DummyJsonProduct): Omit<SeedProduct, "reviews"> & { reviewContents: SeedReviewContent[] } {
 	const tag = `${slugify(product.title)}-${product.id}`;
 	const reviewContents = (product.reviews ?? []).map(mapReviewContent);
@@ -160,6 +169,7 @@ function mapDummyJsonProduct(product: DummyJsonProduct): Omit<SeedProduct, "revi
 		isNew: rating >= 4.5 && reviewsCount >= 2,
 		inStock: product.stock > 0,
 		stockQuantity: product.stock,
+		weight: resolveWeightKg(product),
 		description: product.description,
 		specs: buildSpecs(product),
 		categorySlug: product.category,

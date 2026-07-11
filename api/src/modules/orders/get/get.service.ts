@@ -4,7 +4,7 @@ import { toOrder } from "@/modules/shared/utils/orderMapper";
 export async function getOrder(orderId: string, userId: string, isAdmin: boolean) {
 	const order = await database.order.findFirst({
 		where: { id: orderId, ...(isAdmin ? {} : { userId }) },
-		include: { items: true },
+		include: { items: true, shipment: true },
 	});
 
 	if (!order) return null;

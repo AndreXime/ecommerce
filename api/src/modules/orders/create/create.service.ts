@@ -2,6 +2,8 @@ import type { z } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
 import { database } from "@/database/database";
 import storage from "@/lib/storage";
+import { formatCep } from "@/modules/shipping/cepDatabase";
+import { quoteFreight, roundMoney } from "@/modules/shipping/calculator";
 import { toOrder } from "@/modules/shared/utils/orderMapper";
 import { formatSelectedVariant, validateSelectedVariant } from "@/modules/shared/utils/variantValidation";
 import type { OrderCreateBodySchema } from "./create.schema";
@@ -14,9 +16,27 @@ type SourceItem = {
 };
 
 export async function createOrder(userId: string, body: Body) {
+	const destinationCep = formatCep(body.destinationCep);
+	if (!destinationCep) {
+		throw new HTTPException(422, { message: "CEP de destino inválido." });
+	}
+
 	const sourceItems = await resolveSourceItems(userId, body);
 
 	const order = await database.$transaction(async (tx) => {
+		const shippingMethod = await tx.shippingMethod.findFirst({
+			where: {
+				id: body.shippingMethodId,
+				active: true,
+				carrier: { active: true },
+			},
+			include: { carrier: true },
+		});
+
+		if (!shippingMethod) {
+			throw new HTTPException(400, { message: "Opção de frete inválida ou indisponível." });
+		}
+
 		const products = await tx.product.findMany({
 			where: { id: { in: sourceItems.map((item) => item.productId) } },
 			include: {
@@ -27,6 +47,7 @@ export async function createOrder(userId: string, body: Body) {
 		const productMap = new Map(products.map((product) => [product.id, product] as const));
 		const requestedQuantityByProduct = new Map<string, number>();
 
+		let weightKg = 0;
 		const orderItemsData = sourceItems.map((item) => {
 			const product = productMap.get(item.productId);
 
@@ -40,7 +61,8 @@ export async function createOrder(userId: string, body: Body) {
 			const basePrice = roundMoney(Number(product.price));
 			const discountPercentage = product.discountPercentage !== null ? Number(product.discountPercentage) : null;
 			const unitPrice = calculateUnitPrice(basePrice, discountPercentage);
-			const subtotal = roundMoney(unitPrice * item.quantity);
+			const itemSubtotal = roundMoney(unitPrice * item.quantity);
+			weightKg += Number(product.weight) * item.quantity;
 
 			requestedQuantityByProduct.set(
 				item.productId,
@@ -55,10 +77,37 @@ export async function createOrder(userId: string, body: Body) {
 				quantity: item.quantity,
 				unitPrice,
 				discountPercentage,
-				subtotal,
+				subtotal: itemSubtotal,
 			};
 		});
-		const total = roundMoney(orderItemsData.reduce((sum, item) => sum + item.subtotal, 0));
+
+		const freight = await quoteFreight({
+			cep: destinationCep,
+			weightKg,
+			carrier: {
+				hubLocation: {
+					lat: Number(shippingMethod.carrier.hubLat),
+					lng: Number(shippingMethod.carrier.hubLng),
+				},
+			},
+			method: {
+				basePrice: Number(shippingMethod.basePrice),
+				pricePerKm: Number(shippingMethod.pricePerKm),
+				pricePerKg: Number(shippingMethod.pricePerKg),
+				daysBase: shippingMethod.daysBase,
+				kmPerDay: shippingMethod.kmPerDay,
+			},
+		});
+
+		if (!freight) {
+			throw new HTTPException(422, {
+				message: "Não entregamos para este CEP (prefixo não encontrado na base).",
+			});
+		}
+
+		const subtotal = roundMoney(orderItemsData.reduce((sum, item) => sum + item.subtotal, 0));
+		const shippingCost = freight.cost;
+		const total = roundMoney(subtotal + shippingCost);
 
 		for (const [productId, requestedQuantity] of requestedQuantityByProduct) {
 			const stockUpdate = await tx.product.updateMany({
@@ -103,10 +152,24 @@ export async function createOrder(userId: string, body: Body) {
 		const newOrder = await tx.order.create({
 			data: {
 				userId,
+				subtotal,
+				shippingCost,
 				total,
 				items: { create: orderItemsData },
+				shipment: {
+					create: {
+						carrierName: shippingMethod.carrier.name,
+						methodName: shippingMethod.name,
+						methodCode: shippingMethod.code,
+						cost: shippingCost,
+						estimatedDays: freight.estimatedDays,
+						destinationCep,
+						distanceKm: freight.distanceKm,
+						shippingMethodId: shippingMethod.id,
+					},
+				},
 			},
-			include: { items: true },
+			include: { items: true, shipment: true },
 		});
 
 		if (!body.items) {
@@ -149,10 +212,6 @@ function calculateUnitPrice(basePrice: number, discountPercentage: number | null
 	}
 
 	return roundMoney(basePrice * (1 - discountPercentage / 100));
-}
-
-function roundMoney(value: number) {
-	return Math.round((value + Number.EPSILON) * 100) / 100;
 }
 
 function isSelectedVariant(value: unknown): value is Record<string, string> {

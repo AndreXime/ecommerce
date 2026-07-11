@@ -8,7 +8,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
 	const order = await database.$transaction(async (tx) => {
 		const currentOrder = await tx.order.findUniqueOrThrow({
 			where: { id: orderId },
-			include: { items: true },
+			include: { items: true, shipment: true },
 		});
 
 		assertValidOrderStatusTransition(currentOrder.status, status);
@@ -61,7 +61,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus) {
 
 		return tx.order.findUniqueOrThrow({
 			where: { id: orderId },
-			include: { items: true },
+			include: { items: true, shipment: true },
 		});
 	});
 

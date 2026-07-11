@@ -1,3 +1,38 @@
+export interface OrderShipment {
+	id: string;
+	carrierName: string;
+	methodName: string;
+	methodCode: string;
+	cost: number;
+	estimatedDays: number;
+	destinationCep: string;
+	distanceKm: number | null;
+	status: "pending" | "in_transit" | "delivered";
+}
+
+export interface OrderHistoryItem {
+	id: string;
+	name: string;
+	variant: string | null;
+	img: string | null;
+	quantity: number;
+	price: number;
+	unitPrice?: number;
+	discountPercentage?: number | null;
+	subtotal?: number;
+}
+
+export interface OrderHistory {
+	id: string;
+	date: string;
+	subtotal: number;
+	shippingCost: number;
+	total: number;
+	status: "pending" | "delivered" | "intransit" | "cancelled";
+	items: OrderHistoryItem[];
+	shipment: OrderShipment | null;
+}
+
 export interface User {
 	personalData: {
 		name: string;
@@ -7,20 +42,7 @@ export interface User {
 		role: "ADMIN" | "CUSTOMER" | "SUPPORT";
 		registredAt: string;
 	};
-	ordersHistory: {
-		id: string;
-		date: string;
-		total: number;
-		status: "pending" | "delivered" | "intransit" | "cancelled";
-		items: {
-			id: string;
-			name: string;
-			variant: string | null;
-			img: string | null;
-			quantity: number;
-			price: number;
-		}[];
-	}[];
+	ordersHistory: OrderHistory[];
 	wishlistProducts: {
 		id: string;
 		name: string;
