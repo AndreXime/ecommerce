@@ -258,7 +258,7 @@ export default function AccountDashboard({ user }: { user: User }) {
 											<p className="text-sm text-muted mt-1">
 												{addr.street}
 												<br />
-												{addr.city}
+												{addr.city} - CEP {addr.cep}
 											</p>
 										</div>
 									</div>

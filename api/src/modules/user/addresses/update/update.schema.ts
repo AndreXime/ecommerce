@@ -9,6 +9,7 @@ export const AddressUpdateBodySchema = z.object({
 	type: z.string().min(1).optional(),
 	street: z.string().min(5).optional(),
 	city: z.string().min(2).optional(),
+	cep: z.string().regex(/^\d{5}-\d{3}$/, "CEP deve estar no formato 00000-000").optional(),
 	isDefault: z.boolean().optional(),
 });
 

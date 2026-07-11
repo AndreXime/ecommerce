@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "addresses" ADD COLUMN "cep" VARCHAR(9) NOT NULL DEFAULT '00000-000';
+
+ALTER TABLE "addresses" ALTER COLUMN "cep" DROP DEFAULT;

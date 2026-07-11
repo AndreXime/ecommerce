@@ -1,6 +1,7 @@
 import { formatPrice } from "@/lib/utils";
+import { request } from "@/lib/request";
 import { useState } from "preact/hooks";
-import { Check, MapPin, ArrowRight, ArrowLeft, CreditCard, QrCode, Barcode, Timer, Clock, Info } from "lucide-preact";
+import { Check, MapPin, ArrowRight, ArrowLeft, CreditCard, QrCode, Barcode, Timer, Clock, Info, Loader2 } from "lucide-preact";
 
 interface CartItem {
 	id: string;
@@ -22,16 +23,36 @@ interface UserProfile {
 	email: string;
 }
 
+interface InitialShipping {
+	fullName: string;
+	email: string;
+	cpf: string;
+	phone: string;
+	cep: string;
+	street: string;
+	city: string;
+}
+
+interface CreatedOrder {
+	id: string;
+	total: number;
+	status: string;
+}
+
 interface CheckoutProps {
 	initialOrder: OrderSummary;
 	user: UserProfile;
+	initialShipping: InitialShipping;
 }
 
 type PaymentMethod = "card" | "pix" | "boleto";
 
-export default function Checkout({ initialOrder, user }: CheckoutProps) {
+export default function Checkout({ initialOrder, user, initialShipping }: CheckoutProps) {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+	const [submitting, setSubmitting] = useState(false);
+	const [submitError, setSubmitError] = useState<string | null>(null);
+	const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
 
 	const nextStep = () => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
@@ -41,6 +62,26 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 	const prevStep = () => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
 		setCurrentStep((prev) => prev - 1);
+	};
+
+	const createOrder = async () => {
+		if (submitting) return;
+
+		setSubmitting(true);
+		setSubmitError(null);
+
+		const res = await request.post<CreatedOrder>("/orders", {});
+
+		if (!res.ok) {
+			setSubmitError(res.message || "Não foi possível criar o pedido.");
+			setSubmitting(false);
+			return;
+		}
+
+		setCreatedOrderId(res.data.id);
+		setSubmitting(false);
+		window.scrollTo({ top: 0, behavior: "smooth" });
+		setCurrentStep(3);
 	};
 
 	const stepDotClass = (step: number) => {
@@ -90,47 +131,77 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 						</h2>
 
 						<div class="app-panel p-6 space-y-6">
-							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 								<div>
 									<label htmlFor="fullName" class="block text-sm font-medium text-ink-2 mb-1.5">
 										Nome completo
 									</label>
-									<input id="fullName" type="text" defaultValue={user.name} class="input" />
+									<input id="fullName" type="text" defaultValue={initialShipping.fullName} class="input" />
 								</div>
 								<div>
 									<label htmlFor="email" class="block text-sm font-medium text-ink-2 mb-1.5">
 										Email
 									</label>
-									<input id="email" type="email" defaultValue={user.email} class="input" placeholder="joao@email.com" />
+									<input
+										id="email"
+										type="email"
+										defaultValue={initialShipping.email}
+										class="input"
+										placeholder="joao@email.com"
+									/>
 								</div>
 								<div>
 									<label htmlFor="cpf" class="block text-sm font-medium text-ink-2 mb-1.5">
 										CPF
 									</label>
-									<input id="cpf" type="text" class="input" placeholder="000.000.000-00" />
+									<input
+										id="cpf"
+										type="text"
+										defaultValue={initialShipping.cpf}
+										class="input"
+										placeholder="000.000.000-00"
+									/>
 								</div>
 								<div>
 									<label htmlFor="phone" class="block text-sm font-medium text-ink-2 mb-1.5">
 										Telefone
 									</label>
-									<input id="phone" type="text" class="input" placeholder="(00) 00000-0000" />
+									<input
+										id="phone"
+										type="text"
+										defaultValue={initialShipping.phone}
+										class="input"
+										placeholder="(00) 00000-0000"
+									/>
 								</div>
 							</div>
 
 							<hr class="section-rule" />
 
-							<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+							<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
 								<div>
 									<label htmlFor="cep" class="block text-sm font-medium text-ink-2 mb-1.5">
 										CEP
 									</label>
-									<input id="cep" type="text" class="input" placeholder="00000-000" />
+									<input
+										id="cep"
+										type="text"
+										defaultValue={initialShipping.cep}
+										class="input"
+										placeholder="00000-000"
+									/>
 								</div>
-								<div class="md:col-span-2">
+								<div class="lg:col-span-2">
 									<label htmlFor="street" class="block text-sm font-medium text-ink-2 mb-1.5">
 										Rua / Avenida
 									</label>
-									<input id="street" type="text" class="input" />
+									<input id="street" type="text" defaultValue={initialShipping.street} class="input" />
+								</div>
+								<div class="lg:col-span-3">
+									<label htmlFor="city" class="block text-sm font-medium text-ink-2 mb-1.5">
+										Cidade
+									</label>
+									<input id="city" type="text" defaultValue={initialShipping.city} class="input" />
 								</div>
 							</div>
 
@@ -163,7 +234,8 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 							<button
 								type="button"
 								onClick={prevStep}
-								class="p-2 text-muted hover:text-ink rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+								disabled={submitting}
+								class="p-2 text-muted hover:text-ink rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:opacity-50"
 								aria-label="Voltar"
 							>
 								<ArrowLeft class="w-5 h-5" />
@@ -239,10 +311,29 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 								</div>
 							)}
 
+							{submitError && (
+								<p class="mt-4 text-sm text-danger" role="alert">
+									{submitError}
+								</p>
+							)}
+
 							<hr class="section-rule my-6" />
 
-							<button type="button" onClick={nextStep} class="btn btn-success w-full md:w-auto md:ml-auto md:flex !px-6">
-								Finalizar pedido <Check class="w-4 h-4" aria-hidden="true" />
+							<button
+								type="button"
+								onClick={createOrder}
+								disabled={submitting}
+								class="btn btn-success w-full lg:w-auto lg:ml-auto lg:flex !px-6 disabled:opacity-60"
+							>
+								{submitting ? (
+									<>
+										<Loader2 class="w-4 h-4 animate-spin" aria-hidden="true" /> Criando pedido...
+									</>
+								) : (
+									<>
+										Finalizar pedido <Check class="w-4 h-4" aria-hidden="true" />
+									</>
+								)}
 							</button>
 						</div>
 					</section>
@@ -254,7 +345,12 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 							<Check class="text-success w-8 h-8" aria-hidden="true" />
 						</div>
 						<h2 class="font-display font-semibold text-display-s text-ink mb-2">Pedido recebido</h2>
-						<p class="text-muted mb-8">Obrigado pela sua compra, {user.name.split(" ")[0]}.</p>
+						<p class="text-muted mb-2">Obrigado pela sua compra, {user.name.split(" ")[0]}.</p>
+						{createdOrderId && (
+							<p class="text-sm text-ink-2 mb-8">
+								Número do pedido: <span class="font-mono font-medium text-ink">{createdOrderId}</span>
+							</p>
+						)}
 
 						<div class="app-panel p-5 max-w-lg mx-auto mb-8 text-left border-warning/30 bg-warning-soft">
 							<div class="flex gap-3">
@@ -272,9 +368,14 @@ export default function Checkout({ initialOrder, user }: CheckoutProps) {
 							</div>
 						</div>
 
-						<a href="/" class="btn btn-primary !px-8">
-							Voltar para a loja
-						</a>
+						<div class="flex flex-col lg:flex-row gap-3 justify-center">
+							<a href="/perfil" class="btn btn-primary !px-8">
+								Ver meus pedidos
+							</a>
+							<a href="/" class="btn btn-ghost !px-8">
+								Voltar para a loja
+							</a>
+						</div>
 					</section>
 				)}
 			</div>

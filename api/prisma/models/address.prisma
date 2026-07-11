@@ -3,6 +3,7 @@ model Address {
   type      String
   street    String
   city      String
+  cep       String  @db.VarChar(9)
   isDefault Boolean @default(false) @map("is_default")
 
   userId String @db.Uuid

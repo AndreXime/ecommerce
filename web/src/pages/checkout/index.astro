@@ -25,7 +25,21 @@ if (userRes.status === 401 || !userRes.data) {
     return Astro.redirect(`/auth/refresh?redirect=${encodeURIComponent("/checkout")}`);
 }
 
-const user = { name: userRes.data.personalData.name, email: userRes.data.personalData.email };
+const profile = userRes.data;
+const savedAddress =
+    profile.addresses.find((address) => address.isDefault) ?? profile.addresses[0] ?? null;
+
+const user = { name: profile.personalData.name, email: profile.personalData.email };
+
+const initialShipping = {
+    fullName: profile.personalData.name,
+    email: profile.personalData.email,
+    cpf: profile.personalData.registration ?? "",
+    phone: profile.personalData.phone ?? "",
+    cep: savedAddress?.cep ?? "",
+    street: savedAddress?.street ?? "",
+    city: savedAddress?.city ?? "",
+};
 
 const cartItems = cartRes.data?.items ?? [];
 const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -57,7 +71,7 @@ const orderSummary = {
     </header>
 
     <main class="page-shell flex-grow py-8 lg:py-10">
-        <CheckoutComponent client:load initialOrder={orderSummary} user={user} />
+        <CheckoutComponent client:load initialOrder={orderSummary} user={user} initialShipping={initialShipping} />
     </main>
 
     <footer class="border-t border-rule py-6 text-center text-xs text-muted">

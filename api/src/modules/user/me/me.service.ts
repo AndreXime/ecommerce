@@ -47,6 +47,7 @@ export async function getUserProfile(userId: string) {
 			type: a.type,
 			street: a.street,
 			city: a.city,
+			cep: a.cep,
 			isDefault: a.isDefault,
 		})),
 	};

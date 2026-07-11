@@ -146,6 +146,7 @@ async function seed() {
 							type: "casa",
 							street: "Rua das Flores, 123 - Jardim Primavera",
 							city: "São Paulo",
+							cep: "01310-100",
 							isDefault: true,
 						},
 					});

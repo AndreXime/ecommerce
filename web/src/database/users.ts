@@ -46,6 +46,7 @@ export interface User {
 		type: string;
 		street: string;
 		city: string;
+		cep: string;
 		isDefault: boolean;
 	}[];
 }

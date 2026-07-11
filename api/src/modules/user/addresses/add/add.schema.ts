@@ -5,6 +5,7 @@ export const AddressAddBodySchema = z.object({
 	type: z.string().min(1),
 	street: z.string().min(5),
 	city: z.string().min(2),
+	cep: z.string().regex(/^\d{5}-\d{3}$/, "CEP deve estar no formato 00000-000"),
 	isDefault: z.boolean().optional().default(false),
 });
 
