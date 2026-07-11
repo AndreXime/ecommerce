@@ -57,7 +57,6 @@ const SchemaEnvironment = z.object({
 		(val) => (val === undefined || val === "" ? undefined : val),
 		z
 			.string()
-			.regex(/^\./, { message: "COOKIE_DOMAIN deve começar com '.' (ex: .ecommerce.com)" })
 			.optional(),
 	),
 

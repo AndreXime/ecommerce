@@ -32,7 +32,7 @@ export function buildAuthCookieBase(config: CookieEnv): AuthCookieBase {
 	return {
 		httpOnly: true,
 		secure: isProd,
-		sameSite: isProd ? "Lax" : "Strict",
+		sameSite: "Lax",
 		...(domain ? { domain } : {}),
 	};
 }
