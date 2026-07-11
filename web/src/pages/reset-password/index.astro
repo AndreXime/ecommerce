@@ -1,0 +1,21 @@
+---
+import Layout from "@/layout/layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import ResetPasswordForm from "./_reset";
+
+export const prerender = false;
+
+const tokenParam = Astro.url.searchParams.get("token");
+const token = tokenParam && tokenParam.trim().length > 0 ? tokenParam.trim() : null;
+---
+
+<Layout title="Redefinir senha | Lojas Ximenes" description="Defina uma nova senha para sua conta">
+	<Header hideSearch />
+
+	<main class="flex-grow page-shell py-12 flex items-center justify-center min-h-[70vh]">
+		<ResetPasswordForm client:load token={token} />
+	</main>
+
+	<Footer />
+</Layout>

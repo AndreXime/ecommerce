@@ -1,0 +1,18 @@
+---
+import Layout from "@/layout/layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import ForgotPasswordForm from "./_forgot";
+
+export const prerender = false;
+---
+
+<Layout title="Recuperar senha | Lojas Ximenes" description="Redefina o acesso à sua conta">
+	<Header hideSearch />
+
+	<main class="flex-grow page-shell py-12 flex items-center justify-center min-h-[70vh]">
+		<ForgotPasswordForm client:load />
+	</main>
+
+	<Footer />
+</Layout>

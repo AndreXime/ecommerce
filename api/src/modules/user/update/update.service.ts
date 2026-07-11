@@ -18,10 +18,14 @@ export async function updateUser(currentUser: JWT, data: UpdateRequest) {
 		throw new HTTPException(404, { message: "Usuário não encontrado." });
 	}
 
-	const payload: { name?: string; password?: string } = {};
+	const payload: { name?: string; phone?: string | null; password?: string } = {};
 
 	if (data.name) {
 		payload.name = data.name;
+	}
+
+	if (data.phone !== undefined) {
+		payload.phone = data.phone;
 	}
 
 	if (data.currentPassword && data.newPassword) {

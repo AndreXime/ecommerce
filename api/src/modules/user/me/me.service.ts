@@ -26,6 +26,7 @@ export async function getUserProfile(userId: string) {
 
 	return {
 		personalData: {
+			id: user.id,
 			name: user.name,
 			email: user.email,
 			registration: user.registration,

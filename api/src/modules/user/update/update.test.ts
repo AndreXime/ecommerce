@@ -103,6 +103,20 @@ describe("PUT /users", () => {
 		expect(body.name).toBe("Atualizado pelo Admin");
 	});
 
+	test("Deve atualizar o próprio telefone (200)", async () => {
+		const res = await put({ id: userId, phone: "(11) 98888-7777" }, userToken);
+		expect(res.status).toBe(200);
+		const body = (await res.json()) as { phone: string | null };
+		expect(body.phone).toBe("(11) 98888-7777");
+	});
+
+	test("Deve limpar o telefone com null (200)", async () => {
+		const res = await put({ id: userId, phone: null }, userToken);
+		expect(res.status).toBe(200);
+		const body = (await res.json()) as { phone: string | null };
+		expect(body.phone).toBeNull();
+	});
+
 	test("Deve retornar 400 sem campos para atualizar", async () => {
 		const res = await put({ id: userId }, userToken);
 		expect(res.status).toBe(400);

@@ -8,6 +8,10 @@ export const UpdateRequestSchema = z
 			description: "Novo nome do usuário",
 			example: "André Ximenes",
 		}),
+		phone: z.string().min(8, "Telefone inválido").nullable().optional().openapi({
+			description: "Telefone de contato (null para limpar)",
+			example: "(11) 99999-9999",
+		}),
 		currentPassword: z.string().min(6).optional().openapi({
 			description: "Senha atual (obrigatória para trocar a senha)",
 			example: "senha_atual",
@@ -23,7 +27,7 @@ export const UpdateRequestSchema = z
 		(data) => !!data.currentPassword === !!data.newPassword,
 		"Para alterar a senha, informe a senha atual e a nova senha.",
 	)
-	.refine((data) => data.name || data.currentPassword, {
+	.refine((data) => data.name || data.phone !== undefined || data.currentPassword, {
 		message: "Informe ao menos um campo para atualizar.",
 	});
 

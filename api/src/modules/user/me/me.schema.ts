@@ -5,6 +5,7 @@ import { ProductSummarySchema } from "@/modules/shared/schemas/product";
 
 export const MeResponseSchema = z.object({
 	personalData: z.object({
+		id: z.uuid(),
 		name: z.string(),
 		email: z.string(),
 		registration: z.string().nullable(),

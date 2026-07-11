@@ -102,7 +102,7 @@ export default function Auth() {
 									<label htmlFor="login-pass" class="block text-sm font-medium text-ink-2">
 										Senha
 									</label>
-									<a href="/" class="text-xs text-accent hover:underline">
+									<a href="/forgot-password" class="text-xs text-accent hover:underline">
 										Esqueceu a senha?
 									</a>
 								</div>

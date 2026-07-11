@@ -3,18 +3,28 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Layout from "@/layout/layout.astro";
 import ProductAddToCart from "@/components/ProductAddToCart";
+import WishlistButton from "@/components/WishlistButton";
+import ProductReviewForm from "@/components/ProductReviewForm";
 import StarRating from "@/components/StarRating";
 import { serverGet } from "@/lib/serverApi";
 import { calculateOldPrice, formatPrice, formatReviewDate } from "@/lib/utils";
 import { BadgeCheck, ChevronDown } from "lucide-preact";
 import type { ProductDetails } from "@/database/productsTypes";
+import type { User } from "@/database/users";
 
 export const prerender = false;
 const { slug } = Astro.params;
 
-const { data: product } = await serverGet<ProductDetails>(`/products/${slug}`, null);
+const cookieHeader = Astro.request.headers.get("cookie") ?? "";
+const { data: product } = await serverGet<ProductDetails>(`/products/${slug}`, cookieHeader || null);
 
 if (!product) return Astro.redirect("/404");
+
+let wishlisted = false;
+if (cookieHeader.trim()) {
+	const { data: me } = await serverGet<User>("/users/me", cookieHeader);
+	wishlisted = Boolean(me?.wishlistProducts.some((p) => p.id === product.id));
+}
 
 const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? undefined);
 ---
@@ -59,7 +69,15 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? 
 
             <div class="lg:col-span-5 flex flex-col gap-6 min-w-0">
                 <div>
-                    <h1 class="font-display font-semibold text-display-s text-ink leading-tight mb-3">{product.name}</h1>
+                    <div class="flex items-start justify-between gap-3 mb-3">
+                        <h1 class="font-display font-semibold text-display-s text-ink leading-tight">{product.name}</h1>
+                        <WishlistButton
+                            client:idle
+                            productId={product.id}
+                            initialWishlisted={wishlisted}
+                            className="w-10 h-10 shrink-0"
+                        />
+                    </div>
                     <div class="flex flex-wrap items-center gap-3 text-sm">
                         <div class="flex items-center text-star">
                             <StarRating rating={product.rating} />
@@ -142,7 +160,7 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? 
                             <StarRating rating={product.rating} />
                         </div>
                         <p class="text-sm text-muted mb-6">Baseado em {product.reviewsCount} avaliações</p>
-                        <button type="button" class="btn btn-secondary w-full !py-2 text-sm">Escrever avaliação</button>
+                        <ProductReviewForm client:idle productId={product.id} />
                     </div>
                 </div>
 
@@ -181,9 +199,9 @@ const oldPrice = calculateOldPrice(product.price, product.discountPercentage ?? 
                     }
                     {
                         product.reviewsCount > 0 && product.fullReviews && product.fullReviews.length > 0 && (
-                            <button type="button" class="text-sm font-medium text-accent hover:underline">
+                            <a href="#reviews" class="text-sm font-medium text-accent hover:underline">
                                 Ver todas as {product.reviewsCount} avaliações
-                            </button>
+                            </a>
                         )
                     }
                 </div>

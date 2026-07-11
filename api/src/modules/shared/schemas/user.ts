@@ -27,6 +27,11 @@ export const UserSchema = z.object({
 		example: "CUSTOMER",
 	}),
 
+	phone: z.string().nullable().optional().openapi({
+		description: "Telefone de contato",
+		example: "(11) 99999-9999",
+	}),
+
 	createdAt: z.iso
 		.datetime("Data de criação invalida")
 		.openapi({ description: "Data de criação do usuário no sistema", example: "2026-02-01T10:00:00Z" }),

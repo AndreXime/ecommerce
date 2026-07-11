@@ -51,12 +51,13 @@ describe("GET /users/me", () => {
 
 		expect(res.status).toBe(200);
 		const body = (await res.json()) as {
-			personalData: { email: string; name: string; role: string };
+			personalData: { id: string; email: string; name: string; role: string };
 			ordersHistory: unknown[];
 			wishlistProducts: unknown[];
 			paymentCards: unknown[];
 			addresses: unknown[];
 		};
+		expect(body.personalData.id).toBeTruthy();
 		expect(body.personalData.email).toBe(email);
 		expect(body.personalData.name).toBe("Me User");
 		expect(body.personalData.role).toBe("CUSTOMER");

@@ -35,6 +35,7 @@ export interface OrderHistory {
 
 export interface User {
 	personalData: {
+		id: string;
 		name: string;
 		email: string;
 		registration: string | null;
