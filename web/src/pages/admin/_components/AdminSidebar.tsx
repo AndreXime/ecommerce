@@ -1,4 +1,4 @@
-import { LayoutDashboard, LogOut, Users, Package, ShoppingBag, Tag } from "lucide-preact";
+import { LayoutDashboard, LogOut, Users, Package, ShoppingBag, Tag, Truck } from "lucide-preact";
 import type { Tab } from "./types";
 
 interface TabConfig {
@@ -12,6 +12,7 @@ const TABS: TabConfig[] = [
 	{ id: "products", label: "Produtos", icon: Package },
 	{ id: "orders", label: "Pedidos", icon: ShoppingBag },
 	{ id: "categories", label: "Categorias", icon: Tag },
+	{ id: "shipping", label: "Frete", icon: Truck },
 ];
 
 interface AdminSidebarProps {

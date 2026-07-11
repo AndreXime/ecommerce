@@ -1,4 +1,4 @@
-export type Tab = "users" | "products" | "orders" | "categories";
+export type Tab = "users" | "products" | "orders" | "categories" | "shipping";
 
 export type Meta = {
 	page: number;
@@ -43,6 +43,29 @@ export type ProductDetailsWithImageIds = Omit<ProductDetails, "images"> & {
 };
 
 export type Category = { id: string; name: string };
+
+export type ShippingMethod = {
+	id: string;
+	name: string;
+	code: string;
+	basePrice: number;
+	pricePerKm: number;
+	pricePerKg: number;
+	daysBase: number;
+	kmPerDay: number;
+	active: boolean;
+	carrierId: string;
+};
+
+export type Carrier = {
+	id: string;
+	name: string;
+	slug: string;
+	active: boolean;
+	hubLat: number;
+	hubLng: number;
+	methods?: ShippingMethod[];
+};
 
 export type OrderShipment = {
 	id: string;
